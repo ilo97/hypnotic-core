@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Howler + Web Audio Hypnotic Sound System</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      color: #fff;
+      background: linear-gradient(140deg, #04060a, #0a1018 50%, #0f0508);
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .panel {
+      max-width: 1060px;
+      margin: 0 auto;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 18px;
+      padding: 22px;
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(12px);
+    }
+    h1 { margin: 0; }
+    .sub { color: rgba(255,255,255,0.74); margin: 8px 0 16px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+    button, select {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+    button:hover { border-color: #00ffcc; color: #00ffcc; }
+    .status { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .tile {
+      min-height: 110px;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      align-content: center;
+      background: rgba(255,255,255,0.02);
+      transition: transform .25s ease, border-color .25s ease;
+    }
+    .tile:hover { transform: translateY(-2px); border-color: #00ffcc; }
+    .tiny { font-size: 12px; color: rgba(255,255,255,0.66); }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>Sound Design System Example</h1>
+    <div class="sub">Howler.js (triggering + crossfade) + Web Audio API (synthetic hypnotic bed). No voice, no lyrics.</div>
+
+    <div class="controls">
+      <select id="category">
+        <option value="beverage">Beverage</option>
+        <option value="fashion">Fashion</option>
+        <option value="tech" selected>Tech</option>
+        <option value="automotive">Automotive</option>
+        <option value="luxury">Luxury</option>
+      </select>
+      <button id="start">Start Engine</button>
+      <button id="stop">Stop</button>
+      <button id="pulse">Interaction Pulse</button>
+    </div>
+
+    <div class="status" id="status">Idle • move mouse / scroll / hover tiles after start</div>
+
+    <div class="grid" id="grid">
+      <div class="tile" data-tone="520"><strong>Hover Trigger</strong><span class="tiny">Howler blip + synth shimmer</span></div>
+      <div class="tile" data-tone="690"><strong>Click Trigger</strong><span class="tiny">Howler click + transient burst</span></div>
+      <div class="tile" data-tone="880"><strong>Speed Trigger</strong><span class="tiny">Mouse speed increases tension layer</span></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  <script src="./config.js"></script>
+  <script>
+    const statusEl = document.getElementById('status');
+    const categoryEl = document.getElementById('category');
+
+    let ctx, master, droneGain, tensionGain, noiseGain;
+    let droneOsc, tensionOsc, noiseNode, noiseFilter, lfo, lfoGain;
+    let started = false;
+    let mouseSpeed = 0;
+    let prevX = 0, prevY = 0;
+
+    function setStatus(text) { statusEl.textContent = text; }
+
+    function createToneDataUri(freq = 660, ms = 130, volume = 0.35) {
+      const sampleRate = 44100;
+      const samples = Math.floor(sampleRate * (ms / 1000));
+      const buffer = new ArrayBuffer(44 + samples * 2);
+      const view = new DataView(buffer);
+
+      const writeStr = (offset, str) => { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); };
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + samples * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, samples * 2, true);
+
+      for (let i = 0; i < samples; i++) {
+        const t = i / sampleRate;
+        const env = Math.exp(-t * 22);
+        const sample = Math.sin(2 * Math.PI * freq * t) * env * volume;
+        view.setInt16(44 + i * 2, sample * 32767, true);
+      }
+
+      let binary = '';
+      const bytes = new Uint8Array(buffer);
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+      }
+      return 'data:audio/wav;base64,' + btoa(binary);
+    }
+
+    const hoverSfx = new Howl({ src: [createToneDataUri(560, 110, 0.35)], volume: 0.35 });
+    const clickSfx = new Howl({ src: [createToneDataUri(860, 140, 0.4)], volume: 0.4 });
+
+    // Two looped Howler synthetic layers for crossfade
+    const calmLoop = new Howl({ src: [createToneDataUri(180, 900, 0.25)], loop: true, volume: 0 });
+    const tensionLoop = new Howl({ src: [createToneDataUri(260, 900, 0.28)], loop: true, volume: 0 });
+
+    function setupWebAudio(profile) {
+      if (!ctx) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        ctx = new Ctx();
+      }
+      master = ctx.createGain();
+      master.gain.value = 0;
+      master.connect(ctx.destination);
+
+      droneGain = ctx.createGain();
+      tensionGain = ctx.createGain();
+      noiseGain = ctx.createGain();
+      droneGain.gain.value = 0;
+      tensionGain.gain.value = 0;
+      noiseGain.gain.value = 0;
+
+      droneOsc = ctx.createOscillator();
+      droneOsc.type = 'sine';
+      droneOsc.frequency.value = profile.synth.baseHz;
+
+      tensionOsc = ctx.createOscillator();
+      tensionOsc.type = 'triangle';
+      tensionOsc.frequency.value = profile.synth.baseHz * 1.51;
+
+      const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+      const data = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.16;
+
+      noiseNode = ctx.createBufferSource();
+      noiseNode.buffer = noiseBuffer;
+      noiseNode.loop = true;
+
+      noiseFilter = ctx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.value = profile.synth.noiseBand;
+      noiseFilter.Q.value = 0.7;
+
+      lfo = ctx.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.value = profile.synth.pulseRate;
+      lfoGain = ctx.createGain();
+      lfoGain.gain.value = 340;
+
+      lfo.connect(lfoGain);
+      lfoGain.connect(noiseFilter.frequency);
+
+      droneOsc.connect(droneGain);
+      tensionOsc.connect(tensionGain);
+      noiseNode.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+
+      droneGain.connect(master);
+      tensionGain.connect(master);
+      noiseGain.connect(master);
+
+      droneOsc.start();
+      tensionOsc.start();
+      noiseNode.start();
+      lfo.start();
+    }
+
+    async function startEngine() {
+      const profile = getSoundProfile(categoryEl.value);
+      if (!started) {
+        setupWebAudio(profile);
+        started = true;
+      }
+
+      if (ctx.state === 'suspended') await ctx.resume();
+
+      const t = ctx.currentTime;
+      master.gain.cancelScheduledValues(t);
+      master.gain.linearRampToValueAtTime(0.55, t + 1.2);
+      droneGain.gain.linearRampToValueAtTime(profile.mix.drone * 0.18, t + 1.4);
+      tensionGain.gain.linearRampToValueAtTime(profile.mix.transient * 0.06, t + 1.4);
+      noiseGain.gain.linearRampToValueAtTime(profile.mix.foley * 0.04, t + 1.4);
+
+      if (!calmLoop.playing()) calmLoop.play();
+      if (!tensionLoop.playing()) tensionLoop.play();
+
+      calmLoop.volume(0.35);
+      tensionLoop.volume(0.04);
+
+      setStatus(`Running • ${profile.label} profile • move mouse/scroll to modulate intensity`);
+    }
+
+    function stopEngine() {
+      if (!ctx) return;
+      const t = ctx.currentTime;
+      master.gain.cancelScheduledValues(t);
+      master.gain.linearRampToValueAtTime(0.0001, t + 0.9);
+      calmLoop.fade(calmLoop.volume(), 0, 900);
+      tensionLoop.fade(tensionLoop.volume(), 0, 900);
+      setStatus('Stopped');
+    }
+
+    function pulseInteraction() {
+      if (!started || !ctx) return;
+      clickSfx.play();
+      const now = ctx.currentTime;
+      tensionGain.gain.cancelScheduledValues(now);
+      tensionGain.gain.setValueAtTime(0.02, now);
+      tensionGain.gain.linearRampToValueAtTime(0.16, now + 0.07);
+      tensionGain.gain.exponentialRampToValueAtTime(0.02, now + 0.55);
+    }
+
+    document.getElementById('start').addEventListener('click', startEngine);
+    document.getElementById('stop').addEventListener('click', stopEngine);
+    document.getElementById('pulse').addEventListener('click', pulseInteraction);
+
+    // hover + click triggers
+    document.querySelectorAll('.tile').forEach((tile) => {
+      tile.addEventListener('mouseenter', () => {
+        hoverSfx.play();
+        if (started && ctx) {
+          const hz = Number(tile.dataset.tone || 700);
+          tensionOsc.frequency.setTargetAtTime(hz, ctx.currentTime, 0.06);
+        }
+      });
+
+      tile.addEventListener('click', () => {
+        clickSfx.play();
+        pulseInteraction();
+      });
+    });
+
+    // mouse speed -> tempo/intensity + Howler crossfade
+    window.addEventListener('mousemove', (e) => {
+      const dx = e.clientX - prevX;
+      const dy = e.clientY - prevY;
+      const speed = Math.min(1, Math.sqrt(dx * dx + dy * dy) / 45);
+      mouseSpeed += (speed - mouseSpeed) * 0.14;
+      prevX = e.clientX;
+      prevY = e.clientY;
+
+      if (!started || !ctx) return;
+
+      const profile = getSoundProfile(categoryEl.value);
+      const now = ctx.currentTime;
+      const targetFreq = profile.synth.baseHz * (1 + mouseSpeed * 0.5);
+      const targetPulse = profile.synth.pulseRate + mouseSpeed * 1.8;
+
+      droneOsc.frequency.setTargetAtTime(targetFreq, now, 0.15);
+      lfo.frequency.setTargetAtTime(targetPulse, now, 0.15);
+
+      const calmVol = Math.max(0.08, 0.38 - mouseSpeed * 0.28);
+      const tensionVol = Math.min(0.46, 0.06 + mouseSpeed * 0.36);
+      calmLoop.fade(calmLoop.volume(), calmVol, 120);
+      tensionLoop.fade(tensionLoop.volume(), tensionVol, 120);
+    });
+
+    // scroll trigger
+    window.addEventListener('scroll', () => {
+      if (!started || !ctx) return;
+      const progress = Math.min(1, window.scrollY / 1000);
+      const now = ctx.currentTime;
+      tensionGain.gain.setTargetAtTime(0.03 + progress * 0.14, now, 0.2);
+      noiseGain.gain.setTargetAtTime(0.02 + progress * 0.08, now, 0.2);
+    }, { passive: true });
+
+    categoryEl.addEventListener('change', () => {
+      const profile = getSoundProfile(categoryEl.value);
+      setStatus(`Profile switched: ${profile.label} • ${profile.cues.join(', ')}`);
+      if (started && ctx) {
+        droneOsc.frequency.setTargetAtTime(profile.synth.baseHz, ctx.currentTime, 0.4);
+        noiseFilter.frequency.setTargetAtTime(profile.synth.noiseBand, ctx.currentTime, 0.4);
+      }
+    });
+  </script>
+</body>
+</html>

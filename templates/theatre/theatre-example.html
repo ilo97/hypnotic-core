@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theatre.js Timeline Example</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #06060a;
+      color: #fff;
+      font-family: Inter, system-ui, sans-serif;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .viewport {
+      width: min(980px, 94vw);
+      height: min(620px, 86vh);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      position: relative;
+      background: radial-gradient(circle at 15% 15%, rgba(0,255,204,0.2), transparent 45%), #0c0c12;
+      overflow: hidden;
+    }
+    .orb {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff, #7a7aff 35%, #2b2b62 75%);
+      position: absolute;
+      left: 18%;
+      top: 42%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 70px rgba(122, 122, 255, 0.45);
+    }
+    .camera-readout {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-width: 170px;
+    }
+    .controls {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover { border-color: #00ffcc; color: #00ffcc; }
+    .status {
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      color: rgba(255,255,255,0.75);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport" id="viewport">
+    <div class="status" id="status">Loading Theatre.js...</div>
+    <div class="orb" id="orb"></div>
+    <div class="camera-readout" id="readout">cam.x 0.00<br/>cam.y 0.00<br/>cam.z 4.00</div>
+
+    <div class="controls">
+      <button id="play">Play Timeline</button>
+      <button id="reverse">Reverse</button>
+      <button id="scrub">Scrub 50%</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script type="module">
+    const status = document.getElementById('status');
+    const orb = document.getElementById('orb');
+    const viewport = document.getElementById('viewport');
+    const readout = document.getElementById('readout');
+
+    let timelineFallback = null;
+
+    function applyScene(values) {
+      orb.style.left = `${values.orb.x}%`;
+      orb.style.top = `${values.orb.y}%`;
+      orb.style.transform = `translate(-50%, -50%) scale(${values.orb.scale})`;
+      orb.style.filter = `hue-rotate(${values.orb.hue}deg)`;
+
+      viewport.style.background = `radial-gradient(circle at ${20 + values.camera.x * 8}% ${20 + values.camera.y * 6}%, rgba(0,255,204,0.25), transparent 46%), #0c0c12`;
+      readout.innerHTML = `cam.x ${values.camera.x.toFixed(2)}<br/>cam.y ${values.camera.y.toFixed(2)}<br/>cam.z ${values.camera.z.toFixed(2)}`;
+    }
+
+    async function initTheatre() {
+      try {
+        const core = await import('https://esm.sh/@theatre/core@0.7.2');
+        const studio = await import('https://esm.sh/@theatre/studio@0.7.2');
+
+        // Studio optional (dev style). If it fails silently, timeline still runs.
+        studio?.default?.initialize?.();
+
+        const project = core.getProject('PromptTo3D-Theatre');
+        const sheet = project.sheet('Motion');
+
+        const cameraObj = sheet.object('Camera', {
+          x: core.types.number(0, { range: [-2, 2] }),
+          y: core.types.number(0, { range: [-2, 2] }),
+          z: core.types.number(4, { range: [1.5, 5] })
+        });
+
+        const orbObj = sheet.object('Orb', {
+          x: core.types.number(18, { range: [5, 90] }),
+          y: core.types.number(42, { range: [10, 90] }),
+          scale: core.types.number(1, { range: [0.6, 1.8] }),
+          hue: core.types.number(0, { range: [0, 300] })
+        });
+
+        const values = {
+          camera: { x: 0, y: 0, z: 4 },
+          orb: { x: 18, y: 42, scale: 1, hue: 0 }
+        };
+
+        cameraObj.onValuesChange((v) => { values.camera = v; applyScene(values); });
+        orbObj.onValuesChange((v) => { values.orb = v; applyScene(values); });
+
+        // Keyframe-like progression using sequence position (scroll/controls style)
+        const seq = sheet.sequence;
+        seq.position = 0;
+
+        const animateTo = (target, duration = 1.8) => {
+          const start = seq.position;
+          const startT = performance.now();
+          const loop = (now) => {
+            const p = Math.min(1, (now - startT) / (duration * 1000));
+            const eased = gsap.parseEase('power3.inOut')(p);
+            seq.position = start + (target - start) * eased;
+            if (p < 1) requestAnimationFrame(loop);
+          };
+          requestAnimationFrame(loop);
+        };
+
+        document.getElementById('play').onclick = () => animateTo(5.8, 2.6);
+        document.getElementById('reverse').onclick = () => animateTo(0, 2.4);
+        document.getElementById('scrub').onclick = () => { seq.position = 2.9; };
+
+        status.textContent = 'Theatre.js active (@theatre/core + @theatre/studio)';
+      } catch (err) {
+        status.textContent = 'Theatre CDN unavailable — GSAP fallback active';
+
+        const scene = { camX: 0, camY: 0, camZ: 4, orbX: 18, orbY: 42, scale: 1, hue: 0 };
+        const render = () => applyScene({ camera: { x: scene.camX, y: scene.camY, z: scene.camZ }, orb: { x: scene.orbX, y: scene.orbY, scale: scene.scale, hue: scene.hue } });
+        render();
+
+        timelineFallback = gsap.timeline({ paused: true, defaults: { ease: 'power3.inOut' }, onUpdate: render })
+          .to(scene, { camX: 1.1, camY: 0.7, camZ: 2.7, orbX: 62, orbY: 35, scale: 1.35, hue: 100, duration: 1.4 })
+          .to(scene, { camX: -0.4, camY: -0.2, camZ: 3.4, orbX: 35, orbY: 60, scale: 0.88, hue: 220, duration: 1.2 });
+
+        document.getElementById('play').onclick = () => timelineFallback.play(0);
+        document.getElementById('reverse').onclick = () => timelineFallback.reverse();
+        document.getElementById('scrub').onclick = () => timelineFallback.progress(0.5);
+      }
+    }
+
+    initTheatre();
+  </script>
+</body>
+</html>

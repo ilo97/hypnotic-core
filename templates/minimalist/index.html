@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aesthetic.Studio | Minimalist Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root {
+            --bg: #fff;
+            --black: #000;
+            --gray: #f0f0f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--black);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 80px;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            border: 1px solid var(--black);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 60px;
+        }
+
+        /* Vector lines */
+        .v-line {
+            position: absolute;
+            background: var(--black);
+        }
+        .v-top { top: 40px; left: 0; width: 100%; height: 1px; }
+        .v-left { top: 0; left: 40px; width: 1px; height: 100%; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 100px;
+        }
+
+        .logo {
+            font-weight: 300;
+            font-size: 14px;
+            letter-spacing: 0.8em;
+            text-transform: uppercase;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--black);
+            font-family: 'Inter', sans-serif;
+            font-size: 40px;
+            font-weight: 100;
+            resize: none;
+            line-height: 1.2;
+        }
+
+        textarea::placeholder {
+            color: #eee;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .btn-evolve {
+            background: var(--black);
+            color: var(--bg);
+            border: none;
+            padding: 15px 40px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-evolve:hover {
+            opacity: 0.7;
+        }
+
+        .coordinates {
+            font-size: 10px;
+            font-weight: 200;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="v-line v-top"></div>
+        <div class="v-line v-left"></div>
+
+        <header>
+            <div class="logo">Aesthetic Studio</div>
+            <div class="nav-links">
+                <span class="label">INDEX / 001</span>
+            </div>
+        </header>
+
+        <div class="content">
+            <span class="label">Input Sequence</span>
+            <textarea placeholder="The evolution begins with your word."></textarea>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="coordinates">
+                52.5200° N, 13.4050° E
+            </div>
+            <button class="btn-evolve">Initiate</button>
+        </div>
+    </div>
+
+    <script>
+        gsap.from(".container", { opacity: 0, duration: 2, ease: "power2.inOut" });
+        gsap.from(".v-line", { scale: 0, duration: 1.5, stagger: 0.2, ease: "power4.out" });
+        gsap.from(".logo, .label, textarea, .bottom-nav", { opacity: 0, y: 10, duration: 1, stagger: 0.1, delay: 0.5 });
+    </script>
+</body>
+</html>

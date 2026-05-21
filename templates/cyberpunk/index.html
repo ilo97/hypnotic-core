@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aesthetic.Studio | Cyberpunk Interface</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root {
+            --bg: #05080a;
+            --cyan: #00f2ff;
+            --cyan-dim: rgba(0, 242, 255, 0.1);
+            --red: #ff0055;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--cyan);
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            text-transform: uppercase;
+        }
+
+        /* Scanline Effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 112, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* HUD Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--cyan);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .hud-title { font-size: 24px; letter-spacing: 0.1em; }
+        .hud-status { color: var(--red); animation: blink 1s infinite; }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Main Interface */
+        .main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+
+        .terminal-box {
+            border: 1px solid var(--cyan);
+            background: var(--cyan-dim);
+            padding: 20px;
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: "SYSTEM_INPUT";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--bg);
+            padding: 0 10px;
+            font-size: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 18px;
+            resize: none;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .hud-panel {
+            border: 1px solid var(--cyan);
+            padding: 15px;
+            font-size: 12px;
+        }
+
+        .hud-panel h3 { margin-bottom: 10px; font-size: 14px; border-bottom: 1px solid var(--cyan); }
+
+        .btn-execute {
+            background: var(--cyan);
+            color: var(--bg);
+            border: none;
+            padding: 20px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-execute:hover {
+            box-shadow: 0 0 20px var(--cyan);
+            transform: skew(-5deg);
+        }
+
+        /* HUD Decoration */
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--cyan);
+        }
+        .top-left { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+        .top-right { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+        .bot-left { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+        .bot-right { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+        footer {
+            margin-top: 30px;
+            font-size: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="hud-title">AESTHETIC_STUDIO // CORE_INTERFACE</div>
+        <div class="hud-status">SYNC_PENDING_...</div>
+    </header>
+
+    <div class="main">
+        <div class="terminal-box">
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bot-left"></div>
+            <div class="corner bot-right"></div>
+            
+            <textarea placeholder="> INITIATE_PROMPT_SEQUENCE..."></textarea>
+        </div>
+
+        <div class="controls">
+            <div class="hud-panel">
+                <h3>MODULE_CONFIG</h3>
+                <p>RENDER_ENGINE: WEBGL_2.0</p>
+                <p>PRECISION: MAX_FIDELITY</p>
+                <p>LATENCY: 12MS</p>
+            </div>
+            
+            <div class="hud-panel">
+                <h3>NEURAL_BIAS</h3>
+                <p>VIOLET_SHIFT: ENABLED</p>
+                <p>PARTICLE_DENSITY: 25K</p>
+            </div>
+
+            <button class="btn-execute">EXECUTE_EVOLUTION</button>
+        </div>
+    </div>
+
+    <footer>
+        <div>(C) 2026 AS_CORP // ALL RIGHTS RESERVED</div>
+        <div>Uptime: 1024:12:55</div>
+    </footer>
+
+    <script>
+        // HUD entrance
+        gsap.from(".main", { opacity: 0, scale: 0.9, duration: 1, ease: "power4.out" });
+        gsap.from("header", { x: -100, opacity: 0, duration: 0.8 });
+        
+        // Random glitch effect
+        setInterval(() => {
+            if(Math.random() > 0.95) {
+                gsap.to("body", { x: (Math.random()-0.5)*5, duration: 0.05, yoyo: true, repeat: 3 });
+            }
+        }, 100);
+    </script>
+</body>
+</html>

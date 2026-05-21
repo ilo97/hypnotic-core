@@ -1,0 +1,25 @@
+{
+  "compositions": [
+    {
+      "id": "HypnoticLanding",
+      "fps": 30,
+      "durationInFrames": 300,
+      "width": 1920,
+      "height": 1080,
+      "description": "Core composition for generated 3D landing page previews"
+    },
+    {
+      "id": "ProductRevealVertical",
+      "fps": 30,
+      "durationInFrames": 210,
+      "width": 1080,
+      "height": 1920,
+      "description": "Vertical ad variant for social cutdowns"
+    }
+  ],
+  "renderDefaults": {
+    "codec": "h264",
+    "crf": 18,
+    "audioCodec": "aac"
+  }
+}

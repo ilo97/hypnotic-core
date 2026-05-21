@@ -1,0 +1,22 @@
+{
+  "animations": [
+    {
+      "id": "icon-morph",
+      "label": "Icon Morphing",
+      "src": "https://lottie.host/5f2fb634-64bb-405c-bf6e-4d6bb4e5f4a8/iU4P9hYVqX.lottie",
+      "fallbackJson": "https://assets5.lottiefiles.com/packages/lf20_hu9cd9.json"
+    },
+    {
+      "id": "loading-loop",
+      "label": "Loading Loop",
+      "src": "https://lottie.host/24b48be4-02ff-46d8-8a7f-cf49b511dff0/5KZa4iRrUY.lottie",
+      "fallbackJson": "https://assets10.lottiefiles.com/packages/lf20_usmfx6bp.json"
+    },
+    {
+      "id": "pulse-ring",
+      "label": "Pulse Ring",
+      "src": "https://lottie.host/38910fcb-e0de-4316-9f4e-b3b5c86f78e7/BsINqV0fY4.lottie",
+      "fallbackJson": "https://assets4.lottiefiles.com/packages/lf20_touohxv0.json"
+    }
+  ]
+}

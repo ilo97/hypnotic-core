@@ -1,0 +1,25 @@
+{
+  "presets": {
+    "hypnotic-default": {
+      "droneFrequencies": [110, 164.81],
+      "noiseBandCenter": 640,
+      "masterGain": 0.5,
+      "intensity": 0.45,
+      "voice": false
+    },
+    "luxury-asmr": {
+      "droneFrequencies": [98, 146.83],
+      "noiseBandCenter": 580,
+      "masterGain": 0.42,
+      "intensity": 0.38,
+      "voice": false
+    },
+    "energy-pulse": {
+      "droneFrequencies": [130.81, 196],
+      "noiseBandCenter": 720,
+      "masterGain": 0.58,
+      "intensity": 0.62,
+      "voice": false
+    }
+  }
+}

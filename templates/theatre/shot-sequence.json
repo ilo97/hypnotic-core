@@ -1,0 +1,27 @@
+{
+  "project": "PromptTo3D",
+  "sheet": "LandingCamera",
+  "objects": {
+    "cameraRig": {
+      "position": {
+        "x": [0, 0.4, 0.85],
+        "y": [0, 0.25, 0.7],
+        "z": [4.0, 3.1, 2.55]
+      },
+      "rotation": {
+        "x": [0, 0.08, 0.22],
+        "y": [0, 0.22, 0.95],
+        "z": [0, 0, 0]
+      }
+    },
+    "overlay": {
+      "opacity": [1, 0.75, 0],
+      "titleYPercent": [0, -10, -30]
+    }
+  },
+  "timeline": {
+    "duration": 6.0,
+    "easing": "power3.inOut",
+    "scrubLinked": true
+  }
+}

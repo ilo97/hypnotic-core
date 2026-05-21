@@ -1,0 +1,23 @@
+{
+  "default": {
+    "name": "Neon Orbit",
+    "src": "https://assets8.lottiefiles.com/packages/lf20_tfb3estd.json",
+    "loop": true,
+    "autoplay": true,
+    "speed": 1
+  },
+  "luxury": {
+    "name": "Luxury Spark",
+    "src": "https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json",
+    "loop": true,
+    "autoplay": true,
+    "speed": 0.85
+  },
+  "energy": {
+    "name": "Energy Burst",
+    "src": "https://assets9.lottiefiles.com/packages/lf20_Stt1R8.json",
+    "loop": true,
+    "autoplay": true,
+    "speed": 1.25
+  }
+}

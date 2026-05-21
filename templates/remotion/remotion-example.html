@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Remotion 10s Social Ad Template</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #06060a;
+      color: #fff;
+      font-family: Inter, system-ui, sans-serif;
+      padding: 24px;
+    }
+    .wrap { width: min(1020px, 100%); }
+    h1 { margin: 0 0 8px; }
+    .meta { color: rgba(255,255,255,.7); margin-bottom: 14px; }
+    .player-shell {
+      width: min(100%, 440px);
+      aspect-ratio: 9 / 16;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #111;
+      position: relative;
+    }
+    .note { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,.68); }
+    code { color: #00ffcc; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Remotion Example — 10s Social Media Ad</h1>
+    <div class="meta">React component template for Reels/TikTok export (1080×1920, 300 frames @ 30fps)</div>
+    <div class="player-shell" id="player-shell"></div>
+    <p class="note" id="note">Trying to load <code>@remotion/player</code> from CDN…</p>
+  </main>
+
+  <script type="module">
+    const mount = document.getElementById('player-shell');
+    const note = document.getElementById('note');
+
+    const fallback = () => {
+      note.innerHTML = 'Remotion CDN unavailable in this environment — showing fallback preview. Component source is in <code>SocialAdTemplate.jsx</code>.';
+      mount.innerHTML = `
+        <div style="position:relative;width:100%;height:100%;background:#06060a;overflow:hidden;display:grid;place-items:center;">
+          <div id="orb" style="position:absolute;width:120%;aspect-ratio:1;border-radius:999px;background:radial-gradient(circle,#00ffcc66 0%,#8800ff22 45%,transparent 68%);filter:blur(4px);"></div>
+          <div style="text-align:center;z-index:2;">
+            <h2 style="margin:0;font-size:56px;font-family:Playfair Display,serif;font-style:italic;">Hypnotic Core</h2>
+            <p style="letter-spacing:.22em;text-transform:uppercase;opacity:.8;">10s Social Ad Template</p>
+          </div>
+        </div>`;
+
+      const orb = document.getElementById('orb');
+      let t = 0;
+      const animate = () => {
+        t += 0.015;
+        const scale = 0.94 + (Math.sin(t) * 0.05 + 0.05);
+        orb.style.transform = `scale(${scale}) rotate(${t * 40}deg)`;
+        requestAnimationFrame(animate);
+      };
+      animate();
+    };
+
+    try {
+      const React = await import('https://esm.sh/react@18.2.0');
+      const ReactDOM = await import('https://esm.sh/react-dom@18.2.0/client');
+      const {Player} = await import('https://esm.sh/@remotion/player@4.0.214');
+
+      const SocialAd = ({headline = 'Hypnotic Core', subtitle = '10s Social Ad Template'}) => {
+        const styleFill = {
+          width: '100%', height: '100%', background: '#06060a', color: 'white',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden'
+        };
+
+        return React.createElement('div', {style: styleFill}, [
+          React.createElement('div', {
+            key: 'orb',
+            style: {
+              position: 'absolute', width: '140%', aspectRatio: '1 / 1', borderRadius: '50%',
+              background: 'radial-gradient(circle, #00ffcc66 0%, #8800ff22 45%, transparent 70%)'
+            }
+          }),
+          React.createElement('div', {key: 'text', style: {textAlign: 'center', zIndex: 2}}, [
+            React.createElement('h2', {key: 'h', style: {margin: 0, fontSize: 56, fontStyle: 'italic', fontFamily: 'Playfair Display, serif'}}, headline),
+            React.createElement('p', {key: 'p', style: {letterSpacing: '.22em', textTransform: 'uppercase', opacity: 0.82}}, subtitle)
+          ])
+        ]);
+      };
+
+      const root = ReactDOM.createRoot(mount);
+      root.render(
+        React.createElement(Player, {
+          component: SocialAd,
+          durationInFrames: 300,
+          compositionWidth: 1080,
+          compositionHeight: 1920,
+          fps: 30,
+          controls: true,
+          loop: true,
+          autoPlay: true,
+          inputProps: { headline: 'Hypnotic Core', subtitle: '10s Social Ad Template' },
+          style: { width: '100%', height: '100%' }
+        })
+      );
+
+      note.innerHTML = 'Remotion Player loaded from CDN. This composition is export-ready for social ads.';
+    } catch (e) {
+      console.warn('Remotion player load failed', e);
+      fallback();
+    }
+  </script>
+</body>
+</html>
