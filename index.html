@@ -1,462 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aesthetic.Studio | Prompt-to-3D</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <style>
-        :root {
-            --bg: #030303;
-            --white: #ffffff;
-            --cyan: #00ffcc;
-            --dim-text: rgba(255, 255, 255, 0.4);
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--white);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 0 60px;
-            position: relative;
-        }
-
-        header {
-            position: absolute;
-            top: 40px;
-            left: 60px;
-            right: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .logo {
-            font-size: 14px;
-            letter-spacing: 0.5em;
-            text-transform: uppercase;
-            font-weight: 300;
-        }
-
-        .hero-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .hero-title h1 {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: clamp(48px, 8vw, 120px);
-            font-weight: 400;
-            line-height: 1;
-            margin-bottom: 20px;
-            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-title p {
-            font-size: 12px;
-            letter-spacing: 0.4em;
-            text-transform: uppercase;
-            color: var(--dim-text);
-        }
-
-        /* Prompt Experience */
-        .prompt-box {
-            width: 100%;
-            max-width: 900px;
-            background: var(--glass);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border);
-            padding: 30px;
-            position: relative;
-            transition: border-color 0.6s ease, transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .prompt-box:focus-within {
-            border-color: var(--cyan);
-            transform: scale(1.02);
-        }
-
-        textarea {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--white);
-            font-family: 'Inter', sans-serif;
-            font-size: 20px;
-            font-weight: 200;
-            resize: none;
-            min-height: 80px;
-            line-height: 1.6;
-        }
-
-        textarea::placeholder {
-            color: rgba(255, 255, 255, 0.1);
-        }
-
-        .action-bar {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .evolution-btn,
-        .utility-btn {
-            background: transparent;
-            border: 1px solid var(--cyan);
-            color: var(--cyan);
-            padding: 12px 22px;
-            font-size: 10px;
-            letter-spacing: 0.24em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.35s ease;
-        }
-
-        .evolution-btn:hover,
-        .utility-btn:hover {
-            background: var(--cyan);
-            color: var(--bg);
-        }
-
-        .hint {
-            font-size: 10px;
-            color: var(--dim-text);
-            letter-spacing: 0.1em;
-        }
-
-        .stack-status {
-            margin-top: 18px;
-            font-size: 10px;
-            letter-spacing: 0.14em;
-            color: var(--dim-text);
-            text-transform: uppercase;
-        }
-
-        .lottie-preview {
-            margin-top: 22px;
-            width: 100%;
-            max-width: 360px;
-            aspect-ratio: 1 / 1;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(255, 255, 255, 0.02);
-            display: grid;
-            place-items: center;
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 11px;
-            letter-spacing: 0.1em;
-        }
-
-        /* Showcase Section */
-        .showcase {
-            padding: 120px 60px;
-            background: #000;
-        }
-
-        .section-header {
-            margin-bottom: 60px;
-        }
-
-        .section-header h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            font-weight: 400;
-            font-style: italic;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 40px;
-        }
-
-        .grid-item {
-            position: relative;
-            aspect-ratio: 1;
-            overflow: hidden;
-            background: #111;
-        }
-
-        .grid-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
-            filter: grayscale(100%);
-        }
-
-        .grid-item:hover img {
-            transform: scale(1.1);
-            filter: grayscale(0%);
-        }
-
-        .item-label {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            font-size: 10px;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--white);
-            opacity: 0;
-            transition: opacity 0.6s ease;
-        }
-
-        .grid-item:hover .item-label {
-            opacity: 1;
-        }
-
-        /* Footer */
-        footer {
-            padding: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 10px;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--dim-text);
-        }
-
-        .socials {
-            display: flex;
-            gap: 30px;
-        }
-
-        .socials a {
-            color: var(--dim-text);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .socials a:hover {
-            color: var(--cyan);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; }
-            .hero { padding: 0 30px; }
-            header { left: 30px; right: 30px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aesthetic.Studio | Hypnotic 3D Experiences</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#030303;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden}
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 60px;pointer-events:none}
+.section>*{pointer-events:auto}
+.hero{min-height:100vh;justify-content:center;align-items:center;text-align:center}
+.hero h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(56px,10vw,140px);font-weight:400;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px;opacity:0;transform:translateY(40px)}
+.hero p{font-size:14px;letter-spacing:0.4em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:60px;opacity:0;transform:translateY(20px)}
+.hero .cta{padding:18px 48px;border:1px solid #00ffcc;color:#00ffcc;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .5s cubic-bezier(.19,1,.22,1);opacity:0}
+.hero .cta:hover{background:#00ffcc;color:#030303}
+.scroll-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.2);opacity:0}
+.scroll-line{width:1px;height:60px;background:linear-gradient(to bottom,#00ffcc,transparent);margin:10px auto 0;animation:pulse 2s infinite}
+@keyframes pulse{0%{opacity:0.3}50%{opacity:1}100%{opacity:0.3}}
+.section-header{text-align:center;margin-bottom:80px}
+.section-header h2{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,56px);font-weight:400;opacity:0;transform:translateY(30px)}
+.section-header p{font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:15px;opacity:0}
+.categories-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1200px;margin:0 auto;width:100%}
+.cat-card{aspect-ratio:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);padding:30px;display:flex;flex-direction:column;justify-content:flex-end;transition:all .6s cubic-bezier(.19,1,.22,1);opacity:0;transform:translateY(40px);cursor:pointer}
+.cat-card:hover{border-color:#00ffcc;background:rgba(0,255,204,0.05);transform:translateY(-8px)!important}
+.cat-card .icon{font-size:32px;margin-bottom:15px}
+.cat-card h3{font-size:13px;letter-spacing:0.2em;text-transform:uppercase;font-weight:400;margin-bottom:8px}
+.cat-card p{font-size:10px;color:rgba(255,255,255,0.4);line-height:1.6}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;max-width:1100px;margin:0 auto;width:100%}
+.price-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);padding:50px 40px;transition:all .6s cubic-bezier(.19,1,.22,1);opacity:0;transform:translateY(40px);text-align:center}
+.price-card.featured{border-color:#00ffcc;background:rgba(0,255,204,0.05)}
+.price-card:hover{border-color:#00ffcc;transform:translateY(-8px)!important}
+.price-card .plan{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.price-card .price{font-family:'Playfair Display',serif;font-size:48px;margin-bottom:10px}
+.price-card .price span{font-size:18px;color:rgba(255,255,255,0.4)}
+.price-card .desc{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:30px;line-height:1.6}
+.price-card .btn{border:1px solid #00ffcc;color:#00ffcc;padding:14px 36px;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .4s ease;display:inline-block;text-decoration:none}
+.price-card .btn:hover{background:#00ffcc;color:#030303}
+.admin-section{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);padding:60px;max-width:500px;margin:0 auto;width:100%;text-align:center;opacity:0;transform:translateY(40px)}
+.admin-section h3{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:10px}
+.admin-section p{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:30px}
+.admin-section input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:16px 20px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;margin-bottom:15px;transition:border-color .3s}
+.admin-section input:focus{border-color:#00ffcc}
+.admin-section .btn{width:100%;padding:16px;border:1px solid #00ffcc;color:#00ffcc;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .4s}
+.admin-section .btn:hover{background:#00ffcc;color:#030303}
+.contact{text-align:center;padding:100px 60px}
+.contact h2{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,48px);opacity:0;transform:translateY(30px)}
+.contact p{font-size:12px;color:rgba(255,255,255,0.3);margin:20px 0 40px;letter-spacing:0.2em}
+.contact a{color:#00ffcc;text-decoration:none;font-size:14px;letter-spacing:0.1em;border-bottom:1px solid #00ffcc;padding-bottom:4px}
+footer{padding:40px 60px;display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.05)}
+@media(max-width:768px){
+  .categories-grid{grid-template-columns:repeat(2,1fr)}
+  .pricing-grid{grid-template-columns:1fr}
+  .section{padding:60px 30px}
+  .hero h1{font-size:clamp(40px,15vw,80px)}
+  footer{flex-direction:column;gap:15px;text-align:center}
+}
+</style>
 </head>
 <body>
+<canvas id="webgl"></canvas>
 
-    <div class="hero">
-        <header>
-            <div class="logo">Aesthetic.Studio</div>
-            <div class="status">Neural Link: Active</div>
-        </header>
+<section class="section hero">
+  <h1 id="heroTitle">Hypnotic 3D</h1>
+  <p id="heroSub">Scroll-Triggered Digital Experiences</p>
+  <button class="cta" id="heroCta" onclick="document.getElementById('categories').scrollIntoView({behavior:'smooth'})">Explore →</button>
+  <div class="scroll-hint" id="scrollHint">
+    <span>Scroll to discover</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
 
-        <div class="hero-title">
-            <p>Generative Motion & 3D Reality</p>
-            <h1>Dream in 3D.</h1>
-        </div>
+<section class="section" id="categories">
+  <div class="section-header">
+    <h2 id="catTitle">Design Realms</h2>
+    <p id="catSub">8 hypnotic dimensions for your brand</p>
+  </div>
+  <div class="categories-grid">
+    <div class="cat-card"><div class="icon">🥤</div><h3>Beverage</h3><p>Bubbles, drips, refreshing motion. For drinks & refreshments.</p></div>
+    <div class="cat-card"><div class="icon">👗</div><h3>Fashion</h3><p>Silk, light, elegance. High-fashion editorial motion.</p></div>
+    <div class="cat-card"><div class="icon">💻</div><h3>Tech</h3><p>Neon, digital particles. Futuristic & cyber aesthetics.</p></div>
+    <div class="cat-card"><div class="icon">💎</div><h3>Luxury</h3><p>Gold, velvet, warm light. Premium & timeless.</p></div>
+    <div class="cat-card"><div class="icon">🏎️</div><h3>Automotive</h3><p>Speed, adrenaline, sharp transitions.</p></div>
+    <div class="cat-card"><div class="icon">🍔</div><h3>Food</h3><p>Warm colors, organic movement. Appetizing visuals.</p></div>
+    <div class="cat-card"><div class="icon">💄</div><h3>Cosmetics</h3><p>Soft glow, pastel tones. Beauty in motion.</p></div>
+    <div class="cat-card"><div class="icon">🎵</div><h3>Music</h3><p>Soundwaves, vibration. Psychedelic rhythms.</p></div>
+  </div>
+</section>
 
-        <div class="prompt-box">
-            <textarea id="prompt-input" placeholder="Describe the atmosphere, physics, and luminous essence..."></textarea>
-            <div class="action-bar">
-                <span class="hint">Shift + Enter for new line • no voice audio only</span>
-                <div class="btn-group">
-                    <button class="utility-btn" id="audio-toggle">Audio: Off</button>
-                    <button class="utility-btn" id="lottie-preview-btn">Lottie Preview</button>
-                    <button class="evolution-btn" id="evolution-btn">Begin Evolution</button>
-                </div>
-            </div>
-            <div class="stack-status" id="stack-status">Stack: GSAP active • Lottie pending • Theatre pending • Remotion payload idle</div>
-            <div class="lottie-preview" id="lottie-preview">Lottie preview area</div>
-        </div>
+<section class="section" id="pricing">
+  <div class="section-header">
+    <h2 id="priceTitle">Invest in Hypnosis</h2>
+    <p id="priceSub">Choose your dimension</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="plan">Single Ad</div>
+      <div class="price">€199 <span>/page</span></div>
+      <div class="desc">One hypnotic 3D scroll page. Perfect for campaigns.</div>
+      <a class="btn" href="mailto:ilo97@example.com?subject=Single%20Ad%20Order">Order Now</a>
     </div>
+    <div class="price-card featured">
+      <div class="plan">Premium 3D</div>
+      <div class="price">€499 <span>/page</span></div>
+      <div class="desc">Custom particles, colors, fonts & sound design. Brand fit.</div>
+      <a class="btn" href="mailto:ilo97@example.com?subject=Premium%203D%20Order">Order Now</a>
+    </div>
+    <div class="price-card">
+      <div class="plan">Full Microsite</div>
+      <div class="price">€1.999 <span>/site</span></div>
+      <div class="desc">Multi-page 3D experience with scroll narrative.</div>
+      <a class="btn" href="mailto:ilo97@example.com?subject=Full%20Microsite%20Order">Order Now</a>
+    </div>
+  </div>
+</section>
 
-    <section class="showcase">
-        <div class="section-header">
-            <h2>Latent Realities</h2>
-        </div>
+<section class="section" id="admin">
+  <div class="section-header">
+    <h2 id="adminTitle">Private Access</h2>
+    <p id="adminSub">For existing clients & partners</p>
+  </div>
+  <div class="admin-section">
+    <h3>Client Portal</h3>
+    <p>Enter your access code to manage projects</p>
+    <input type="password" placeholder="Access Code" id="accessCode">
+    <button class="btn" onclick="checkAccess()">Enter →</button>
+    <p style="margin-top:15px;font-size:10px;color:rgba(255,255,255,0.2)">Contact ilo97 for your private code</p>
+  </div>
+</section>
 
-        <div class="grid">
-            <a href="generated/luxury-watch.html" target="_blank" class="grid-item">
-                <img src="assets/example1.png" alt="Example 1">
-                <div class="item-label">Luxury Gold (Vogue)</div>
-            </a>
-            <a href="generated/cyberpunk-city.html" target="_blank" class="grid-item">
-                <img src="assets/example2.png" alt="Example 2">
-                <div class="item-label">Cyber Reality (Neon)</div>
-            </a>
-            <a href="generated/racing-speed.html" target="_blank" class="grid-item">
-                <img src="assets/example3.png" alt="Example 3">
-                <div class="item-label">Raw Power (Speed)</div>
-            </a>
-            <a href="generated/beauty-glow.html" target="_blank" class="grid-item">
-                <img src="assets/example4.png" alt="Example 4">
-                <div class="item-label">Soft Radiance (Beauty)</div>
-            </a>
-            <a href="generated/refreshing-drink.html" target="_blank" class="grid-item">
-                <img src="assets/example1.png" alt="Example 5">
-                <div class="item-label">Liquid Frost (Beverage)</div>
-            </a>
-            <a href="generated/organic-food.html" target="_blank" class="grid-item">
-                <img src="assets/example2.png" alt="Example 6">
-                <div class="item-label">Organic Bloom (Food)</div>
-            </a>
-            <a href="generated/minimal-zen.html" target="_blank" class="grid-item">
-                <img src="assets/example3.png" alt="Example 7">
-                <div class="item-label">Zen Minimal (Pure)</div>
-            </a>
-            <a href="generated/mystic-music.html" target="_blank" class="grid-item">
-                <img src="assets/example4.png" alt="Example 8">
-                <div class="item-label">Sonic Waves (Music)</div>
-            </a>
-        </div>
-    </section>
+<section class="contact">
+  <h2 id="contactTitle">Let's Create</h2>
+  <p>One message away from your hypnotic 3D experience</p>
+  <a href="mailto:ilo97@example.com">ilo97@example.com</a>
+</section>
 
-    <footer>
-        <div class="copy">&copy; 2026 Aesthetic.Studio</div>
-        <div class="socials">
-            <a href="#">X (Twitter)</a>
-            <a href="#">Instagram</a>
-            <a href="#">Showcase</a>
-        </div>
-    </footer>
+<footer>
+  <span>© 2026 Aesthetic.Studio</span>
+  <span>Hypnotic 3D • GSAP • Three.js • Web Audio</span>
+  <span>x.com / Instagram</span>
+</footer>
 
-    <script src="./animation-stack.js"></script>
-    <script src="./sound-engine.js"></script>
-    <script src="./prompt-mapping.js"></script>
-    <script src="./generator-bridge.js"></script>
-    <script>
-        const statusEl = document.getElementById('stack-status');
-        const promptInput = document.getElementById('prompt-input');
-        const evolutionBtn = document.getElementById('evolution-btn');
-        const audioToggle = document.getElementById('audio-toggle');
-        const lottieBtn = document.getElementById('lottie-preview-btn');
-        const lottiePreview = document.getElementById('lottie-preview');
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
 
-        function setStatus(text) {
-            statusEl.textContent = text;
-        }
+// === 3D PARTICLE SPHERE (from prototype) ===
+const scene = new THREE.Scene();
+const canvas = document.querySelector('#webgl');
+const renderer = new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+const camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,100);
+camera.position.z = 4;
 
-        // Intro Animations
-        gsap.from('.hero-title p', { opacity: 0, y: 20, duration: 1.5, ease: 'power4.out' });
-        gsap.from('.hero-title h1', { opacity: 0, y: 40, duration: 1.8, ease: 'power4.out', delay: 0.2 });
-        gsap.from('.prompt-box', { opacity: 0, scale: 0.95, duration: 1.5, ease: 'power3.out', delay: 0.5 });
+const count = 25000;
+const geo = new THREE.BufferGeometry();
+const pos = new Float32Array(count*3);
+const orig = new Float32Array(count*3);
+const scat = new Float32Array(count*3);
+for(let i=0;i<count*3;i+=3){
+  const u=Math.random(),v=Math.random(),theta=u*2*Math.PI,phi=Math.acos(2*v-1),r=1.5;
+  const x=r*Math.sin(phi)*Math.cos(theta),y=r*Math.sin(phi)*Math.sin(theta),z=r*Math.cos(phi);
+  orig[i]=x;orig[i+1]=y;orig[i+2]=z;
+  scat[i]=(Math.random()-0.5)*12;scat[i+1]=(Math.random()-0.5)*12;scat[i+2]=(Math.random()-0.5)*12;
+  pos[i]=scat[i];pos[i+1]=scat[i+1];pos[i+2]=scat[i+2];
+}
+geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+const mat = new THREE.PointsMaterial({size:0.015,color:0x00ffcc,transparent:true,opacity:0.85,blending:THREE.AdditiveBlending});
+const particles = new THREE.Points(geo,mat);
+scene.add(particles);
 
-        // Audio Toggle (Web Audio API, hypnotic no-voice)
-        audioToggle.addEventListener('click', async () => {
-            if (!window.HypnoticAudio) return;
+const intro={progress:0};
+gsap.to(intro,{progress:1,duration:2.5,ease:'power2.inOut',delay:0.3});
 
-            if (!window.HypnoticAudio.state.started || window.HypnoticAudio.state.muted) {
-                await window.HypnoticAudio.start();
-                audioToggle.textContent = 'Audio: On';
-                setStatus('Stack: GSAP active • WebAudio active • Lottie pending • Theatre pending');
-                window.HypnoticAudio.triggerBlip(620);
-            } else {
-                window.HypnoticAudio.stop();
-                audioToggle.textContent = 'Audio: Off';
-                setStatus('Stack: GSAP active • WebAudio muted • Lottie pending • Theatre pending');
-            }
-        });
+// === SCROLL STATE ===
+const scrollState={progress:0};
+gsap.to(scrollState,{progress:1,ease:'none',scrollTrigger:{trigger:'body',start:'top top',end:'bottom bottom',scrub:1.5}});
 
-        // Lottie preview integration
-        lottieBtn.addEventListener('click', async () => {
-            if (!window.AnimationStack) return;
+// === GSAP ENTRY ANIMATIONS ===
+gsap.to('#heroTitle',{opacity:1,y:0,duration:1.8,ease:'power4.out',delay:0.8});
+gsap.to('#heroSub',{opacity:1,y:0,duration:1.5,ease:'power3.out',delay:1.2});
+gsap.to('#heroCta',{opacity:1,duration:1.2,ease:'power3.out',delay:1.6});
+gsap.to('#scrollHint',{opacity:1,duration:1.5,delay:2.2});
 
-            const loaded = await window.AnimationStack.mountLottiePreview({
-                container: lottiePreview,
-                src: 'https://assets8.lottiefiles.com/packages/lf20_tfb3estd.json',
-                loop: true,
-                autoplay: true,
-                speed: 1
-            });
+// Category cards stagger
+gsap.utils.toArray('.cat-card').forEach((el,i)=>{
+  gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%',end:'top 40%',scrub:1.2,toggleActions:'play none none reverse'}});
+});
 
-            if (loaded) {
-                setStatus('Stack: GSAP active • Lottie ready • Theatre pending • Remotion payload idle');
-            } else {
-                setStatus('Stack: GSAP active • Lottie failed to load • Theatre pending');
-            }
-        });
+// Pricing cards stagger
+gsap.utils.toArray('.price-card').forEach((el,i)=>{
+  gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',delay:i*0.15,scrollTrigger:{trigger:el,start:'top 85%',end:'top 40%',scrub:1.2}});
+});
 
-        // Evolution: GSAP response + Theatre fallback + Remotion payload prep + audio blip
-        evolutionBtn.addEventListener('click', async function() {
-            gsap.to(this, { scale: 0.95, duration: 0.1 });
-            gsap.to(this, { scale: 1, duration: 0.4, ease: 'elastic.out(1, 0.3)' });
+// Section headers
+gsap.utils.toArray('.section-header h2,.section-header p').forEach(el=>{
+  gsap.to(el,{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%',end:'top 50%',scrub:1.2}});
+});
 
-            gsap.to('.hero', {
-                backgroundColor: 'rgba(0, 255, 204, 0.05)',
-                duration: 0.2,
-                yoyo: true,
-                repeat: 1
-            });
+// Admin section
+gsap.to('.admin-section',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'.admin-section',start:'top 85%',end:'top 50%',scrub:1.2}});
+gsap.to('#contactTitle',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'#contactTitle',start:'top 85%',end:'top 60%',scrub:1.2}});
 
-            if (window.HypnoticAudio) {
-                if (!window.HypnoticAudio.state.started || window.HypnoticAudio.state.muted) {
-                    await window.HypnoticAudio.start();
-                    audioToggle.textContent = 'Audio: On';
-                }
-                window.HypnoticAudio.triggerBlip(880);
-            }
+// === MOUSE FOLLOW ===
+const mouse={x:0,y:0};
+const setMouseX=gsap.quickTo(mouse,'x',{duration:0.8,ease:'power3.out'});
+const setMouseY=gsap.quickTo(mouse,'y',{duration:0.8,ease:'power3.out'});
+window.addEventListener('mousemove',e=>{
+  setMouseX((e.clientX/window.innerWidth)*2-1);
+  setMouseY(-(e.clientY/window.innerHeight)*2+1);
+});
 
-            const theatreLoaded = window.AnimationStack ? await window.AnimationStack.ensureTheatreCore() : false;
-            if (!theatreLoaded && window.AnimationStack) {
-                window.AnimationStack.createTheatreLikeSequence({ target: document.querySelector('.prompt-box'), duration: 1.8 });
-            }
+let mouseSpeed=0,lastMX=0,lastMY=0;
+const baseColor=new THREE.Color(0x00ffcc),targetColor=new THREE.Color(0x8800ff);
+const clock=new THREE.Clock();
 
-            const prompt = (promptInput.value || '').trim();
-            
-            if (!prompt) {
-                setStatus('Status: Waiting for prompt...');
-                return;
-            }
+function tick(){
+  const t=clock.getElapsedTime();
+  const dx=mouse.x-lastMX,dy=mouse.y-lastMY;
+  mouseSpeed+=((Math.sqrt(dx*dx+dy*dy))-mouseSpeed)*0.1;
+  lastMX=mouse.x;lastMY=mouse.y;
+  mat.color.copy(baseColor).lerp(targetColor,Math.min(mouseSpeed*8,1));
 
-            setStatus('Status: Synthesizing reality... Please wait.');
-            
-            // Call the Generator Bridge
-            const result = await window.GeneratorBridge.generate(prompt);
+  const sp=scrollState.progress;
+  particles.rotation.y=t*0.05+sp*0.95;
+  particles.rotation.x=t*0.02+sp*0.22;
 
-            if (result.success) {
-                // Bridge updates the status/UI internally if successful
-                console.log('[Platform] Generation successful:', result);
-            } else {
-                setStatus(`Error: ${result.error}`);
-            }
-        });
-    </script>
+  const pa=geo.attributes.position;
+  for(let i=0;i<count;i++){
+    const i3=i*3;
+    const cx=scat[i3]+(orig[i3]-scat[i3])*intro.progress;
+    const cy=scat[i3+1]+(orig[i3+1]-scat[i3+1])*intro.progress;
+    const cz=scat[i3+2]+(orig[i3+2]-scat[i3+2])*intro.progress;
+    const wave=Math.sin(orig[i3]*2+t)*0.12*Math.cos(orig[i3+1]*2+t)*intro.progress;
+    pa.array[i3]=cx+orig[i3]*wave+mouse.x*0.15*intro.progress;
+    pa.array[i3+1]=cy+orig[i3+1]*wave+mouse.y*0.15*intro.progress;
+    pa.array[i3+2]=cz+orig[i3+2]*wave;
+  }
+  pa.needsUpdate=true;
+
+  const cX=THREE.MathUtils.lerp(0,0.95,sp)+mouse.x*0.35;
+  const cY=THREE.MathUtils.lerp(0,0.7,sp)+mouse.y*0.35;
+  const cZ=THREE.MathUtils.lerp(4,2.55,sp);
+  camera.position.x+=(cX-camera.position.x)*0.05;
+  camera.position.y+=(cY-camera.position.y)*0.05;
+  camera.position.z+=(cZ-camera.position.z)*0.05;
+  camera.lookAt(scene.position);
+
+  renderer.render(scene,camera);
+  window.requestAnimationFrame(tick);
+}
+tick();
+
+window.addEventListener('resize',()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  ScrollTrigger.refresh();
+});
+
+// === PRIVATE ACCESS ===
+function checkAccess(){
+  const code=document.getElementById('accessCode').value;
+  if(code==='aesthetic2026'){
+    window.location.href='https://ilo97.github.io/hypnotic-core/platform';
+  } else {
+    gsap.to('#accessCode',{borderColor:'#ff0044',x:10,duration:0.1,repeat:3,yoyo:true});
+    setTimeout(()=>{
+      document.getElementById('accessCode').style.borderColor='rgba(255,255,255,0.1)';
+    },800);
+  }
+}
+
+// Enter key for access
+document.getElementById('accessCode').addEventListener('keydown',e=>{
+  if(e.key==='Enter') checkAccess();
+});
+</script>
 </body>
 </html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High-Class 3D Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            background-color: #030303;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #ffffff;
+        }
+
+        body {
+            min-height: 320vh; /* Scroll-Strecke für ScrollTrigger */
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 60px;
+            pointer-events: none;
+            opacity: 0; /* Intro wird mit GSAP eingeblendet */
+            will-change: opacity, transform;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            pointer-events: auto;
+        }
+
+        .logo {
+            font-size: 16px;
+            font-weight: 300;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        header:hover nav ul {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        nav a {
+            color: rgba(255, 255, 255, 0.55);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #00ffcc;
+        }
+
+        .main-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            will-change: transform, opacity;
+        }
+
+        .main-title h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(40px, 8vw, 80px);
+            font-weight: 400;
+            font-style: italic;
+            letter-spacing: 0.05em;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .main-title p {
+            font-size: 12px;
+            font-weight: 200;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 100%;
+        }
+
+        .footer-text {
+            font-size: 10px;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+        }
+
+        .scroll-hint {
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: #00ffcc;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            will-change: transform, opacity;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, #00ffcc, transparent);
+            transform-origin: top;
+        }
+
+        .scroll-space {
+            position: relative;
+            z-index: 0;
+            height: 320vh;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay">
+        <header>
+            <div class="logo">Aesthetic.Studio</div>
+            <nav>
+                <ul>
+                    <li><a href="#">Works</a></li>
+                    <li><a href="#">Process</a></li>
+                    <li><a href="#">Connect</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="main-title">
+            <h1>Hypnotic Core</h1>
+            <p>Digital Art Experiment No. 01</p>
+        </div>
+
+        <footer>
+            <div class="footer-text">Built with Passion & Code</div>
+            <div class="scroll-hint">
+                <span>Explore</span>
+                <div class="scroll-line"></div>
+            </div>
+        </footer>
+    </div>
+
+    <canvas id="webgl"></canvas>
+    <div class="scroll-space" aria-hidden="true"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const scene = new THREE.Scene();
+        const canvas = document.querySelector('#webgl');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.z = 4;
+
+        const count = 25000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(count * 3);
+        const originalPositions = new Float32Array(count * 3);
+        const scatteredPositions = new Float32Array(count * 3);
+
+        for (let i = 0; i < count * 3; i += 3) {
+            const u = Math.random();
+            const v = Math.random();
+            const theta = u * 2.0 * Math.PI;
+            const phi = Math.acos(2.0 * v - 1.0);
+            const r = 1.3;
+
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+
+            originalPositions[i] = x;
+            originalPositions[i + 1] = y;
+            originalPositions[i + 2] = z;
+
+            scatteredPositions[i] = (Math.random() - 0.5) * 10;
+            scatteredPositions[i + 1] = (Math.random() - 0.5) * 10;
+            scatteredPositions[i + 2] = (Math.random() - 0.5) * 10;
+
+            positions[i] = scatteredPositions[i];
+            positions[i + 1] = scatteredPositions[i + 1];
+            positions[i + 2] = scatteredPositions[i + 2];
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const particleIntroDuration = 2.5;
+        const particleIntroDelay = 0.2;
+
+        const intro = { progress: 0 };
+        gsap.to(intro, {
+            progress: 1,
+            duration: particleIntroDuration,
+            ease: 'power2.inOut',
+            delay: particleIntroDelay
+        });
+
+        const material = new THREE.PointsMaterial({
+            size: 0.012,
+            color: 0x00ffcc,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particleSystem = new THREE.Points(geometry, material);
+        scene.add(particleSystem);
+
+        // Micro-Interaction State (GSAP easing statt harter Sprünge)
+        const mouse = { x: 0, y: 0 };
+        const setMouseX = gsap.quickTo(mouse, 'x', { duration: 0.8, ease: 'power3.out' });
+        const setMouseY = gsap.quickTo(mouse, 'y', { duration: 0.8, ease: 'power3.out' });
+
+        let mouseSpeed = 0;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        window.addEventListener('mousemove', (event) => {
+            const targetX = (event.clientX / window.innerWidth) * 2 - 1;
+            const targetY = -(event.clientY / window.innerHeight) * 2 + 1;
+            setMouseX(targetX);
+            setMouseY(targetY);
+        });
+
+        // Scroll-State für elegante Kamera-Reise
+        const scrollState = { progress: 0 };
+        gsap.to(scrollState, {
+            progress: 1,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.scroll-space',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 1.2
+            }
+        });
+
+        gsap.to('.main-title', {
+            opacity: 0,
+            yPercent: -30,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.scroll-space',
+                start: 'top top',
+                end: '45% top',
+                scrub: true
+            }
+        });
+
+        gsap.to('.scroll-hint', {
+            opacity: 0,
+            y: 20,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.scroll-space',
+                start: 'top top',
+                end: '30% top',
+                scrub: true
+            }
+        });
+
+        gsap.to('.scroll-line', {
+            scaleY: 0.15,
+            transformOrigin: 'top',
+            repeat: -1,
+            yoyo: true,
+            duration: 0.9,
+            ease: 'sine.inOut'
+        });
+
+        // Page Intro (zeitlich versetzt nach der Partikel-Explosion)
+        const overlayIntroDelay = particleIntroDelay + particleIntroDuration + 0.3;
+        const introTl = gsap.timeline({
+            delay: overlayIntroDelay,
+            defaults: { ease: 'power3.out' }
+        });
+
+        introTl
+            .to('.overlay', { opacity: 1, duration: 1.2 }, 0)
+            .from('.main-title h1', { y: 36, opacity: 0, duration: 1 }, 0.15)
+            .from('.main-title p', { y: 20, opacity: 0, duration: 0.9 }, 0.35)
+            .from('.logo', { y: -16, opacity: 0, duration: 0.8 }, 0.25)
+            .from('.footer-text, .scroll-hint', { y: 18, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.45);
+
+        const clock = new THREE.Clock();
+        const baseColor = new THREE.Color(0x00ffcc);
+        const targetColor = new THREE.Color(0x8800ff);
+
+        const tick = () => {
+            const elapsedTime = clock.getElapsedTime();
+
+            // Mausgeschwindigkeit für Farb-Morph
+            const dx = mouse.x - lastMouseX;
+            const dy = mouse.y - lastMouseY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            mouseSpeed += (dist - mouseSpeed) * 0.1;
+            lastMouseX = mouse.x;
+            lastMouseY = mouse.y;
+
+            material.color.copy(baseColor).lerp(targetColor, Math.min(mouseSpeed * 8, 1));
+
+            const scrollP = scrollState.progress;
+
+            // Leichte Rotationsreise auf Scroll
+            particleSystem.rotation.y = elapsedTime * 0.05 + scrollP * 0.95;
+            particleSystem.rotation.x = elapsedTime * 0.02 + scrollP * 0.22;
+
+            const positionAttribute = geometry.attributes.position;
+
+            for (let i = 0; i < count; i++) {
+                const i3 = i * 3;
+
+                const sx = scatteredPositions[i3];
+                const sy = scatteredPositions[i3 + 1];
+                const sz = scatteredPositions[i3 + 2];
+
+                const tx = originalPositions[i3];
+                const ty = originalPositions[i3 + 1];
+                const tz = originalPositions[i3 + 2];
+
+                // Intro-Implosion in Zielkugel
+                const cx = sx + (tx - sx) * intro.progress;
+                const cy = sy + (ty - sy) * intro.progress;
+                const cz = sz + (tz - sz) * intro.progress;
+
+                // Wabernde Oberfläche + Maus-Distortion
+                const wave = Math.sin(tx * 2 + elapsedTime) * 0.12 * Math.cos(ty * 2 + elapsedTime) * intro.progress;
+
+                positionAttribute.array[i3] = cx + tx * wave + mouse.x * 0.15 * intro.progress;
+                positionAttribute.array[i3 + 1] = cy + ty * wave + mouse.y * 0.15 * intro.progress;
+                positionAttribute.array[i3 + 2] = cz + tz * wave;
+            }
+
+            positionAttribute.needsUpdate = true;
+
+            // Kamera: Scroll bestimmt Basisweg, Maus liefert feines Follow
+            const cameraTargetX = THREE.MathUtils.lerp(0, 0.95, scrollP) + mouse.x * 0.35;
+            const cameraTargetY = THREE.MathUtils.lerp(0, 0.7, scrollP) + mouse.y * 0.35;
+            const cameraTargetZ = THREE.MathUtils.lerp(4, 2.55, scrollP);
+
+            camera.position.x += (cameraTargetX - camera.position.x) * 0.05;
+            camera.position.y += (cameraTargetY - camera.position.y) * 0.05;
+            camera.position.z += (cameraTargetZ - camera.position.z) * 0.05;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+            window.requestAnimationFrame(tick);
+        };
+
+        tick();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            ScrollTrigger.refresh();
+        });
+    </script>
+</body>
+</html>
