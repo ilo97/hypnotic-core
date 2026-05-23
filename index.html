@@ -1,148 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aesthetic.Studio | Hypnotic 3D Experiences</title>
+<title>Aesthetic.Studio | Hypnotic 3D Werbeerlebnisse</title>
+<meta name="description" content="Hypnotische 3D Webseiten mit Scroll-Animationen. Keine flachen Videos, keine langweiligen Templates. Maßgeschneiderte, interaktive Markenerlebnisse.">
+<meta name="keywords" content="3D website, creative coding, web design, scroll animation, GSAP, Three.js, hypnotic">
+<meta property="og:title" content="Aesthetic.Studio – Hypnotic 3D Experiences">
+<meta property="og:description" content="Interaktive 3D Webseiten mit GSAP ScrollTrigger und hypnotischen Partikeleffekten.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:#030303;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden}
+body{background:#030303;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 60px;pointer-events:none}
+
+/* Audio toggle */
+.audio-toggle{position:fixed;top:30px;right:30px;z-index:100;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);padding:10px 18px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .4s;font-family:'Inter',sans-serif}
+.audio-toggle:hover{border-color:#00ffcc;color:#00ffcc}
+.audio-toggle.active{color:#00ffcc;border-color:#00ffcc}
+
+.section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:100px 80px;pointer-events:none}
 .section>*{pointer-events:auto}
 .hero{min-height:100vh;justify-content:center;align-items:center;text-align:center}
-.hero h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(56px,10vw,140px);font-weight:400;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px;opacity:0;transform:translateY(40px)}
-.hero p{font-size:14px;letter-spacing:0.4em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:60px;opacity:0;transform:translateY(20px)}
-.hero .cta{padding:18px 48px;border:1px solid #00ffcc;color:#00ffcc;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .5s cubic-bezier(.19,1,.22,1);opacity:0}
+.brand{position:absolute;top:40px;left:80px;font-size:11px;letter-spacing:.5em;text-transform:uppercase;font-weight:300;color:rgba(255,255,255,0.2);opacity:0}
+.hero h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(64px,12vw,160px);font-weight:400;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px;opacity:0;transform:translateY(40px)}
+.hero .tagline{font-size:clamp(14px,2vw,20px);font-weight:200;letter-spacing:.15em;color:rgba(255,255,255,0.25);margin-bottom:60px;opacity:0;transform:translateY(20px)}
+.hero .cta{padding:16px 48px;border:1px solid #00ffcc;color:#00ffcc;font-size:10px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .5s cubic-bezier(.19,1,.22,1);opacity:0}
 .hero .cta:hover{background:#00ffcc;color:#030303}
-.scroll-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.2);opacity:0}
-.scroll-line{width:1px;height:60px;background:linear-gradient(to bottom,#00ffcc,transparent);margin:10px auto 0;animation:pulse 2s infinite}
-@keyframes pulse{0%{opacity:0.3}50%{opacity:1}100%{opacity:0.3}}
-.section-header{text-align:center;margin-bottom:80px}
-.section-header h2{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,56px);font-weight:400;opacity:0;transform:translateY(30px)}
-.section-header p{font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:15px;opacity:0}
-.categories-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1200px;margin:0 auto;width:100%}
-.cat-card{aspect-ratio:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);padding:30px;display:flex;flex-direction:column;justify-content:flex-end;transition:all .6s cubic-bezier(.19,1,.22,1);opacity:0;transform:translateY(40px);cursor:pointer}
-.cat-card:hover{border-color:#00ffcc;background:rgba(0,255,204,0.05);transform:translateY(-8px)!important}
-.cat-card .icon{font-size:32px;margin-bottom:15px}
-.cat-card h3{font-size:13px;letter-spacing:0.2em;text-transform:uppercase;font-weight:400;margin-bottom:8px}
-.cat-card p{font-size:10px;color:rgba(255,255,255,0.4);line-height:1.6}
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;max-width:1100px;margin:0 auto;width:100%}
-.price-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);padding:50px 40px;transition:all .6s cubic-bezier(.19,1,.22,1);opacity:0;transform:translateY(40px);text-align:center}
-.price-card.featured{border-color:#00ffcc;background:rgba(0,255,204,0.05)}
-.price-card:hover{border-color:#00ffcc;transform:translateY(-8px)!important}
-.price-card .plan{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:20px}
-.price-card .price{font-family:'Playfair Display',serif;font-size:48px;margin-bottom:10px}
-.price-card .price span{font-size:18px;color:rgba(255,255,255,0.4)}
-.price-card .desc{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:30px;line-height:1.6}
-.price-card .btn{border:1px solid #00ffcc;color:#00ffcc;padding:14px 36px;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .4s ease;display:inline-block;text-decoration:none}
-.price-card .btn:hover{background:#00ffcc;color:#030303}
-.admin-section{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);padding:60px;max-width:500px;margin:0 auto;width:100%;text-align:center;opacity:0;transform:translateY(40px)}
-.admin-section h3{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:10px}
-.admin-section p{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:30px}
-.admin-section input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:16px 20px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;margin-bottom:15px;transition:border-color .3s}
-.admin-section input:focus{border-color:#00ffcc}
-.admin-section .btn{width:100%;padding:16px;border:1px solid #00ffcc;color:#00ffcc;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .4s}
-.admin-section .btn:hover{background:#00ffcc;color:#030303}
-.contact{text-align:center;padding:100px 60px}
-.contact h2{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,48px);opacity:0;transform:translateY(30px)}
-.contact p{font-size:12px;color:rgba(255,255,255,0.3);margin:20px 0 40px;letter-spacing:0.2em}
-.contact a{color:#00ffcc;text-decoration:none;font-size:14px;letter-spacing:0.1em;border-bottom:1px solid #00ffcc;padding-bottom:4px}
-footer{padding:40px 60px;display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.05)}
+.scroll-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,0.15);opacity:0}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,#00ffcc,transparent);margin:10px auto 0;animation:breath 2.5s infinite ease-in-out}
+@keyframes breath{0%{opacity:.15;transform:scaleY(0.3);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.15;transform:scaleY(0.3);transform-origin:bottom}}
+
+.section-label{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,0.15);margin-bottom:20px;opacity:0;transform:translateY(15px)}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,56px);font-weight:400;margin-bottom:60px;opacity:0;transform:translateY(30px)}
+
+.work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.04);max-width:1200px;margin:0 auto;width:100%}
+.work-item{aspect-ratio:4/3;background:#030303;padding:40px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;transition:all .7s cubic-bezier(.19,1,.22,1);opacity:0;transform:translateY(30px);border:1px solid transparent}
+.work-item:hover{background:rgba(0,255,204,0.03);border-color:rgba(0,255,204,0.15);transform:translateY(-4px)!important}
+.work-item .cat{font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:#00ffcc;margin-bottom:12px}
+.work-item h3{font-size:14px;font-weight:400;letter-spacing:.05em;margin-bottom:8px}
+.work-item p{font-size:10px;color:rgba(255,255,255,0.3);line-height:1.6;max-width:240px}
+
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;max-width:1100px;margin:0 auto;width:100%}
+.card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);padding:50px 40px;transition:all .6s cubic-bezier(.19,1,.22,1);opacity:0;transform:translateY(30px);text-align:center}
+.card.featured{border-color:#00ffcc;background:rgba(0,255,204,0.04)}
+.card:hover{border-color:#00ffcc;transform:translateY(-6px)!important}
+.card .p-name{font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px}
+.card .p-price{font-family:'Playfair Display',serif;font-size:52px;margin-bottom:6px}
+.card .p-price small{font-size:16px;font-family:'Inter',sans-serif;color:rgba(255,255,255,0.3);font-weight:200}
+.card .p-desc{font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:30px;line-height:1.7}
+.card .p-btn{border:1px solid #00ffcc;color:#00ffcc;padding:14px 36px;font-size:9px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .4s;display:inline-block;text-decoration:none}
+.card .p-btn:hover{background:#00ffcc;color:#030303}
+
+.access{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);padding:60px;max-width:460px;margin:0 auto;width:100%;text-align:center;opacity:0;transform:translateY(30px)}
+.access h3{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;margin-bottom:8px}
+.access p{font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:28px}
+.access input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:14px 18px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;outline:none;margin-bottom:14px;transition:border-color .3s}
+.access input:focus{border-color:#00ffcc}
+.access .ac-btn{width:100%;padding:14px;border:1px solid #00ffcc;color:#00ffcc;font-size:9px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .4s}
+.access .ac-btn:hover{background:#00ffcc;color:#030303}
+
+.cta-section{text-align:center;padding:140px 60px}
+.cta-section h2{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);opacity:0;transform:translateY(20px)}
+.cta-section .cta-mail{display:inline-block;margin-top:30px;color:#00ffcc;text-decoration:none;font-size:16px;letter-spacing:.05em;border-bottom:1px solid #00ffcc;padding-bottom:6px;transition:opacity .3s}
+.cta-section .cta-mail:hover{opacity:.6}
+.cta-section .social{display:flex;gap:30px;justify-content:center;margin-top:30px}
+.cta-section .social a{color:rgba(255,255,255,0.2);text-decoration:none;font-size:10px;letter-spacing:.2em;text-transform:uppercase;transition:color .3s}
+.cta-section .social a:hover{color:#00ffcc}
+
+footer{padding:30px 80px;display:flex;justify-content:space-between;align-items:center;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.1);border-top:1px solid rgba(255,255,255,0.03)}
+
 @media(max-width:768px){
-  .categories-grid{grid-template-columns:repeat(2,1fr)}
-  .pricing-grid{grid-template-columns:1fr}
+  .work-grid{grid-template-columns:1fr}
+  .pricing{grid-template-columns:1fr}
   .section{padding:60px 30px}
-  .hero h1{font-size:clamp(40px,15vw,80px)}
-  footer{flex-direction:column;gap:15px;text-align:center}
+  .hero h1{font-size:clamp(36px,15vw,72px)}
+  .brand{left:30px}
 }
 </style>
 </head>
 <body>
+
+<button class="audio-toggle" id="audioBtn">◌ Frequenz</button>
+
 <canvas id="webgl"></canvas>
 
 <section class="section hero">
-  <h1 id="heroTitle">Hypnotic 3D</h1>
-  <p id="heroSub">Scroll-Triggered Digital Experiences</p>
-  <button class="cta" id="heroCta" onclick="document.getElementById('categories').scrollIntoView({behavior:'smooth'})">Explore →</button>
-  <div class="scroll-hint" id="scrollHint">
-    <span>Scroll to discover</span>
-    <div class="scroll-line"></div>
+  <div class="brand">Aesthetic.Studio</div>
+  <h1 id="h1">Hypnotic 3D</h1>
+  <div class="tagline" id="tagline">Scroll-Erlebnisse die Menschen nicht vergessen</div>
+  <button class="cta" id="ctaBtn" onclick="document.getElementById('work').scrollIntoView({behavior:'smooth'})">Arbeiten →</button>
+  <div class="scroll-hint" id="shint"><span>Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<section class="section" id="work">
+  <div class="section-label" id="lab1">Ausgewählte Arbeiten</div>
+  <div class="section-title" id="t1">Dimensionen</div>
+  <div class="work-grid">
+    <div class="work-item"><div class="cat">Beverage</div><h3>Liquid Ether</h3><p>Schwebende Tropfen, organische Wellen. Markenerlebnis für Premium-Getränke.</p></div>
+    <div class="work-item"><div class="cat">Fashion</div><h3>Silk Noir</h3><p>Fließende Stoffe, Lichtreflexe. Haute-Couture trifft auf digitale Materie.</p></div>
+    <div class="work-item"><div class="cat">Tech</div><h3>Neon Core</h3><p>Digitale Partikel, kybernetische Ästhetik. Zukunft wird sichtbar.</p></div>
+    <div class="work-item"><div class="cat">Luxury</div><h3>Gold Ratio</h3><p>Warme Töne, zeitlose Eleganz. Für Marken die Ewigkeit versprechen.</p></div>
+    <div class="work-item"><div class="cat">Automotive</div><h3>Velocity</h3><p>Geschwindigkeit als visuelles Gedicht. Adrenalin in reinster Form.</p></div>
+    <div class="work-item"><div class="cat">Cosmetics</div><h3>Glow</h3><p>Schimmernde Oberflächen. Schönheit die sich bewegt.</p></div>
   </div>
 </section>
 
-<section class="section" id="categories">
-  <div class="section-header">
-    <h2 id="catTitle">Design Realms</h2>
-    <p id="catSub">8 hypnotic dimensions for your brand</p>
-  </div>
-  <div class="categories-grid">
-    <div class="cat-card"><div class="icon">🥤</div><h3>Beverage</h3><p>Bubbles, drips, refreshing motion. For drinks & refreshments.</p></div>
-    <div class="cat-card"><div class="icon">👗</div><h3>Fashion</h3><p>Silk, light, elegance. High-fashion editorial motion.</p></div>
-    <div class="cat-card"><div class="icon">💻</div><h3>Tech</h3><p>Neon, digital particles. Futuristic & cyber aesthetics.</p></div>
-    <div class="cat-card"><div class="icon">💎</div><h3>Luxury</h3><p>Gold, velvet, warm light. Premium & timeless.</p></div>
-    <div class="cat-card"><div class="icon">🏎️</div><h3>Automotive</h3><p>Speed, adrenaline, sharp transitions.</p></div>
-    <div class="cat-card"><div class="icon">🍔</div><h3>Food</h3><p>Warm colors, organic movement. Appetizing visuals.</p></div>
-    <div class="cat-card"><div class="icon">💄</div><h3>Cosmetics</h3><p>Soft glow, pastel tones. Beauty in motion.</p></div>
-    <div class="cat-card"><div class="icon">🎵</div><h3>Music</h3><p>Soundwaves, vibration. Psychedelic rhythms.</p></div>
-  </div>
-</section>
-
-<section class="section" id="pricing">
-  <div class="section-header">
-    <h2 id="priceTitle">Invest in Hypnosis</h2>
-    <p id="priceSub">Choose your dimension</p>
-  </div>
-  <div class="pricing-grid">
-    <div class="price-card">
-      <div class="plan">Single Ad</div>
-      <div class="price">€199 <span>/page</span></div>
-      <div class="desc">One hypnotic 3D scroll page. Perfect for campaigns.</div>
-      <a class="btn" href="mailto:ilo97@example.com?subject=Single%20Ad%20Order">Order Now</a>
+<section class="section" id="preise">
+  <div class="section-label" id="lab2">Investition</div>
+  <div class="section-title" id="t2">Preisgefüge</div>
+  <div class="pricing">
+    <div class="card">
+      <div class="p-name">Single Page</div>
+      <div class="p-price">€199 <small>/ Seite</small></div>
+      <div class="p-desc">Eine hypnotische 3D-Seite mit GSAP Scroll-Effekten. Ideal für Kampagnen.</div>
+      <a class="p-btn" href="mailto:hi@aesthetic.studio?subject=Single%20Page">Anfragen</a>
     </div>
-    <div class="price-card featured">
-      <div class="plan">Premium 3D</div>
-      <div class="price">€499 <span>/page</span></div>
-      <div class="desc">Custom particles, colors, fonts & sound design. Brand fit.</div>
-      <a class="btn" href="mailto:ilo97@example.com?subject=Premium%203D%20Order">Order Now</a>
+    <div class="card featured">
+      <div class="p-name">Premium 3D</div>
+      <div class="p-price">€499 <small>/ Seite</small></div>
+      <div class="p-desc">Maßgeschneiderte Partikel, Sounds, Farben. Perfekt für deine Brand.</div>
+      <a class="p-btn" href="mailto:hi@aesthetic.studio?subject=Premium%203D">Anfragen</a>
     </div>
-    <div class="price-card">
-      <div class="plan">Full Microsite</div>
-      <div class="price">€1.999 <span>/site</span></div>
-      <div class="desc">Multi-page 3D experience with scroll narrative.</div>
-      <a class="btn" href="mailto:ilo97@example.com?subject=Full%20Microsite%20Order">Order Now</a>
+    <div class="card">
+      <div class="p-name">Microsite</div>
+      <div class="p-price">€1.999 <small>/ Projekt</small></div>
+      <div class="p-desc">Mehrseitiges 3D-Erlebnis mit narrativer Scroll-Story.</div>
+      <a class="p-btn" href="mailto:hi@aesthetic.studio?subject=Microsite">Anfragen</a>
     </div>
   </div>
 </section>
 
 <section class="section" id="admin">
-  <div class="section-header">
-    <h2 id="adminTitle">Private Access</h2>
-    <p id="adminSub">For existing clients & partners</p>
-  </div>
-  <div class="admin-section">
-    <h3>Client Portal</h3>
-    <p>Enter your access code to manage projects</p>
-    <input type="password" placeholder="Access Code" id="accessCode">
-    <button class="btn" onclick="checkAccess()">Enter →</button>
-    <p style="margin-top:15px;font-size:10px;color:rgba(255,255,255,0.2)">Contact ilo97 for your private code</p>
+  <div class="section-label" id="lab3">Zugang</div>
+  <div class="section-title" id="t3">Kundenportal</div>
+  <div class="access">
+    <h3>Private Area</h3>
+    <p>Gib deinen Code ein, um Projekte zu verwalten</p>
+    <input type="password" placeholder="Zugangscode" id="ac">
+    <button class="ac-btn" onclick="check()">Eintreten →</button>
+    <p style="margin-top:12px;font-size:9px;color:rgba(255,255,255,0.12)">Kontaktiere uns für deinen Code</p>
   </div>
 </section>
 
-<section class="contact">
-  <h2 id="contactTitle">Let's Create</h2>
-  <p>One message away from your hypnotic 3D experience</p>
-  <a href="mailto:ilo97@example.com">ilo97@example.com</a>
+<section class="cta-section">
+  <h2 id="ctaT">Lass uns etwas erschaffen</h2>
+  <a class="cta-mail" href="mailto:hi@aesthetic.studio">hi@aesthetic.studio</a>
+  <div class="social">
+    <a href="#">Instagram</a>
+    <a href="#">X (Twitter)</a>
+    <a href="#">LinkedIn</a>
+  </div>
 </section>
 
 <footer>
   <span>© 2026 Aesthetic.Studio</span>
-  <span>Hypnotic 3D • GSAP • Three.js • Web Audio</span>
-  <span>x.com / Instagram</span>
+  <span>Three.js • GSAP • ScrollTrigger • Web Audio</span>
+  <span>Berlin</span>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -151,111 +167,102 @@ footer{padding:40px 60px;display:flex;justify-content:space-between;align-items:
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
-// === 3D PARTICLE SPHERE (from prototype) ===
-const scene = new THREE.Scene();
-const canvas = document.querySelector('#webgl');
-const renderer = new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+// === 3D Scene ===
+const scene=new THREE.Scene();
+const canvas=document.querySelector('#webgl');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
 renderer.setSize(window.innerWidth,window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-const camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,100);
-camera.position.z = 4;
+const camera=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,100);
+camera.position.z=4.5;
 
-const count = 25000;
-const geo = new THREE.BufferGeometry();
-const pos = new Float32Array(count*3);
-const orig = new Float32Array(count*3);
-const scat = new Float32Array(count*3);
-for(let i=0;i<count*3;i+=3){
-  const u=Math.random(),v=Math.random(),theta=u*2*Math.PI,phi=Math.acos(2*v-1),r=1.5;
+const COUNT=30000;
+const geo=new THREE.BufferGeometry();
+const pos=new Float32Array(COUNT*3);
+const orig=new Float32Array(COUNT*3);
+const scat=new Float32Array(COUNT*3);
+for(let i=0;i<COUNT*3;i+=3){
+  const u=Math.random(),v=Math.random(),theta=u*2*Math.PI,phi=Math.acos(2*v-1),r=1.6;
   const x=r*Math.sin(phi)*Math.cos(theta),y=r*Math.sin(phi)*Math.sin(theta),z=r*Math.cos(phi);
   orig[i]=x;orig[i+1]=y;orig[i+2]=z;
-  scat[i]=(Math.random()-0.5)*12;scat[i+1]=(Math.random()-0.5)*12;scat[i+2]=(Math.random()-0.5)*12;
+  scat[i]=(Math.random()-0.5)*15;scat[i+1]=(Math.random()-0.5)*15;scat[i+2]=(Math.random()-0.5)*15;
   pos[i]=scat[i];pos[i+1]=scat[i+1];pos[i+2]=scat[i+2];
 }
 geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-const mat = new THREE.PointsMaterial({size:0.015,color:0x00ffcc,transparent:true,opacity:0.85,blending:THREE.AdditiveBlending});
-const particles = new THREE.Points(geo,mat);
-scene.add(particles);
+const mat=new THREE.PointsMaterial({size:0.014,color:0x00ffcc,transparent:true,opacity:0.9,blending:THREE.AdditiveBlending});
+const P=new THREE.Points(geo,mat);
+scene.add(P);
 
-const intro={progress:0};
-gsap.to(intro,{progress:1,duration:2.5,ease:'power2.inOut',delay:0.3});
+const IN={progress:0};
+gsap.to(IN,{progress:1,duration:2.8,ease:'power3.inOut',delay:0.4});
 
-// === SCROLL STATE ===
-const scrollState={progress:0};
-gsap.to(scrollState,{progress:1,ease:'none',scrollTrigger:{trigger:'body',start:'top top',end:'bottom bottom',scrub:1.5}});
+// Scroll
+const SP={progress:0};
+gsap.to(SP,{progress:1,ease:'none',scrollTrigger:{trigger:'body',start:'top top',end:'bottom bottom',scrub:1.5}});
 
-// === GSAP ENTRY ANIMATIONS ===
-gsap.to('#heroTitle',{opacity:1,y:0,duration:1.8,ease:'power4.out',delay:0.8});
-gsap.to('#heroSub',{opacity:1,y:0,duration:1.5,ease:'power3.out',delay:1.2});
-gsap.to('#heroCta',{opacity:1,duration:1.2,ease:'power3.out',delay:1.6});
-gsap.to('#scrollHint',{opacity:1,duration:1.5,delay:2.2});
+// === ENTRIES ===
+gsap.to('.brand',{opacity:1,duration:1.5,ease:'power3.out',delay:0.3});
+gsap.to('#h1',{opacity:1,y:0,duration:1.8,ease:'power4.out',delay:0.6});
+gsap.to('#tagline',{opacity:1,y:0,duration:1.5,ease:'power3.out',delay:1.0});
+gsap.to('#ctaBtn',{opacity:1,duration:1.2,delay:1.4});
+gsap.to('#shint',{opacity:1,duration:1.5,delay:1.8});
 
-// Category cards stagger
-gsap.utils.toArray('.cat-card').forEach((el,i)=>{
-  gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%',end:'top 40%',scrub:1.2,toggleActions:'play none none reverse'}});
+// Scroll reveals
+gsap.utils.toArray('.section-label,.section-title').forEach(el=>{
+  gsap.to(el,{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%',end:'top 55%',scrub:1}});
 });
-
-// Pricing cards stagger
-gsap.utils.toArray('.price-card').forEach((el,i)=>{
-  gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',delay:i*0.15,scrollTrigger:{trigger:el,start:'top 85%',end:'top 40%',scrub:1.2}});
+gsap.utils.toArray('.work-item').forEach((el,i)=>{
+  gsap.to(el,{opacity:1,y:0,duration:0.9,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%',end:'top 50%',scrub:1.1}});
 });
-
-// Section headers
-gsap.utils.toArray('.section-header h2,.section-header p').forEach(el=>{
-  gsap.to(el,{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%',end:'top 50%',scrub:1.2}});
+gsap.utils.toArray('.card').forEach((el,i)=>{
+  gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',delay:i*0.12,scrollTrigger:{trigger:el,start:'top 88%',end:'top 50%',scrub:1.1}});
 });
+gsap.to('.access',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'.access',start:'top 88%',end:'top 55%',scrub:1}});
+gsap.to('#ctaT',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'#ctaT',start:'top 88%',end:'top 60%',scrub:1}});
 
-// Admin section
-gsap.to('.admin-section',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'.admin-section',start:'top 85%',end:'top 50%',scrub:1.2}});
-gsap.to('#contactTitle',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'#contactTitle',start:'top 85%',end:'top 60%',scrub:1.2}});
-
-// === MOUSE FOLLOW ===
-const mouse={x:0,y:0};
-const setMouseX=gsap.quickTo(mouse,'x',{duration:0.8,ease:'power3.out'});
-const setMouseY=gsap.quickTo(mouse,'y',{duration:0.8,ease:'power3.out'});
+// === MOUSE ===
+const m={x:0,y:0};
+const sx=gsap.quickTo(m,'x',{duration:0.7,ease:'power3.out'});
+const sy=gsap.quickTo(m,'y',{duration:0.7,ease:'power3.out'});
 window.addEventListener('mousemove',e=>{
-  setMouseX((e.clientX/window.innerWidth)*2-1);
-  setMouseY(-(e.clientY/window.innerHeight)*2+1);
+  sx((e.clientX/window.innerWidth)*2-1);
+  sy(-(e.clientY/window.innerHeight)*2+1);
 });
 
-let mouseSpeed=0,lastMX=0,lastMY=0;
-const baseColor=new THREE.Color(0x00ffcc),targetColor=new THREE.Color(0x8800ff);
-const clock=new THREE.Clock();
+let ms=0,lx=0,ly=0;
+const bc=new THREE.Color(0x00ffcc),tc=new THREE.Color(0x8800ff);
+const cl=new THREE.Clock();
 
 function tick(){
-  const t=clock.getElapsedTime();
-  const dx=mouse.x-lastMX,dy=mouse.y-lastMY;
-  mouseSpeed+=((Math.sqrt(dx*dx+dy*dy))-mouseSpeed)*0.1;
-  lastMX=mouse.x;lastMY=mouse.y;
-  mat.color.copy(baseColor).lerp(targetColor,Math.min(mouseSpeed*8,1));
-
-  const sp=scrollState.progress;
-  particles.rotation.y=t*0.05+sp*0.95;
-  particles.rotation.x=t*0.02+sp*0.22;
-
+  const t=cl.getElapsedTime();
+  const dx=m.x-lx,dy=m.y-ly;
+  ms+=(Math.sqrt(dx*dx+dy*dy)-ms)*0.08;
+  lx=m.x;ly=m.y;
+  mat.color.copy(bc).lerp(tc,Math.min(ms*10,1));
+  const sp=SP.progress;
+  P.rotation.y=t*0.04+sp*1.2;
+  P.rotation.x=t*0.015+sp*0.3;
   const pa=geo.attributes.position;
-  for(let i=0;i<count;i++){
+  for(let i=0;i<COUNT;i++){
     const i3=i*3;
-    const cx=scat[i3]+(orig[i3]-scat[i3])*intro.progress;
-    const cy=scat[i3+1]+(orig[i3+1]-scat[i3+1])*intro.progress;
-    const cz=scat[i3+2]+(orig[i3+2]-scat[i3+2])*intro.progress;
-    const wave=Math.sin(orig[i3]*2+t)*0.12*Math.cos(orig[i3+1]*2+t)*intro.progress;
-    pa.array[i3]=cx+orig[i3]*wave+mouse.x*0.15*intro.progress;
-    pa.array[i3+1]=cy+orig[i3+1]*wave+mouse.y*0.15*intro.progress;
-    pa.array[i3+2]=cz+orig[i3+2]*wave;
+    const cx=scat[i3]+(orig[i3]-scat[i3])*IN.progress;
+    const cy=scat[i3+1]+(orig[i3+1]-scat[i3+1])*IN.progress;
+    const cz=scat[i3+2]+(orig[i3+2]-scat[i3+2])*IN.progress;
+    const w=Math.sin(orig[i3]*2.5+t*0.8)*0.15*Math.cos(orig[i3+1]*2.5+t*0.6)*IN.progress;
+    pa.array[i3]=cx+orig[i3]*w+m.x*0.18*IN.progress;
+    pa.array[i3+1]=cy+orig[i3+1]*w+m.y*0.18*IN.progress;
+    pa.array[i3+2]=cz+orig[i3+2]*w;
   }
   pa.needsUpdate=true;
-
-  const cX=THREE.MathUtils.lerp(0,0.95,sp)+mouse.x*0.35;
-  const cY=THREE.MathUtils.lerp(0,0.7,sp)+mouse.y*0.35;
-  const cZ=THREE.MathUtils.lerp(4,2.55,sp);
-  camera.position.x+=(cX-camera.position.x)*0.05;
-  camera.position.y+=(cY-camera.position.y)*0.05;
-  camera.position.z+=(cZ-camera.position.z)*0.05;
+  const cX=THREE.MathUtils.lerp(0,1.1,sp)+m.x*0.3;
+  const cY=THREE.MathUtils.lerp(0,0.8,sp)+m.y*0.3;
+  const cZ=THREE.MathUtils.lerp(4.5,2.8,sp);
+  camera.position.x+=(cX-camera.position.x)*0.04;
+  camera.position.y+=(cY-camera.position.y)*0.04;
+  camera.position.z+=(cZ-camera.position.z)*0.04;
   camera.lookAt(scene.position);
-
   renderer.render(scene,camera);
-  window.requestAnimationFrame(tick);
+  requestAnimationFrame(tick);
 }
 tick();
 
@@ -267,23 +274,120 @@ window.addEventListener('resize',()=>{
   ScrollTrigger.refresh();
 });
 
-// === PRIVATE ACCESS ===
-function checkAccess(){
-  const code=document.getElementById('accessCode').value;
+// === ACCESS ===
+function check(){
+  const code=document.getElementById('ac').value;
   if(code==='aesthetic2026'){
-    window.location.href='https://ilo97.github.io/hypnotic-core/platform';
+    window.location.href='https://ilo97.github.io/hypnotic-core/prototype-3d.html';
   } else {
-    gsap.to('#accessCode',{borderColor:'#ff0044',x:10,duration:0.1,repeat:3,yoyo:true});
-    setTimeout(()=>{
-      document.getElementById('accessCode').style.borderColor='rgba(255,255,255,0.1)';
-    },800);
+    gsap.to('#ac',{borderColor:'#ff0044',x:8,duration:0.08,repeat:3,yoyo:true});
+    setTimeout(()=>document.getElementById('ac').style.borderColor='rgba(255,255,255,0.08)',600);
+  }
+}
+document.getElementById('ac').addEventListener('keydown',e=>{if(e.key==='Enter') check()});
+
+// === SOUND ENGINE (Hypnotic Frequencies) ===
+let audioCtx=null,oscNodes=[],gainNodes=[],noiseNode=null,noiseGain=null,isPlaying=false;
+
+function initAudio(){
+  if(audioCtx) return;
+  const AC=window.AudioContext||window.webkitAudioContext;
+  audioCtx=new AC();
+  
+  // Base drone (Theta frequency ~6.5Hz pulsing)
+  const drone=audioCtx.createOscillator();
+  const droneGain=audioCtx.createGain();
+  drone.type='sine';
+  drone.frequency.value=58.3; // deep relaxing
+  droneGain.gain.value=0.04;
+  
+  // LFO for pulsating effect
+  const lfo=audioCtx.createOscillator();
+  const lfoGain=audioCtx.createGain();
+  lfo.type='sine';
+  lfo.frequency.value=6.5; // Theta brainwave
+  lfoGain.gain.value=0.03;
+  lfo.connect(lfoGain);
+  lfoGain.connect(droneGain.gain);
+  
+  drone.connect(droneGain);
+  droneGain.connect(audioCtx.destination);
+  
+  // Shimmer layer
+  const shim=audioCtx.createOscillator();
+  const shimGain=audioCtx.createGain();
+  shim.type='triangle';
+  shim.frequency.value=172.3;
+  shimGain.gain.value=0.015;
+  
+  const lfo2=audioCtx.createOscillator();
+  const lfo2G=audioCtx.createGain();
+  lfo2.type='sine';
+  lfo2.frequency.value=3.2;
+  lfo2G.gain.value=0.012;
+  lfo2.connect(lfo2G);
+  lfo2G.connect(shimGain.gain);
+  
+  shim.connect(shimGain);
+  shimGain.connect(audioCtx.destination);
+  
+  // Brown noise via filtered noise
+  const bufferSize=audioCtx.sampleRate*2;
+  const buffer=audioCtx.createBuffer(1,bufferSize,audioCtx.sampleRate);
+  const data=buffer.getChannelData(0);
+  let lastOut=0;
+  for(let i=0;i<bufferSize;i++){
+    const white=Math.random()*2-1;
+    data[i]=(lastOut+0.02*white)/1.02;
+    lastOut=data[i];
+  }
+  noiseNode=audioCtx.createBufferSource();
+  noiseNode.buffer=buffer;
+  noiseNode.loop=true;
+  const noiseFilter=audioCtx.createBiquadFilter();
+  noiseFilter.type='lowpass';
+  noiseFilter.frequency.value=180;
+  noiseFilter.Q.value=0.5;
+  noiseGain=audioCtx.createGain();
+  noiseGain.gain.value=0.03;
+  noiseNode.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(audioCtx.destination);
+  noiseNode.start();
+  
+  lfo.start();lfo2.start();drone.start();shim.start();
+  
+  oscNodes=[drone,shim,lfo,lfo2];
+  gainNodes=[droneGain,shimGain,lfoGain,lfo2G,noiseGain];
+  isPlaying=true;
+}
+
+function toggleAudio(){
+  if(!audioCtx){
+    initAudio();
+    document.getElementById('audioBtn').textContent='◉ Frequenz';
+    document.getElementById('audioBtn').classList.add('active');
+    return;
+  }
+  if(isPlaying){
+    audioCtx.suspend();
+    document.getElementById('audioBtn').textContent='◌ Frequenz';
+    document.getElementById('audioBtn').classList.remove('active');
+    isPlaying=false;
+  } else {
+    audioCtx.resume();
+    document.getElementById('audioBtn').textContent='◉ Frequenz';
+    document.getElementById('audioBtn').classList.add('active');
+    isPlaying=true;
   }
 }
 
-// Enter key for access
-document.getElementById('accessCode').addEventListener('keydown',e=>{
-  if(e.key==='Enter') checkAccess();
-});
+document.getElementById('audioBtn').addEventListener('click',toggleAudio);
+
+// Auto-start on first interaction
+document.addEventListener('click',()=>{
+  if(!audioCtx) toggleAudio();
+},{once:true});
 </script>
 </body>
 </html>
