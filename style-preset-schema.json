@@ -1,0 +1,108 @@
+{
+  "$schema": "Aesthetic.Studio Style Preset v1",
+  "description": "Each preset defines a complete 3D scene: visuals, audio, camera, export, and motion narrative.",
+  "preset": {
+    "id": "liquid-ether",
+    "name": "Liquid Ether",
+    "vertical": "beverage",
+    "tags": ["beverage", "liquid", "premium", "organic"],
+    "description": "Schwebende Tropfen, organische Wellen – für Premium-Getränke.",
+    
+    "visuals": {
+      "particles": {
+        "count": 35000,
+        "sphereRadius": 1.6,
+        "scatterSpread": 15,
+        "size": 0.013,
+        "opacity": 0.9,
+        "waveAmplitude": 0.18,
+        "waveFrequency": 2.5,
+        "mouseInfluence": 0.2,
+        "colorMorphStrength": 10
+      },
+      "colors": {
+        "background": "#030303",
+        "primary": "#00d9ff",
+        "secondary": "#0077ff",
+        "accent": "#00ffcc"
+      },
+      "palettes": [
+        {"primary": "#00d9ff", "secondary": "#0077ff"},
+        {"primary": "#00ffcc", "secondary": "#0088aa"},
+        {"primary": "#66ffff", "secondary": "#0044ff"}
+      ],
+      "paletteCycleSeconds": 25,
+      "postprocessing": {
+        "bloom": { "strength": 0.3, "radius": 0.5 },
+        "vignette": { "strength": 0.4 },
+        "chromaticAberration": { "strength": 0.002 }
+      }
+    },
+
+    "typography": {
+      "headline": "Playfair Display",
+      "body": "Inter",
+      "headlineWeight": 400,
+      "bodyWeight": 200,
+      "headlineItalic": true,
+      "letterSpacing": "0.05em",
+      "gradient": "linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.2) 100%)"
+    },
+
+    "motion": {
+      "intro": {
+        "duration": 2.5,
+        "ease": "power3.inOut",
+        "delay": 0.4,
+        "overlayOffset": 0.3
+      },
+      "mouse": {
+        "quickToDuration": 0.6,
+        "quickToEase": "power3.out",
+        "cameraInfluence": 0.3
+      },
+      "scroll": {
+        "heightVh": 320,
+        "scrub": 1.5,
+        "titleFadeEnd": 45,
+        "cameraEnd": { "x": 1.2, "y": 0.9, "z": 3.0 },
+        "rotation": { "y": 1.5, "x": 0.4 }
+      },
+      "cameraChoreography": "cinematic",
+      "adArcs": ["reveal", "impact", "detail", "cta"]
+    },
+
+    "audio": {
+      "engine": "WebAudio Modular",
+      "drone": { "frequency": 240, "type": "sine", "gain": 0.035 },
+      "shimmer": { "frequency": 960, "type": "triangle", "gain": 0.015 },
+      "lfoRate": 6.5,
+      "noiseBand": 780,
+      "pulseRate": 1.2,
+      "foley": {
+        "type": "beverage",
+        "cues": ["fizz", "bubble-pop", "pouring"],
+        "crossfadeOnScroll": true
+      },
+      "sidechain": {
+        "toScroll": true,
+        "toCursorEnergy": true
+      },
+      "mix": { "drone": 0.28, "foley": 0.52, "transient": 0.42 }
+    },
+
+    "export": {
+      "formats": ["webm", "mp4", "ig-reel", "tiktok", "story"],
+      "resolution": ["1080p", "1440p", "2160p"],
+      "duration": 10,
+      "fps": 60,
+      "alpha": false
+    },
+
+    "brandKit": {
+      "logoAttractor": false,
+      "productPhoto": false,
+      "autoExtractColors": true
+    }
+  }
+}

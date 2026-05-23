@@ -74,6 +74,11 @@ footer{padding:25px 80px;display:flex;justify-content:space-between;font-size:8p
   </div>
 </section>
 
+<section class="presets" id="presets">
+  <h2 id="presetTitle" style="font-family:'Playfair Display',serif;font-size:clamp(28px,3vw,40px);text-align:center;margin-bottom:50px;transform:translateY(20px);opacity:0">Style Presets</h2>
+  <div class="pgrid" id="presetGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:rgba(255,255,255,0.02);max-width:1100px;margin:0 auto"></div>
+</section>
+
 <section class="work" id="work">
   <h2 id="workTitle">Generated Realities</h2>
   <div class="grd" id="exGrid">
@@ -90,21 +95,21 @@ footer{padding:25px 80px;display:flex;justify-content:space-between;font-size:8p
   <h2 id="priceTitle">Investment</h2>
   <div class="pg">
     <div class="pc feat">
-      <div class="pl">Single</div>
-      <div class="pr">€199 <small>/ pg</small></div>
-      <div class="pd">AI-generated 3D scroll page. Unlimited revisions. 24h delivery.</div>
-      <a class="pb" href="mailto:hi@aesthetic.studio?subject=Single">Order →</a>
+      <div class="pl">Starter</div>
+      <div class="pr">€299 <small>/ ad</small></div>
+      <div class="pd">1 preset + 1 export + hosted link. Ready in 24h.</div>
+      <a class="pb" href="mailto:hi@aesthetic.studio?subject=Starter">Order →</a>
     </div>
     <div class="pc">
-      <div class="pl">Premium</div>
-      <div class="pr">€499 <small>/ pg</small></div>
-      <div class="pd">Custom colors, sound design, particle behavior. Full brand fit.</div>
-      <a class="pb" href="mailto:hi@aesthetic.studio?subject=Premium">Order →</a>
+      <div class="pl">Pro</div>
+      <div class="pr">€799 <small>/ ad</small></div>
+      <div class="pd">Custom palette, 3 variants, 3 exports (Reel, Story, Web).</div>
+      <a class="pb" href="mailto:hi@aesthetic.studio?subject=Pro">Order →</a>
     </div>
     <div class="pc">
-      <div class="pl">Enterprise</div>
-      <div class="pr">€1.999 <small>/ project</small></div>
-      <div class="pd">Multi-page narrative, custom shaders, priority support.</div>
+      <div class="pl">Elite</div>
+      <div class="pr">€2.500 <small>/ project</small></div>
+      <div class="pd">Bespoke shaders, product foley pack, copywriting pass.</div>
       <a class="pb" href="mailto:hi@aesthetic.studio?subject=Enterprise">Order →</a>
     </div>
   </div>
@@ -147,6 +152,55 @@ const IN={p:0};
 gsap.to(IN,{p:1,duration:2.5,ease:'power3.inOut',delay:0.5});
 const SP={p:0};
 gsap.to(SP,{p:1,ease:'none',scrollTrigger:{trigger:'body',start:'top top',end:'bottom bottom',scrub:1.5}});
+
+// === 12 STYLE PRESETS ===
+const PRESETS=[
+  {id:'liquid-ether',name:'Liquid Ether',vert:'beverage',tag:'Schwebende Tropfen',p:'#00d9ff',s:'#0077ff',n:35000,sp:'beverage'},
+  {id:'silk-noir',name:'Silk Noir',vert:'fashion',tag:'Fließende Stoffe',p:'#ff6b35',s:'#004e92',n:30000,sp:'fashion'},
+  {id:'neon-core',name:'Neon Core',vert:'tech',tag:'Kybernetische Ästhetik',p:'#39ff14',s:'#ff00ff',n:40000,sp:'tech'},
+  {id:'gold-ratio',name:'Gold Ratio',vert:'luxury',tag:'Zeitlose Eleganz',p:'#d4af37',s:'#8800ff',n:25000,sp:'luxury'},
+  {id:'velocity',name:'Velocity',vert:'automotive',tag:'Geschwindigkeit',p:'#ff4400',s:'#ffcc00',n:38000,sp:'automotive'},
+  {id:'nebula-core',name:'Nebula Core',vert:'cosmic',tag:'Unendliche Weiten',p:'#8800ff',s:'#00ffcc',n:45000,sp:'tech'},
+  {id:'crystal-prism',name:'Crystal Prism',vert:'cosmetics',tag:'Reine Ästhetik',p:'#ff88cc',s:'#88ddff',n:28000,sp:'luxury'},
+  {id:'ember-glow',name:'Ember Glow',vert:'food',tag:'Warme Farben',p:'#ff6b35',s:'#ffcc00',n:32000,sp:'beverage'},
+  {id:'digital-god',name:'Digital God',vert:'tech',tag:'Macht der Zukunft',p:'#00ffff',s:'#ff0044',n:42000,sp:'tech'},
+  {id:'aurora-waves',name:'Aurora Waves',vert:'music',tag:'Frequenz tanzt',p:'#00ff88',s:'#8800ff',n:35000,sp:'beverage'},
+  {id:'midnight-velvet',name:'Midnight Velvet',vert:'luxury',tag:'Samt und Dunkelheit',p:'#1a007a',s:'#d4af37',n:30000,sp:'luxury'},
+  {id:'cyber-storm',name:'Cyber Storm',vert:'tech',tag:'Digitale Revolution',p:'#ff00ff',s:'#00ffff',n:48000,sp:'tech'}
+];
+
+// Render preset grid
+const PG=document.getElementById('presetGrid');
+PRESETS.forEach((pr,i)=>{
+  const el=document.createElement('div');
+  el.className='itm';
+  el.dataset.idx=i;
+  el.innerHTML='<div class="lbl"><div class="cat">'+pr.vert+'</div><div class="nm">'+pr.name+'</div></div>';
+  el.style.background='radial-gradient(circle at 50% 50%, '+pr.p+'15, #050505)';
+  el.addEventListener('mouseenter',()=>{
+    gsap.to(el,{scale:1.03,duration:0.4,ease:'power2.out'});
+    // Morph scene colors
+    BC.setStyle(pr.p);TC.setStyle(pr.s);
+    // Switch sound profile
+    const prof=window.getSoundProfile?.(pr.sp);
+    if(prof&&AC)switchSound(prof);
+  });
+  el.addEventListener('mouseleave',()=>{
+    gsap.to(el,{scale:1,duration:0.4,ease:'power2.out'});
+  });
+  el.addEventListener('click',()=>{
+    inp.value='Create a '+pr.vert+' experience: '+pr.name+'. '+pr.tag;
+    document.getElementById('presets').scrollIntoView({behavior:'smooth'});
+    gsap.to('.gen-box',{borderColor:pr.p,duration:0.5});
+  });
+  PG.appendChild(el);
+});
+
+// Preset grid animation
+gsap.to('#presetTitle',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'#presetTitle',start:'top 85%',end:'top 55%',scrub:1}});
+gsap.utils.toArray('#presetGrid .itm').forEach((el,i)=>{
+  gsap.to(el,{opacity:1,y:0,duration:0.8,ease:'power3.out',delay:i*0.05,scrollTrigger:{trigger:el,start:'top 90%',end:'top 50%',scrub:1}});
+});
 
 // Entries
 gsap.to('#heroTitle',{opacity:1,y:0,duration:1.8,ease:'power4.out',delay:0.6});
