@@ -3,437 +3,318 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aesthetic Studio – AI 3D Generation Platform</title>
-<meta name="description" content="Describe your vision. AI generates a hypnotic 3D website instantly. No coding, no templates. World-class 3D experiences on demand.">
+<title>Aesthetic Studio – AI 3D Generation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="sound-profiles.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#030303;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-
-/* Main wrapper */
-.main-wrapper{position:relative;z-index:1}
-
-/* Audio toggle */
 .at{position:fixed;top:25px;right:25px;z-index:100;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);color:rgba(255,255,255,0.2);padding:8px 16px;font-size:8px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .4s;font-family:'Inter',sans-serif;backdrop-filter:blur(10px)}
 .at:hover,.at.on{border-color:#00ffcc;color:#00ffcc}
-.at.on{color:#00ffcc}
-
-/* === HERO / GENERATOR === */
 .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:80px;position:relative}
-.brand{position:absolute;top:35px;left:80px;font-size:9px;letter-spacing:.5em;text-transform:uppercase;font-weight:300;color:rgba(255,255,255,0.12)}
-.hero h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(48px,8vw,96px);font-weight:400;text-align:center;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
-.hero .sub{font-size:clamp(11px,1.2vw,15px);font-weight:200;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,0.15);margin-bottom:50px;text-align:center}
-
-/* Generator box */
-.gen-box{width:100%;max-width:820px;background:rgba(255,255,255,0.02);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.05);padding:30px;transition:border-color .5s,transform .5s cubic-bezier(.19,1,.22,1)}
-.gen-box:focus-within{border-color:rgba(0,255,204,0.3);transform:scale(1.01)}
+.hero h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(48px,8vw,96px);font-weight:400;text-align:center;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;transform:translateY(40px);opacity:0}
+.hero .sub{font-size:clamp(11px,1.2vw,15px);font-weight:200;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,0.15);margin-bottom:50px;text-align:center;transform:translateY(20px);opacity:0}
+.gen-box{width:100%;max-width:820px;background:rgba(255,255,255,0.02);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.05);padding:30px;transition:border-color .5s,transform .5s cubic-bezier(.19,1,.22,1);opacity:0;transform:translateY(20px)}
+.gen-box:focus-within{border-color:rgba(0,255,204,0.3)}
 .gen-box textarea{width:100%;background:transparent;border:none;outline:none;color:#fff;font-family:'Inter',sans-serif;font-size:18px;font-weight:200;resize:none;min-height:70px;line-height:1.6}
 .gen-box textarea::placeholder{color:rgba(255,255,255,0.08);font-style:italic}
 .gen-bar{display:flex;justify-content:space-between;align-items:center;margin-top:15px}
-.gen-bar .hint{font-size:9px;color:rgba(255,255,255,0.12);letter-spacing:.05em}
+.gen-bar .hint{font-size:9px;color:rgba(255,255,255,0.12)}
 .gen-btn{background:transparent;border:1px solid #00ffcc;color:#00ffcc;padding:14px 44px;font-size:9px;letter-spacing:.3em;text-transform:uppercase;cursor:pointer;transition:all .4s}
 .gen-btn:hover{background:#00ffcc;color:#030303}
 .gen-btn:disabled{opacity:.3;cursor:not-allowed}
-
-/* Examples grid */
-.examples{padding:100px 80px}
-.examples h2{font-family:'Playfair Display',serif;font-size:clamp(24px,3vw,36px);font-weight:400;margin-bottom:12px;text-align:center}
-.examples .ex-sub{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,0.15);text-align:center;margin-bottom:60px}
-.ex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(255,255,255,0.03);max-width:1100px;margin:0 auto}
-.ex-item{aspect-ratio:16/9;background:#050505;position:relative;overflow:hidden;cursor:pointer;transition:all .7s cubic-bezier(.19,1,.22,1);border:1px solid transparent}
-.ex-item:hover{border-color:rgba(0,255,204,0.2);transform:scale(1.02);z-index:2}
-.ex-item video{width:100%;height:100%;object-fit:cover;opacity:.6;transition:opacity .5s}
-.ex-item:hover video{opacity:1}
-.ex-item .ex-label{position:absolute;bottom:20px;left:20px}
-.ex-item .ex-label .tag{font-size:7px;letter-spacing:.3em;text-transform:uppercase;color:#00ffcc;opacity:.6}
-.ex-item .ex-label .name{font-size:12px;font-weight:300;letter-spacing:.05em;margin-top:4px}
-
-/* Pricing */
-.pricing{padding:100px 80px;max-width:1100px;margin:0 auto}
-.pricing h2{font-family:'Playfair Display',serif;font-size:clamp(24px,3vw,36px);font-weight:400;text-align:center;margin-bottom:50px}
-.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.p-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);padding:40px 30px;text-align:center;transition:all .4s}
-.p-card:hover{border-color:rgba(0,255,204,0.2);transform:translateY(-4px)}
-.p-card.feat{border-color:rgba(0,255,204,0.3);background:rgba(0,255,204,0.03)}
-.p-card .p-plan{font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:12px}
-.p-card .p-price{font-family:'Playfair Display',serif;font-size:44px;margin-bottom:4px}
-.p-card .p-price small{font-size:14px;font-family:'Inter';color:rgba(255,255,255,0.2);font-weight:200}
-.p-card .p-desc{font-size:10px;color:rgba(255,255,255,0.2);margin:20px 0;line-height:1.7}
-.p-card .p-btn{display:inline-block;padding:12px 32px;border:1px solid #00ffcc;color:#00ffcc;font-size:8px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .4s;text-decoration:none}
-.p-card .p-btn:hover{background:#00ffcc;color:#030303}
-
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);max-width:800px;margin:0 auto;padding:60px 0;text-align:center}
-.stat .num{font-family:'Playfair Display',serif;font-size:36px;color:#00ffcc}
-.stat .lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-top:6px}
-
-/* CTA */
+.work{padding:120px 80px}
+.work h2{font-family:'Playfair Display',serif;font-size:clamp(28px,3vw,40px);text-align:center;margin-bottom:50px;transform:translateY(20px);opacity:0}
+.grd{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(255,255,255,0.02);max-width:1100px;margin:0 auto}
+.itm{aspect-ratio:16/9;background:#050505;position:relative;overflow:hidden;cursor:pointer;transition:all .6s cubic-bezier(.19,1,.22,1);border:1px solid transparent;transform:translateY(20px);opacity:0}
+.itm:hover{border-color:rgba(0,255,204,0.15);transform:scale(1.02) translateY(0)!important;z-index:2}
+.itm .lbl{position:absolute;bottom:20px;left:24px}
+.itm .lbl .cat{font-size:7px;letter-spacing:.3em;text-transform:uppercase;color:#00ffcc;opacity:.5}
+.itm .lbl .nm{font-size:14px;font-weight:300;letter-spacing:.02em;margin-top:3px}
+.pricing{max-width:1100px;margin:0 auto;padding:100px 80px}
+.pricing h2{font-family:'Playfair Display',serif;font-size:clamp(24px,3vw,36px);text-align:center;margin-bottom:50px;transform:translateY(20px);opacity:0}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pc{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);padding:40px 30px;text-align:center;transition:all .4s;transform:translateY(20px);opacity:0}
+.pc:hover{border-color:rgba(0,255,204,0.2);transform:translateY(-4px)!important}
+.pc.feat{border-color:rgba(0,255,204,0.3);background:rgba(0,255,204,0.03)}
+.pc .pl{font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:12px}
+.pc .pr{font-family:'Playfair Display',serif;font-size:44px;margin-bottom:4px}
+.pc .pr small{font-size:14px;font-family:'Inter';color:rgba(255,255,255,0.2);font-weight:200}
+.pc .pd{font-size:10px;color:rgba(255,255,255,0.2);margin:20px 0;line-height:1.7}
+.pc .pb{display:inline-block;padding:12px 32px;border:1px solid #00ffcc;color:#00ffcc;font-size:8px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .4s;text-decoration:none}
+.pc .pb:hover{background:#00ffcc;color:#030303}
 .cta-sec{text-align:center;padding:100px 60px}
-.cta-sec h2{font-family:'Playfair Display',serif;font-size:clamp(24px,3vw,36px);margin-bottom:30px}
+.cta-sec h2{font-family:'Playfair Display',serif;font-size:clamp(24px,3vw,36px);margin-bottom:30px;transform:translateY(20px);opacity:0}
 .cta-sec a{color:#00ffcc;text-decoration:none;font-size:15px;letter-spacing:.05em;border-bottom:1px solid #00ffcc;padding-bottom:4px}
-
 footer{padding:25px 80px;display:flex;justify-content:space-between;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.08);border-top:1px solid rgba(255,255,255,0.03)}
-
-/* Generated page preview */
-#preview-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:#030303;display:none;overflow-y:auto}
-#preview-overlay iframe{width:100%;height:100%;border:none}
-
 @media(max-width:768px){
-  .hero{padding:60px 30px}.ex-grid{grid-template-columns:1fr}.p-grid{grid-template-columns:1fr}.examples,.pricing{padding:60px 30px}.brand{left:30px}
+  .hero{padding:60px 30px}.grd{grid-template-columns:1fr}.pg{grid-template-columns:1fr}.work,.pricing{padding:60px 30px}
 }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="main-wrapper">
-
 <button class="at" id="audioBtn">◌ Frequenz</button>
 
 <section class="hero">
-  <div class="brand">A E S T H E T I C</div>
-  <h1>Describe. Generate. Hypnotize.</h1>
-  <div class="sub">AI-Powered 3D Experience Engine</div>
-  <div class="gen-box">
+  <h1 id="heroTitle">Describe. Generate. Hypnotize.</h1>
+  <div class="sub" id="heroSub">AI-Powered 3D Engine</div>
+  <div class="gen-box" id="genBox">
     <textarea id="promptInput" placeholder="Describe your vision... e.g. 'A luxury perfume bottle floating in a neon vortex with gold particles'"></textarea>
     <div class="gen-bar">
-      <span class="hint">Press Enter to generate</span>
+      <span class="hint" id="catHint">✦ luxury detected</span>
       <button class="gen-btn" id="genBtn">Generate →</button>
     </div>
   </div>
-  <div style="margin-top:12px;font-size:8px;color:rgba(255,255,255,0.06);letter-spacing:.1em">Click anywhere to activate audio frequencies</div>
 </section>
 
-<section class="examples" id="examples">
-  <h2>Generated Realities</h2>
-  <div class="ex-sub">Each is a unique AI-generated 3D world</div>
-  <div class="ex-grid" id="exGrid">
-    <div class="ex-item"><div class="ex-label"><div class="tag">Beverage</div><div class="name">Liquid Neon</div></div></div>
-    <div class="ex-item"><div class="ex-label"><div class="tag">Fashion</div><div class="name">Silk Noire</div></div></div>
-    <div class="ex-item"><div class="ex-label"><div class="tag">Tech</div><div class="name">Digital God</div></div></div>
-    <div class="ex-item"><div class="ex-label"><div class="tag">Luxury</div><div class="name">Gold Ratio</div></div></div>
-    <div class="ex-item"><div class="ex-label"><div class="tag">Automotive</div><div class="name">Velocity</div></div></div>
-    <div class="ex-item"><div class="ex-label"><div class="tag">Cosmic</div><div class="name">Nebula Core</div></div></div>
+<section class="work" id="work">
+  <h2 id="workTitle">Generated Realities</h2>
+  <div class="grd" id="exGrid">
+    <div class="itm"><div class="lbl"><div class="cat">Beverage</div><div class="nm">Liquid Neon</div></div></div>
+    <div class="itm"><div class="lbl"><div class="cat">Fashion</div><div class="nm">Silk Noire</div></div></div>
+    <div class="itm"><div class="lbl"><div class="cat">Tech</div><div class="nm">Neon God</div></div></div>
+    <div class="itm"><div class="lbl"><div class="cat">Luxury</div><div class="nm">Gold Ratio</div></div></div>
+    <div class="itm"><div class="lbl"><div class="cat">Automotive</div><div class="nm">Velocity</div></div></div>
+    <div class="itm"><div class="lbl"><div class="cat">Cosmic</div><div class="nm">Nebula</div></div></div>
   </div>
 </section>
 
 <section class="pricing">
-  <h2>Choose Your Path</h2>
-  <div class="p-grid">
-    <div class="p-card feat">
-      <div class="p-plan">Single Generation</div>
-      <div class="p-price">€199 <small>/ page</small></div>
-      <div class="p-desc">One AI-generated 3D scroll page. Unlimited revisions. Ready in 24h.</div>
-      <a class="p-btn" href="mailto:hi@aesthetic.studio?subject=Single">Get Started</a>
+  <h2 id="priceTitle">Investment</h2>
+  <div class="pg">
+    <div class="pc feat">
+      <div class="pl">Single</div>
+      <div class="pr">€199 <small>/ pg</small></div>
+      <div class="pd">AI-generated 3D scroll page. Unlimited revisions. 24h delivery.</div>
+      <a class="pb" href="mailto:hi@aesthetic.studio?subject=Single">Order →</a>
     </div>
-    <div class="p-card">
-      <div class="p-plan">Premium Suite</div>
-      <div class="p-price">€499 <small>/ page</small></div>
-      <div class="p-desc">Custom color palette, sound design, particle behavior. Full brand alignment.</div>
-      <a class="p-btn" href="mailto:hi@aesthetic.studio?subject=Premium">Get Started</a>
+    <div class="pc">
+      <div class="pl">Premium</div>
+      <div class="pr">€499 <small>/ pg</small></div>
+      <div class="pd">Custom colors, sound design, particle behavior. Full brand fit.</div>
+      <a class="pb" href="mailto:hi@aesthetic.studio?subject=Premium">Order →</a>
     </div>
-    <div class="p-card">
-      <div class="p-plan">Enterprise</div>
-      <div class="p-price">€1.999 <small>/ project</small></div>
-      <div class="p-desc">Multi-page 3D narrative, custom shaders, priority support, dedicated AI training.</div>
-      <a class="p-btn" href="mailto:hi@aesthetic.studio?subject=Enterprise">Get Started</a>
+    <div class="pc">
+      <div class="pl">Enterprise</div>
+      <div class="pr">€1.999 <small>/ project</small></div>
+      <div class="pd">Multi-page narrative, custom shaders, priority support.</div>
+      <a class="pb" href="mailto:hi@aesthetic.studio?subject=Enterprise">Order →</a>
     </div>
   </div>
 </section>
 
 <section class="cta-sec">
-  <h2>Ready to transcend the flat web?</h2>
+  <h2 id="ctaTitle">Ready to transcend?</h2>
   <a href="mailto:hi@aesthetic.studio">hi@aesthetic.studio</a>
 </section>
 
 <footer>
   <span>© 2026 Aesthetic Studio</span>
-  <span>Three.js • GSAP • Web Audio • AI</span>
+  <span>Three.js · GSAP · Web Audio</span>
   <span>Berlin / Istanbul</span>
 </footer>
 
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
-// ===== CONTINUOUS 3D PARTICLE FIELD =====
-const S=new THREE.Scene();
-const CA=document.querySelector('#c');
-const R=new THREE.WebGLRenderer({canvas:CA,antialias:true,alpha:true});
+// === 3D SCENE ===
+const S=new THREE.Scene(),CA=document.querySelector('#c'),
+R=new THREE.WebGLRenderer({canvas:CA,antialias:true,alpha:true});
 R.setSize(window.innerWidth,window.innerHeight);
 R.setPixelRatio(Math.min(window.devicePixelRatio,2));
-
 const CM=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,100);
 CM.position.z=5;
-
-const CNT=40000;
-const G=new THREE.BufferGeometry();
-const P=new Float32Array(CNT*3);
-const O=new Float32Array(CNT*3);
-const T=new Float32Array(CNT*3);
+const CNT=45000,G=new THREE.BufferGeometry();
+const P=new Float32Array(CNT*3),O=new Float32Array(CNT*3),T=new Float32Array(CNT*3);
 for(let i=0;i<CNT*3;i+=3){
-  const u=Math.random(),v=Math.random(),theta=u*2*Math.PI,phi=Math.acos(2*v-1),rad=1.8+Math.random()*0.6;
-  const x=rad*Math.sin(phi)*Math.cos(theta);
-  const y=rad*Math.sin(phi)*Math.sin(theta);
-  const z=rad*Math.cos(phi);
-  O[i]=x;O[i+1]=y;O[i+2]=z;
-  T[i]=(Math.random()-0.5)*18;
-  T[i+1]=(Math.random()-0.5)*18;
-  T[i+2]=(Math.random()-0.5)*18;
+  const u=Math.random(),v=Math.random(),theta=u*2*Math.PI,phi=Math.acos(2*v-1),rad=1.8+Math.random()*0.8;
+  const x=rad*Math.sin(phi)*Math.cos(theta),y=rad*Math.sin(phi)*Math.sin(theta),z=rad*Math.cos(phi);
+  O[i]=x;O[i+1]=y;O[i+2]=z;T[i]=(Math.random()-0.5)*20;T[i+1]=(Math.random()-0.5)*20;T[i+2]=(Math.random()-0.5)*20;
   P[i]=T[i];P[i+1]=T[i+1];P[i+2]=T[i+2];
 }
 G.setAttribute('position',new THREE.BufferAttribute(P,3));
-const M=new THREE.PointsMaterial({size:0.013,color:0x00ffcc,transparent:true,opacity:0.9,blending:THREE.AdditiveBlending});
-const PT=new THREE.Points(G,M);
-S.add(PT);
+const M=new THREE.PointsMaterial({size:0.012,color:0x00ffcc,transparent:true,opacity:0.9,blending:THREE.AdditiveBlending});
+const PT=new THREE.Points(G,M);S.add(PT);
 
-// Intro explosion
 const IN={p:0};
 gsap.to(IN,{p:1,duration:2.5,ease:'power3.inOut',delay:0.5});
-
-// Scroll
 const SP={p:0};
 gsap.to(SP,{p:1,ease:'none',scrollTrigger:{trigger:'body',start:'top top',end:'bottom bottom',scrub:1.5}});
 
-// === GSAP ENTRIES ===
-gsap.to('.brand',{opacity:1,duration:1.5,delay:0.3});
-gsap.to('h1',{opacity:1,y:0,duration:1.8,ease:'power4.out',delay:0.6,transform:'translateY(0)'});
-gsap.from('h1',{opacity:0,y:40,duration:1.8,ease:'power4.out',delay:0.6});
-gsap.from('.sub',{opacity:0,y:20,duration:1.5,ease:'power3.out',delay:1.0});
-gsap.from('.gen-box',{opacity:0,y:20,duration:1.5,ease:'power3.out',delay:1.4});
-gsap.from('.gen-bar',{opacity:0,duration:1,delay:1.8});
+// Entries
+gsap.to('#heroTitle',{opacity:1,y:0,duration:1.8,ease:'power4.out',delay:0.6});
+gsap.to('#heroSub',{opacity:1,y:0,duration:1.5,ease:'power3.out',delay:1.0});
+gsap.to('#genBox',{opacity:1,y:0,duration:1.5,ease:'power3.out',delay:1.4});
+gsap.to('.gen-btn',{opacity:1,duration:1,delay:1.8});
 
 // Scroll reveals
-gsap.utils.toArray('.ex-item').forEach((el,i)=>{
-  gsap.from(el,{opacity:0,y:30,duration:0.9,ease:'power3.out',delay:i*0.08,scrollTrigger:{trigger:el,start:'top 90%',end:'top 60%',scrub:1}});
+gsap.utils.toArray('.itm').forEach((el,i)=>{
+  gsap.to(el,{opacity:1,y:0,duration:0.9,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 90%',end:'top 50%',scrub:1}});
 });
-gsap.utils.toArray('.p-card').forEach((el,i)=>{
-  gsap.from(el,{opacity:0,y:30,duration:1,ease:'power3.out',delay:i*0.1,scrollTrigger:{trigger:el,start:'top 90%',end:'top 60%',scrub:1}});
+gsap.utils.toArray('.pc').forEach((el,i)=>{
+  gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 90%',end:'top 50%',scrub:1}});
 });
-gsap.from('.stats',{opacity:0,duration:1.2,scrollTrigger:{trigger:'.stats',start:'top 85%',end:'top 60%',scrub:1}});
-gsap.from('.cta-sec h2',{opacity:0,y:20,duration:1.2,scrollTrigger:{trigger:'.cta-sec',start:'top 85%',end:'top 60%',scrub:1}});
-gsap.from('.cta-sec a',{opacity:0,duration:1,delay:0.3,scrollTrigger:{trigger:'.cta-sec',start:'top 85%',end:'top 60%',scrub:1}});
+gsap.to('#workTitle',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'#workTitle',start:'top 85%',end:'top 55%',scrub:1}});
+gsap.to('#priceTitle',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'#priceTitle',start:'top 85%',end:'top 55%',scrub:1}});
+gsap.to('#ctaTitle',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'#ctaTitle',start:'top 85%',end:'top 60%',scrub:1}});
 
-// === MOUSE FOLLOW ===
+// Mouse
 const MX={x:0,y:0};
 const SX=gsap.quickTo(MX,'x',{duration:0.6,ease:'power3.out'});
 const SY=gsap.quickTo(MX,'y',{duration:0.6,ease:'power3.out'});
-window.addEventListener('mousemove',e=>{
-  SX((e.clientX/window.innerWidth)*2-1);
-  SY(-(e.clientY/window.innerHeight)*2+1);
-});
+window.addEventListener('mousemove',e=>{SX((e.clientX/window.innerWidth)*2-1);SY(-(e.clientY/window.innerHeight)*2+1);});
 
 let MS=0,LMX=0,LMY=0;
-const BC=new THREE.Color(0x00ffcc),TC=new THREE.Color(0xff00aa);
-const CLK=new THREE.Clock();
-
-// Extra color palettes for frequency
-const PALETTES=[
-  {b:0x00ffcc,t:0x8800ff},
-  {b:0xff6b35,t:0x004e92},
-  {b:0x39ff14,t:0xff00ff},
-  {b:0x00d9ff,t:0x0077ff},
-  {b:0xff9e4a,t:0xff4ecd},
+const BC=new THREE.Color(0x00ffcc),TC=new THREE.Color(0x8800ff);
+const PALS=[
+  {b:0x00ffcc,t:0x8800ff},{b:0xff6b35,t:0x004e92},{b:0x39ff14,t:0xff00ff},
+  {b:0x00d9ff,t:0x0077ff},{b:0xff9e4a,t:0xff4ecd},{b:0xff0088,t:0x00ffcc}
 ];
-let PAL=0;
+let PAL=0,CLK=new THREE.Clock();
 
 function tick(){
   const t=CLK.getElapsedTime();
-  
-  // Mouse speed color
   const ddx=MX.x-LMX,ddy=MX.y-LMY;
-  MS+=(Math.sqrt(ddx*ddx+ddy*ddy)-MS)*0.06;
-  LMX=MX.x;LMY=MX.y;
-  
-  // Cycle palette slowly
-  if(Math.floor(t*0.15)!==PAL){PAL=Math.floor(t*0.15)%PALETTES.length;}
-  const cp=PALETTES[PAL];
-  BC.setHex(cp.b);TC.setHex(cp.t);
+  MS+=(Math.sqrt(ddx*ddx+ddy*ddy)-MS)*0.06;LMX=MX.x;LMY=MX.y;
+  if(Math.floor(t*0.12)!==PAL){PAL=Math.floor(t*0.12)%PALS.length;}
+  const cp=PALS[PAL];BC.setHex(cp.b);TC.setHex(cp.t);
   M.color.copy(BC).lerp(TC,Math.min(MS*12,1));
-  
   const sp=SP.p;
-  PT.rotation.y=t*0.03+sp*1.5;
-  PT.rotation.x=t*0.01+sp*0.4;
-  
-  // Particle positions
+  PT.rotation.y=t*0.03+sp*1.5;PT.rotation.x=t*0.01+sp*0.4;
   const pa=G.attributes.position;
   for(let i=0;i<CNT;i++){
     const i3=i*3;
-    const cx=T[i3]+(O[i3]-T[i3])*IN.p;
-    const cy=T[i3+1]+(O[i3+1]-T[i3+1])*IN.p;
-    const cz=T[i3+2]+(O[i3+2]-T[i3+2])*IN.p;
+    const cx=T[i3]+(O[i3]-T[i3])*IN.p,cy=T[i3+1]+(O[i3+1]-T[i3+1])*IN.p,cz=T[i3+2]+(O[i3+2]-T[i3+2])*IN.p;
     const w=Math.sin(O[i3]*2.5+t*0.9)*0.18*Math.cos(O[i3+1]*2.5+t*0.7)*IN.p;
     pa.array[i3]=cx+O[i3]*w+MX.x*0.2*IN.p+Math.sin(t*0.5+i*0.001)*0.05;
     pa.array[i3+1]=cy+O[i3+1]*w+MX.y*0.2*IN.p+Math.cos(t*0.7+i*0.001)*0.05;
     pa.array[i3+2]=cz+O[i3+2]*w;
   }
   pa.needsUpdate=true;
-  
-  // Camera
-  const cX=THREE.MathUtils.lerp(0,1.2,sp)+MX.x*0.25;
-  const cY=THREE.MathUtils.lerp(0,0.9,sp)+MX.y*0.25;
-  const cZ=THREE.MathUtils.lerp(5,3,sp);
-  CM.position.x+=(cX-CM.position.x)*0.04;
-  CM.position.y+=(cY-CM.position.y)*0.04;
-  CM.position.z+=(cZ-CM.position.z)*0.04;
+  const cX=THREE.MathUtils.lerp(0,1.2,sp)+MX.x*0.25,cY=THREE.MathUtils.lerp(0,0.9,sp)+MX.y*0.25,cZ=THREE.MathUtils.lerp(5,3,sp);
+  CM.position.x+=(cX-CM.position.x)*0.04;CM.position.y+=(cY-CM.position.y)*0.04;CM.position.z+=(cZ-CM.position.z)*0.04;
   CM.lookAt(S.position);
-  
-  R.render(S,CM);
-  requestAnimationFrame(tick);
+  R.render(S,CM);requestAnimationFrame(tick);
 }
 tick();
+window.addEventListener('resize',()=>{CM.aspect=window.innerWidth/window.innerHeight;CM.updateProjectionMatrix();R.setSize(window.innerWidth,window.innerHeight);R.setPixelRatio(Math.min(window.devicePixelRatio,2));ScrollTrigger.refresh();});
 
-window.addEventListener('resize',()=>{
-  CM.aspect=window.innerWidth/window.innerHeight;
-  CM.updateProjectionMatrix();
-  R.setSize(window.innerWidth,window.innerHeight);
-  R.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  ScrollTrigger.refresh();
-});
-
-// ===== AI GENERATOR =====
+// === PROMPT DETECTION + GENERATOR ===
 const genBtn=document.getElementById('genBtn');
-const promptInput=document.getElementById('promptInput');
+const inp=document.getElementById('promptInput');
+const hint=document.getElementById('catHint');
 
-// Config from our platform
-const STYLES={
-  luxury:{base:'#d4af37',accent:'#8800ff',particles:30000,title:'Luxury'},
-  neon:{base:'#39ff14',accent:'#ff00ff',particles:35000,title:'Neon'},
-  ocean:{base:'#00d9ff',accent:'#0077ff',particles:25000,title:'Ocean'},
-  sunset:{base:'#ff9e4a',accent:'#ff4ecd',particles:28000,title:'Sunset'},
-  dark:{base:'#8800ff',accent:'#00ffcc',particles:40000,title:'Dark Mystic'},
-  fire:{base:'#ff4400',accent:'#ffcc00',particles:32000,title:'Fire'},
-  nature:{base:'#00ff88',accent:'#44aa00',particles:22000,title:'Nature'},
-  cyber:{base:'#00ffff',accent:'#ff0044',particles:38000,title:'Cyberpunk'}
+const CATS={
+  beverage:['drink','water','beer','wine','coffee','tea','juice','bottle','can','fizz','soda','refresh'],
+  fashion:['fashion','cloth','dress','silk','couture','wear','textile','fabric','style'],
+  tech:['tech','digital','cyber','neon','computer','ai','software','robot','future','code'],
+  automotive:['car','auto','vehicle','engine','speed','drive','wheel','motor','sport','race'],
+  luxury:['luxury','gold','premium','elegant','diamond','rich','wealth','exclusive','high-end'],
+  cosmic:['space','cosmic','nebula','galaxy','star','universe','astral','void','mystic']
 };
 
-function detectStyle(prompt){
+function detect(prompt){
   const l=prompt.toLowerCase();
-  if(l.includes('luxury')||l.includes('gold')||l.includes('premium')||l.includes('elegant')) return STYLES.luxury;
-  if(l.includes('neon')||l.includes('cyber')||l.includes('synth')||l.includes('techno')) return STYLES.cyber;
-  if(l.includes('ocean')||l.includes('water')||l.includes('aqua')||l.includes('marine')) return STYLES.ocean;
-  if(l.includes('sunset')||l.includes('warm')||l.includes('orange')||l.includes('golden')) return STYLES.sunset;
-  if(l.includes('dark')||l.includes('mystic')||l.includes('night')||l.includes('space')) return STYLES.dark;
-  if(l.includes('fire')||l.includes('energy')||l.includes('power')||l.includes('flame')) return STYLES.fire;
-  if(l.includes('nature')||l.includes('organic')||l.includes('earth')||l.includes('green')) return STYLES.nature;
-  return STYLES.luxury;
+  for(const[cat,kws]of Object.entries(CATS))
+    if(kws.some(k=>l.includes(k))) return cat;
+  return 'luxury';
 }
 
-genBtn.addEventListener('click',generate);
-
-promptInput.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();generate();}
+inp.addEventListener('input',()=>{
+  const t=inp.value.trim();
+  if(t.length>2){
+    const cat=detect(t);
+    hint.textContent='✦ '+cat;
+    hint.style.color='#00ffcc';
+  } else {
+    hint.textContent='describe your vision';
+    hint.style.color='rgba(255,255,255,0.12)';
+  }
 });
 
-function generate(){
-  const prompt=promptInput.value.trim();
-  if(!prompt){gsap.to('.gen-box',{x:6,duration:0.08,repeat:3,yoyo:true});return;}
+genBtn.addEventListener('click',gen);
+inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();gen();}});
+
+function gen(){
+  const p=inp.value.trim();
+  if(!p){gsap.to('.gen-box',{x:5,duration:0.07,repeat:3,yoyo:true});return;}
   
-  // Disable + show loading
+  const cat=detect(p);
+  const profile=window.getSoundProfile?.(cat)||null;
+  
   genBtn.disabled=true;
   genBtn.textContent='Dreaming...';
   
-  const style=detectStyle(prompt);
-  console.log(`🎨 Generating for: "${prompt}" → Style: ${JSON.stringify(style)}`);
-  
-  // Show preview in new tab (using our generator)
-  const params=new URLSearchParams();
-  params.set('prompt',prompt);
-  params.set('base',style.base);
-  params.set('accent',style.accent);
-  params.set('particles',style.particles);
-  params.set('title',style.title);
-  
-  // Try to use the prototype as base
-  const previewUrl=`prototype-3d.html?${params.toString()}`;
-  
-  // Simulate generation delay (AI thinking)
-  gsap.to('.gen-box',{borderColor:'rgba(0,255,204,0.5)',duration:0.3});
+  if(profile) switchSound(profile);
   
   setTimeout(()=>{
-    genBtn.textContent='✨ Generated!';
-    gsap.to('.gen-box',{borderColor:'rgba(0,255,204,0.8)',duration:0.2});
-    
-    setTimeout(()=>{
-      genBtn.textContent='Generate →';
-      genBtn.disabled=false;
-      
-      // Open generated page
-      window.open(previewUrl,'_blank');
-      
-      // Log for later AI integration
-      console.log(`✅ Would generate page with style: ${JSON.stringify(style)}`);
-      console.log(`📄 Preview URL: ${previewUrl}`);
-    },800);
-  },1200);
+    genBtn.textContent='✦ Generated!';
+    gsap.to('.gen-box',{borderColor:'rgba(0,255,204,0.8)',duration:0.3});
+    window.open('prototype-3d.html?cat='+cat+'&prompt='+encodeURIComponent(p),'_blank');
+    setTimeout(()=>{genBtn.textContent='Generate →';genBtn.disabled=false;},1000);
+  },1500);
 }
 
-// ===== HYPNOTIC AUDIO ENGINE =====
-let AC=null,playing=false;
+// === HYPNOTIC AUDIO ENGINE WITH PROFILES ===
+let AC=null,playing=false,oscs=[],gains=[],noiseG=null,currentProfile=null;
 
-function initAudio(){
+function initAudio(profile){
   const A=window.AudioContext||window.webkitAudioContext;
   AC=new A();
+  const p=profile||{synth:{baseHz:130.8,shimmerHz:1000},mix:{drone:0.04,transient:0.02}};
   
-  // Deep drone - 58.3Hz (relaxation)
-  const d1=AC.createOscillator();
-  const d1g=AC.createGain();
-  d1.type='sine';d1.frequency.value=58.3;d1g.gain.value=0.035;
-  
-  // LFO pulse (Theta 6.5Hz)
-  const l1=AC.createOscillator();
-  const l1g=AC.createGain();
+  // Drone
+  const d1=AC.createOscillator(),d1g=AC.createGain();
+  d1.type='sine';d1.frequency.value=p.synth.baseHz||130.8;d1g.gain.value=p.mix?.drone||0.035;
+  const l1=AC.createOscillator(),l1g=AC.createGain();
   l1.type='sine';l1.frequency.value=6.5;l1g.gain.value=0.025;
   l1.connect(l1g);l1g.connect(d1g.gain);
   
-  // Shimmer layer 172Hz
-  const s1=AC.createOscillator();
-  const s1g=AC.createGain();
-  s1.type='triangle';s1.frequency.value=172.3;s1g.gain.value=0.012;
-  
-  const l2=AC.createOscillator();
-  const l2g=AC.createGain();
+  // Shimmer
+  const s1=AC.createOscillator(),s1g=AC.createGain();
+  s1.type='triangle';s1.frequency.value=p.synth.shimmerHz||960;s1g.gain.value=p.mix?.transient||0.015;
+  const l2=AC.createOscillator(),l2g=AC.createGain();
   l2.type='sine';l2.frequency.value=3.2;l2g.gain.value=0.01;
   l2.connect(l2g);l2g.connect(s1g.gain);
   
   // Brown noise
   const buf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);
-  const d=buf.getChannelData(0);
-  let lo=0;
+  const d=buf.getChannelData(0);let lo=0;
   for(let i=0;i<buf.length;i++){const w=Math.random()*2-1;d[i]=(lo+0.02*w)/1.02;lo=d[i];}
-  const n=AC.createBufferSource();
-  n.buffer=buf;n.loop=true;
-  const nf=AC.createBiquadFilter();
-  nf.type='lowpass';nf.frequency.value=150;nf.Q.value=0.5;
-  const ng=AC.createGain();
-  ng.gain.value=0.025;
-  n.connect(nf);nf.connect(ng);ng.connect(AC.destination);
-  n.start();
+  const n=AC.createBufferSource();n.buffer=buf;n.loop=true;
+  const nf=AC.createBiquadFilter();nf.type='lowpass';nf.frequency.value=150;nf.Q.value=0.5;
+  noiseG=AC.createGain();noiseG.gain.value=0.025;
+  n.connect(nf);nf.connect(noiseG);noiseG.connect(AC.destination);n.start();
   
-  d1.connect(d1g);d1g.connect(AC.destination);
-  s1.connect(s1g);s1g.connect(AC.destination);
+  d1.connect(d1g);d1g.connect(AC.destination);s1.connect(s1g);s1g.connect(AC.destination);
   l1.start();l2.start();d1.start();s1.start();
-  
+  oscs=[d1,s1,l1,l2];gains=[d1g,s1g,l1g,l2g,noiseG];
   playing=true;
+}
+
+function switchSound(profile){
+  if(!profile) return;
+  if(!AC){initAudio(profile);return;}
+  if(oscs[0]){try{oscs[0].frequency.setTargetAtTime(profile.synth.baseHz,AC.currentTime,0.3);}catch(e){}}
+  if(oscs[1]){try{oscs[1].frequency.setTargetAtTime(profile.synth.shimmerHz,AC.currentTime,0.3);}catch(e){}}
+  if(gains[0]){try{gains[0].gain.setTargetAtTime(profile.mix?.drone||0.04,AC.currentTime,0.3);}catch(e){}}
+  currentProfile=profile;
 }
 
 document.querySelector('.at').addEventListener('click',()=>{
   if(!AC)initAudio();
   else if(playing){AC.suspend();playing=false;document.querySelector('.at').classList.remove('on');document.querySelector('.at').textContent='◌ Frequenz';}
   else{AC.resume();playing=true;document.querySelector('.at').classList.add('on');document.querySelector('.at').textContent='◉ Frequenz';}
-  if(AC&&!document.querySelector('.at').classList.contains('on')){
-    document.querySelector('.at').classList.add('on');
-    document.querySelector('.at').textContent='◉ Frequenz';
-  }
+  if(AC&&!document.querySelector('.at').classList.contains('on')){document.querySelector('.at').classList.add('on');document.querySelector('.at').textContent='◉ Frequenz';}
 });
 
-// Auto-start audio on first click anywhere
 document.addEventListener('click',()=>{if(!AC)initAudio();},{once:true});
 </script>
 </body>
