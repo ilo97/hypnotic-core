@@ -13,7 +13,7 @@
 
 const express = require('express');
 const router = express.Router();
-const stripe = require('../stripe');
+const { stripe, IS_MOCK_MODE } = require('../stripe');
 const { getTier } = require('../pricing');
 
 router.post('/payment-links', async (req, res) => {
@@ -26,18 +26,20 @@ router.post('/payment-links', async (req, res) => {
 
     const tierConfig = getTier(tier);
 
-    if (!stripe) {
-      // Development mode – return mock link
-      console.warn('⚠️  No Stripe key configured – returning mock payment link');
+    // Mock mode
+    if (IS_MOCK_MODE || !stripe) {
+      console.log('🔶 MOCK payment link created for tier:', tier);
       return res.json({
-        url: `https://buy.stripe.com/test_000?tier=${tier}`,
+        url: `https://buy.stripe.com/mock_${tier}`,
+        tier,
+        amount: tierConfig.price / 100,
+        currency: tierConfig.currency,
         mock: true,
         message: 'Set STRIPE_SECRET_KEY env var to enable real payment links',
       });
     }
 
-    // Create a Stripe Payment Link via a price
-    // First, create or retrieve the product
+    // Create or find existing product
     let product;
     const products = await stripe.products.list({ active: true, limit: 100 });
     const existing = products.data.find(p => p.name === tierConfig.name);
@@ -51,7 +53,7 @@ router.post('/payment-links', async (req, res) => {
       });
     }
 
-    // Create or reuse a price for this product
+    // Create or reuse a price
     const prices = await stripe.prices.list({ product: product.id, active: true, limit: 10 });
     let price;
     if (prices.data.length > 0) {
@@ -76,6 +78,7 @@ router.post('/payment-links', async (req, res) => {
       tier,
       amount: tierConfig.price / 100,
       currency: tierConfig.currency,
+      mock: false,
     });
   } catch (err) {
     console.error('❌ POST /payment-links error:', err.message);

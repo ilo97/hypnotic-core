@@ -14,7 +14,7 @@
 
 const express = require('express');
 const router = express.Router();
-const stripe = require('../stripe');
+const { stripe, IS_MOCK_MODE } = require('../stripe');
 const { createOrderFromSession, updateOrderBySessionId } = require('../models/order');
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -26,22 +26,22 @@ router.post('/', async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
 
-  // Verify the webhook signature if we have a secret
-  if (endpointSecret && stripe) {
+  // Mock mode: accept webhook events without verification
+  if (IS_MOCK_MODE || !stripe) {
+    try {
+      event = JSON.parse(req.body.toString());
+      console.log('🔶 MOCK webhook received:', event.type);
+    } catch {
+      return res.status(400).json({ error: 'Invalid payload' });
+    }
+  } else {
+    // Verify the webhook signature
     try {
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
       console.error('❌ Webhook signature verification failed:', err.message);
       return res.status(400).json({ error: `Webhook Error: ${err.message}` });
     }
-  } else {
-    // No secret configured – parse body directly (development mode)
-    try {
-      event = JSON.parse(req.body.toString());
-    } catch {
-      return res.status(400).json({ error: 'Invalid payload' });
-    }
-    console.warn('⚠️  Webhook secret not set – skipping signature verification');
   }
 
   const eventType = event.type;
@@ -59,13 +59,13 @@ router.post('/', async (req, res) => {
       }
 
       case 'checkout.session.async_payment_succeeded': {
-        const updated = updateOrderBySessionId(session.id, { status: 'paid' });
+        updateOrderBySessionId(session.id, { status: 'paid' });
         console.log(`💰 Payment succeeded for session: ${session.id}`);
         break;
       }
 
       case 'checkout.session.async_payment_failed': {
-        const updated = updateOrderBySessionId(session.id, { status: 'failed' });
+        updateOrderBySessionId(session.id, { status: 'failed' });
         console.log(`❌ Payment failed for session: ${session.id}`);
         break;
       }
