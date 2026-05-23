@@ -13,7 +13,7 @@
 
 const express = require('express');
 const router = express.Router();
-const stripe = require('../stripe');
+const { stripe, IS_MOCK_MODE } = require('../stripe');
 const { getTier } = require('../pricing');
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ilo97.github.io/hypnotic-core/';
@@ -28,16 +28,19 @@ router.post('/create-checkout-session', async (req, res) => {
 
     const tierConfig = getTier(tier);
 
-    if (!stripe) {
-      // No Stripe key set – return a mock URL for development
-      console.warn('⚠️  No Stripe key configured – returning mock checkout URL');
+    // ─── Mock mode: return a preview URL ─────────────────────────
+    if (IS_MOCK_MODE || !stripe) {
+      const mockUrl = `${FRONTEND_URL}?tier=${tier}&amount=${tierConfig.price / 100}&status=paid`;
+      console.log(`🔶 MOCK checkout: tier=${tier}, amount=€${(tierConfig.price / 100).toFixed(0)}`);
       return res.json({
-        url: `https://buy.stripe.com/test_000?tier=${tier}&amount=${tierConfig.price / 100}`,
+        url: mockUrl,
+        sessionId: `mock_${tier}_${Date.now()}`,
         mock: true,
-        message: 'Set STRIPE_SECRET_KEY env var to enable real payments',
+        message: 'Set STRIPE_SECRET_KEY env var to enable real Stripe payments',
       });
     }
 
+    // ─── Live mode: create real Stripe Checkout Session ──────────
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
@@ -63,7 +66,7 @@ router.post('/create-checkout-session', async (req, res) => {
     });
 
     console.log(`✅ Checkout session created: ${session.id} (tier: ${tier}, amount: €${(tierConfig.price / 100).toFixed(0)})`);
-    res.json({ url: session.url, sessionId: session.id });
+    res.json({ url: session.url, sessionId: session.id, mock: false });
   } catch (err) {
     console.error('❌ create-checkout-session error:', err.message);
     res.status(500).json({ error: err.message });
