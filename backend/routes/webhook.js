@@ -70,6 +70,21 @@ router.post('/', async (req, res) => {
         break;
       }
 
+      case 'order.submitted': {
+        // Order form submitted with creative brief after payment
+        const orderData = event.data?.object;
+        if (orderData) {
+          const fs = require('fs');
+          const path = require('path');
+          const ordersDir = path.join(__dirname, '..', 'data', 'briefs');
+          if (!fs.existsSync(ordersDir)) fs.mkdirSync(ordersDir, { recursive: true });
+          const filename = `brief-${orderData.email}-${Date.now()}.json`;
+          fs.writeFileSync(path.join(ordersDir, filename), JSON.stringify(orderData, null, 2), 'utf8');
+          console.log(`📋 Creative brief saved: ${filename} (${orderData.tier}, ${orderData.email})`);
+        }
+        break;
+      }
+
       default:
         console.log(`📡 Unhandled event type: ${eventType}`);
     }

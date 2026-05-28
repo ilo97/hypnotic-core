@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aesthetic.Studio | Prompt-to-3D</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root {
+            --bg: #030303;
+            --white: #ffffff;
+            --cyan: #00ffcc;
+            --dim-text: rgba(255, 255, 255, 0.4);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 60px;
+            position: relative;
+        }
+
+        header {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 14px;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .hero-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .hero-title h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: clamp(48px, 8vw, 120px);
+            font-weight: 400;
+            line-height: 1;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-title p {
+            font-size: 12px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--dim-text);
+        }
+
+        /* Prompt Experience */
+        .prompt-box {
+            width: 100%;
+            max-width: 900px;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            position: relative;
+            transition: border-color 0.6s ease, transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .prompt-box:focus-within {
+            border-color: var(--cyan);
+            transform: scale(1.02);
+        }
+
+        textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 200;
+            resize: none;
+            min-height: 80px;
+            line-height: 1.6;
+        }
+
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.1);
+        }
+
+        .action-bar {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .evolution-btn,
+        .utility-btn {
+            background: transparent;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 12px 22px;
+            font-size: 10px;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.35s ease;
+        }
+
+        .evolution-btn:hover,
+        .utility-btn:hover {
+            background: var(--cyan);
+            color: var(--bg);
+        }
+
+        .hint {
+            font-size: 10px;
+            color: var(--dim-text);
+            letter-spacing: 0.1em;
+        }
+
+        .stack-status {
+            margin-top: 18px;
+            font-size: 10px;
+            letter-spacing: 0.14em;
+            color: var(--dim-text);
+            text-transform: uppercase;
+        }
+
+        .lottie-preview {
+            margin-top: 22px;
+            width: 100%;
+            max-width: 360px;
+            aspect-ratio: 1 / 1;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.02);
+            display: grid;
+            place-items: center;
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 11px;
+            letter-spacing: 0.1em;
+        }
+
+        /* Showcase Section */
+        .showcase {
+            padding: 120px 60px;
+            background: #000;
+        }
+
+        .section-header {
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+
+        .grid-item {
+            position: relative;
+            aspect-ratio: 1;
+            overflow: hidden;
+            background: #111;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+            filter: grayscale(100%);
+        }
+
+        .grid-item:hover img {
+            transform: scale(1.1);
+            filter: grayscale(0%);
+        }
+
+        .item-label {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--white);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .grid-item:hover .item-label {
+            opacity: 1;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--dim-text);
+        }
+
+        .socials {
+            display: flex;
+            gap: 30px;
+        }
+
+        .socials a {
+            color: var(--dim-text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .socials a:hover {
+            color: var(--cyan);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .hero { padding: 0 30px; }
+            header { left: 30px; right: 30px; }
+        }
+
+        /* ===== PRICING SECTION ===== */
+        .pricing { padding: 120px 60px; background: #000; }
+        .price-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
+        .pc { position: relative; background: var(--glass); border: 1px solid var(--glass-border); padding: 40px 30px; display: flex; flex-direction: column; transition: all 0.5s cubic-bezier(0.19,1,0.22,1); }
+        .pc:hover { transform: translateY(-8px); border-color: rgba(0,255,204,0.3); }
+        .pc.feat { border-color: rgba(0,255,204,0.2); background: rgba(0,255,204,0.03); }
+        .badge { position: absolute; top: 16px; right: 16px; background: var(--cyan); color: var(--bg); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; padding: 4px 12px; font-weight: 400; }
+        .pl { font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim-text); margin-bottom: 16px; }
+        .pr { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(36px, 5vw, 56px); color: var(--white); margin-bottom: 12px; }
+        .pd { font-size: 11px; line-height: 1.7; color: var(--dim-text); margin-bottom: 24px; }
+        .pf { list-style: none; padding: 0; margin: 0 0 30px; flex: 1; }
+        .pf li { font-size: 10px; letter-spacing: .05em; color: rgba(255,255,255,0.5); padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .pf li:last-child { border-bottom: none; }
+        .pb { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); padding: 14px 30px; font-size: 10px; letter-spacing: .3em; text-transform: uppercase; cursor: pointer; transition: all 0.4s ease; text-align: center; width: 100%; }
+        .pb:hover { background: var(--cyan); color: var(--bg); }
+
+        /* ===== ORDER FORM ===== */
+        .order-form { padding: 120px 60px; background: #050505; }
+        .form-container { max-width: 760px; margin: 0 auto; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .form-group { margin-bottom: 24px; }
+        .form-group label { display: block; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--dim-text); margin-bottom: 8px; }
+        .form-group input, .form-group textarea { width: 100%; background: var(--glass); border: 1px solid var(--glass-border); color: var(--white); padding: 14px 16px; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; transition: border-color 0.3s ease; border-radius: 0; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--cyan); }
+        .form-group input[type="file"] { padding: 10px; font-size: 12px; }
+        .form-hint { display: block; font-size: 9px; color: rgba(255,255,255,0.2); margin-top: 4px; letter-spacing: .05em; }
+        @media (max-width: 768px) {
+            .price-cards { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .pricing, .order-form { padding: 80px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <header>
+            <div class="logo">Aesthetic.Studio</div>
+            <div class="status">Neural Link: Active</div>
+        </header>
+
+        <div class="hero-title">
+            <p>Generative Motion & 3D Reality</p>
+            <h1>Dream in 3D.</h1>
+        </div>
+
+        <div class="prompt-box">
+            <textarea id="prompt-input" placeholder="Describe the atmosphere, physics, and luminous essence..."></textarea>
+            <div class="action-bar">
+                <span class="hint">Shift + Enter for new line • no voice audio only</span>
+                <div class="btn-group">
+                    <button class="utility-btn" id="audio-toggle">Audio: Off</button>
+                    <button class="utility-btn" id="lottie-preview-btn">Lottie Preview</button>
+                    <button class="evolution-btn" id="evolution-btn">Begin Evolution</button>
+                </div>
+            </div>
+            <div class="stack-status" id="stack-status">Stack: GSAP active • Lottie pending • Theatre pending • Remotion payload idle</div>
+            <div class="lottie-preview" id="lottie-preview">Lottie preview area</div>
+        </div>
+    </div>
+
+    <!-- ===== PRICING + STRIPE CHECKOUT SECTION ===== -->
+    <section class="pricing" id="pricing">
+        <div class="section-header">
+            <h2>Investment</h2>
+        </div>
+        <div class="price-cards">
+            <div class="pc" data-tier="basic">
+                <div class="pl">Basic Ad Page</div>
+                <div class="pr">€299</div>
+                <div class="pd">One scroll experience. Premium preset. Live in 24h. Hosted link.</div>
+                <ul class="pf">
+                    <li>3D scroll experience with particle system</li>
+                    <li>Premium visual preset</li>
+                    <li>Hypnotic sound design (no voice)</li>
+                    <li>Live hosted link</li>
+                    <li>14-day delivery</li>
+                </ul>
+                <button class="pb" onclick="handleCheckout('basic')">Buy Now →</button>
+            </div>
+            <div class="pc feat" data-tier="pro">
+                <div class="badge">Popular</div>
+                <div class="pl">Conversion Page</div>
+                <div class="pr">€999</div>
+                <div class="pd">Custom palette + typo. 3 variants. Sound design. Product integration.</div>
+                <ul class="pf">
+                    <li>Everything in Basic, plus:</li>
+                    <li>Custom color palette &amp; typography</li>
+                    <li>3 visual variants (A/B test ready)</li>
+                    <li>Product/logo integration</li>
+                    <li>Custom sound identity</li>
+                    <li>Scroll-triggered camera animation</li>
+                    <li>Responsive design</li>
+                </ul>
+                <button class="pb" onclick="handleCheckout('pro')">Buy Now →</button>
+            </div>
+            <div class="pc" data-tier="elite">
+                <div class="pl">Full Campaign</div>
+                <div class="pr">€3.000+</div>
+                <div class="pd">Multi-scene. Custom shaders. Video exports. Brand kit. Priority support.</div>
+                <ul class="pf">
+                    <li>Everything in Pro, plus:</li>
+                    <li>Multi-scene immersive 3D world</li>
+                    <li>Custom GLSL shader effects</li>
+                    <li>Video export (MP4, Reel, TikTok)</li>
+                    <li>Complete brand kit integration</li>
+                    <li>AI-powered prompt-to-3D</li>
+                    <li>Priority support &amp; unlimited revisions</li>
+                    <li>Dedicated project manager</li>
+                </ul>
+                <button class="pb" onclick="handleCheckout('elite')">Buy Now →</button>
+            </div>
+        </div>
+        <div style="text-align:center;font-size:10px;color:var(--dim-text);letter-spacing:.1em;margin-top:30px">
+            Secure payment via Stripe • 14-day delivery • Unlimited revisions
+        </div>
+    </section>
+
+    <!-- ===== ORDER FORM (after payment) ===== -->
+    <section class="order-form" id="orderForm" style="display:none">
+        <div class="section-header">
+            <h2>Your Project Details</h2>
+            <p style="font-size:12px;color:var(--dim-text);margin-top:8px;letter-spacing:.05em">Payment confirmed! Now tell us about your brand.</p>
+        </div>
+        <div class="form-container">
+            <form id="orderFormFields" onsubmit="return submitOrder(event)">
+                <input type="hidden" id="orderTier" name="tier">
+                <input type="hidden" id="orderSessionId" name="session_id">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="formName">Your Name *</label>
+                        <input type="text" id="formName" name="name" required placeholder="e.g. John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="formEmail">Email *</label>
+                        <input type="email" id="formEmail" name="email" required placeholder="e.g. john@brand.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="formBrand">Brand / Company</label>
+                    <input type="text" id="formBrand" name="brand" placeholder="Your brand name">
+                </div>
+
+                <div class="form-group">
+                    <label for="formBrief">Creative Brief *</label>
+                    <textarea id="formBrief" name="brief" rows="5" required placeholder="Describe your vision, atmosphere, colors, and what you want the 3D experience to feel like..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="formWebsite">Website / Social Media</label>
+                        <input type="url" id="formWebsite" name="website" placeholder="e.g. https://yourbrand.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="formLogo">Logo Upload</label>
+                        <input type="file" id="formLogo" name="logo" accept="image/png,image/jpeg,image/svg+xml,.ai,.eps">
+                        <span class="form-hint">PNG, JPG, SVG, AI, EPS accepted</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="formKeywords">Keywords / Mood</label>
+                    <input type="text" id="formKeywords" name="keywords" placeholder="e.g. luxury, gold, elegant, cinematic, satisfying">
+                </div>
+
+                <div class="form-group">
+                    <label for="formDeadline">Desired Deadline</label>
+                    <input type="date" id="formDeadline" name="deadline">
+                </div>
+
+                <button type="submit" class="evolution-btn" id="submitOrderBtn">Submit Project Brief →</button>
+                <div id="orderSuccess" style="display:none;color:var(--cyan);margin-top:16px;font-size:12px;letter-spacing:.05em">
+                    ✅ Brief received! We'll start your 3D experience within 24h. Check your email for confirmation.
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="showcase">
+        <div class="section-header">
+            <h2>Latent Realities</h2>
+        </div>
+
+        <div class="grid">
+            <a href="generated/luxury-watch.html" target="_blank" class="grid-item">
+                <img src="assets/example1.png" alt="Example 1">
+                <div class="item-label">Luxury Gold (Vogue)</div>
+            </a>
+            <a href="generated/cyberpunk-city.html" target="_blank" class="grid-item">
+                <img src="assets/example2.png" alt="Example 2">
+                <div class="item-label">Cyber Reality (Neon)</div>
+            </a>
+            <a href="generated/racing-speed.html" target="_blank" class="grid-item">
+                <img src="assets/example3.png" alt="Example 3">
+                <div class="item-label">Raw Power (Speed)</div>
+            </a>
+            <a href="generated/beauty-glow.html" target="_blank" class="grid-item">
+                <img src="assets/example4.png" alt="Example 4">
+                <div class="item-label">Soft Radiance (Beauty)</div>
+            </a>
+            <a href="generated/refreshing-drink.html" target="_blank" class="grid-item">
+                <img src="assets/example1.png" alt="Example 5">
+                <div class="item-label">Liquid Frost (Beverage)</div>
+            </a>
+            <a href="generated/organic-food.html" target="_blank" class="grid-item">
+                <img src="assets/example2.png" alt="Example 6">
+                <div class="item-label">Organic Bloom (Food)</div>
+            </a>
+            <a href="generated/minimal-zen.html" target="_blank" class="grid-item">
+                <img src="assets/example3.png" alt="Example 7">
+                <div class="item-label">Zen Minimal (Pure)</div>
+            </a>
+            <a href="generated/mystic-music.html" target="_blank" class="grid-item">
+                <img src="assets/example4.png" alt="Example 8">
+                <div class="item-label">Sonic Waves (Music)</div>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="copy">&copy; 2026 Aesthetic.Studio</div>
+        <div class="socials">
+            <a href="#">X (Twitter)</a>
+            <a href="#">Instagram</a>
+            <a href="#">Showcase</a>
+        </div>
+    </footer>
+
+    <script src="./animation-stack.js"></script>
+    <script src="./sound-engine.js"></script>
+    <script src="./prompt-mapping.js"></script>
+    <script src="./generator-bridge.js"></script>
+    <script>
+        const statusEl = document.getElementById('stack-status');
+        const promptInput = document.getElementById('prompt-input');
+        const evolutionBtn = document.getElementById('evolution-btn');
+        const audioToggle = document.getElementById('audio-toggle');
+        const lottieBtn = document.getElementById('lottie-preview-btn');
+        const lottiePreview = document.getElementById('lottie-preview');
+
+        function setStatus(text) {
+            statusEl.textContent = text;
+        }
+
+        // Intro Animations
+        gsap.from('.hero-title p', { opacity: 0, y: 20, duration: 1.5, ease: 'power4.out' });
+        gsap.from('.hero-title h1', { opacity: 0, y: 40, duration: 1.8, ease: 'power4.out', delay: 0.2 });
+        gsap.from('.prompt-box', { opacity: 0, scale: 0.95, duration: 1.5, ease: 'power3.out', delay: 0.5 });
+
+        // Audio Toggle (Web Audio API, hypnotic no-voice)
+        audioToggle.addEventListener('click', async () => {
+            if (!window.HypnoticAudio) return;
+
+            if (!window.HypnoticAudio.state.started || window.HypnoticAudio.state.muted) {
+                await window.HypnoticAudio.start();
+                audioToggle.textContent = 'Audio: On';
+                setStatus('Stack: GSAP active • WebAudio active • Lottie pending • Theatre pending');
+                window.HypnoticAudio.triggerBlip(620);
+            } else {
+                window.HypnoticAudio.stop();
+                audioToggle.textContent = 'Audio: Off';
+                setStatus('Stack: GSAP active • WebAudio muted • Lottie pending • Theatre pending');
+            }
+        });
+
+        // Lottie preview integration
+        lottieBtn.addEventListener('click', async () => {
+            if (!window.AnimationStack) return;
+
+            const loaded = await window.AnimationStack.mountLottiePreview({
+                container: lottiePreview,
+                src: 'https://assets8.lottiefiles.com/packages/lf20_tfb3estd.json',
+                loop: true,
+                autoplay: true,
+                speed: 1
+            });
+
+            if (loaded) {
+                setStatus('Stack: GSAP active • Lottie ready • Theatre pending • Remotion payload idle');
+            } else {
+                setStatus('Stack: GSAP active • Lottie failed to load • Theatre pending');
+            }
+        });
+
+        // Evolution: GSAP response + Theatre fallback + Remotion payload prep + audio blip
+        evolutionBtn.addEventListener('click', async function() {
+            gsap.to(this, { scale: 0.95, duration: 0.1 });
+            gsap.to(this, { scale: 1, duration: 0.4, ease: 'elastic.out(1, 0.3)' });
+
+            gsap.to('.hero', {
+                backgroundColor: 'rgba(0, 255, 204, 0.05)',
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1
+            });
+
+            if (window.HypnoticAudio) {
+                if (!window.HypnoticAudio.state.started || window.HypnoticAudio.state.muted) {
+                    await window.HypnoticAudio.start();
+                    audioToggle.textContent = 'Audio: On';
+                }
+                window.HypnoticAudio.triggerBlip(880);
+            }
+
+            const theatreLoaded = window.AnimationStack ? await window.AnimationStack.ensureTheatreCore() : false;
+            if (!theatreLoaded && window.AnimationStack) {
+                window.AnimationStack.createTheatreLikeSequence({ target: document.querySelector('.prompt-box'), duration: 1.8 });
+            }
+
+            const prompt = (promptInput.value || '').trim();
+            
+            if (!prompt) {
+                setStatus('Status: Waiting for prompt...');
+                return;
+            }
+
+            setStatus('Status: Synthesizing reality... Please wait.');
+            
+            // Call the Generator Bridge
+            const result = await window.GeneratorBridge.generate(prompt);
+
+            if (result.success) {
+                // Bridge updates the status/UI internally if successful
+                console.log('[Platform] Generation successful:', result);
+            } else {
+                setStatus(`Error: ${result.error}`);
+            }
+        });
+
+        // ─── STRIPE CHECKOUT + ORDER FORM ───────────────────────
+        const API_BASE = 'https://hypnotic-core-api.vercel.app';
+
+        // GSAP scroll animations for pricing + order form
+        gsap.from('.pricing .section-header', {
+            scrollTrigger: { trigger: '.pricing', start: 'top 80%' },
+            opacity: 0, y: 30, duration: 1.2, ease: 'power3.out'
+        });
+        gsap.from('.pc', {
+            scrollTrigger: { trigger: '.price-cards', start: 'top 85%' },
+            opacity: 0, y: 40, duration: 1, ease: 'power3.out', stagger: 0.15
+        });
+        gsap.from('.order-form', {
+            scrollTrigger: { trigger: '.order-form', start: 'top 85%' },
+            opacity: 0, y: 30, duration: 1.2, ease: 'power3.out'
+        });
+
+        async function handleCheckout(tier) {
+            const btns = document.querySelectorAll('.pb');
+            const btn = Array.from(btns).find(b => b.textContent.includes('Buy'));
+            if (btn) { btn.textContent = '⏳ Redirecting...'; btn.style.opacity = '0.5'; }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/create-checkout-session`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tier, metadata: { source: 'aesthetic-studio' } }),
+                });
+                const data = await res.json();
+                if (data.url) {
+                    if (data.mock) {
+                        window.open(data.url, '_blank');
+                        showOrderForm(tier, data.sessionId);
+                    } else {
+                        localStorage.setItem('pending_order_tier', tier);
+                        window.location.href = data.url;
+                    }
+                }
+            } catch (err) {
+                console.error('Checkout error:', err);
+                alert('Payment failed. Please try again or email hi@aesthetic.studio');
+            } finally {
+                if (btn) { btn.textContent = 'Buy Now →'; btn.style.opacity = '1'; }
+            }
+        }
+
+        function showOrderForm(tier, sessionId) {
+            document.getElementById('orderForm').style.display = 'block';
+            document.getElementById('orderTier').value = tier;
+            document.getElementById('orderSessionId').value = sessionId || 'manual';
+            document.getElementById('orderForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function submitOrder(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submitOrderBtn');
+            btn.textContent = '⏳ Submitting...';
+            btn.disabled = true;
+            const formData = new FormData(document.getElementById('orderFormFields'));
+            const order = {
+                tier: formData.get('tier'),
+                session_id: formData.get('session_id'),
+                name: formData.get('name'),
+                email: formData.get('email'),
+                brand: formData.get('brand') || '',
+                brief: formData.get('brief'),
+                website: formData.get('website') || '',
+                keywords: formData.get('keywords') || '',
+                deadline: formData.get('deadline') || '',
+                timestamp: new Date().toISOString(),
+            };
+            const logoFile = document.getElementById('formLogo').files[0];
+            if (logoFile) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    order.logo = e.target.result.substring(0, 100000);
+                    await sendOrder(order);
+                };
+                reader.readAsDataURL(logoFile);
+            } else {
+                await sendOrder(order);
+            }
+            return false;
+        }
+
+        async function sendOrder(order) {
+            try {
+                await fetch(`${API_BASE}/api/webhook`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'order.submitted', data: { object: order } }),
+                });
+                document.getElementById('orderSuccess').style.display = 'block';
+                document.getElementById('submitOrderBtn').textContent = '✅ Submitted';
+                document.getElementById('submitOrderBtn').style.display = 'none';
+                const orders = JSON.parse(localStorage.getItem('aesthetic_orders') || '[]');
+                orders.push(order);
+                localStorage.setItem('aesthetic_orders', JSON.stringify(orders));
+                console.log('✅ Order submitted:', order.tier, order.email);
+            } catch (err) {
+                console.error('Order submission error:', err);
+                document.getElementById('submitOrderBtn').textContent = '❌ Error – Try Again';
+                document.getElementById('submitOrderBtn').disabled = false;
+            }
+        }
+
+        (function checkPaymentReturn() {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
+            const sessionId = params.get('session_id');
+            const tier = params.get('tier') || localStorage.getItem('pending_order_tier');
+            if (status === 'success' || status === 'paid' || params.get('amount')) {
+                showOrderForm(tier || 'basic', sessionId || 'checkout_return');
+                localStorage.removeItem('pending_order_tier');
+                if (window.history.replaceState) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+        })();
+
+        console.log('💳 Stripe Checkout ready – API:', API_BASE);
+    </script>
+</body>
+</html>
