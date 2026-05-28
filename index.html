@@ -120,9 +120,9 @@ footer{padding:20px 60px;display:flex;justify-content:space-between;font-size:8p
 <section class="pricing" id="pricing">
   <div class="label" id="lab2">Investment</div>
   <div class="price-cards">
-    <div class="pc"><div class="pl">Basic Ad Page</div><div class="pr">€299</div><div class="pd">One scroll experience. Premium preset. Live in 24h. Hosted link.</div><a class="pb" href="#" target="_blank">Buy Now →</a></div>
-    <div class="pc feat"><div class="pl">Conversion Page</div><div class="pr">€999</div><div class="pd">Custom palette + typo. 3 variants. Sound design. Product integration.</div><a class="pb" href="#" target="_blank">Buy Now →</a></div>
-    <div class="pc"><div class="pl">Full Campaign</div><div class="pr">€3.000+</div><div class="pd">Multi-scene. Custom shaders. Video exports. Brand kit. Priority support.</div><a class="pb" href="#" target="_blank">Contact →</a></div>
+    <div class="pc"><div class="pl">Basic Ad Page</div><div class="pr">€299</div><div class="pd">One scroll experience. Premium preset. Live in 24h. Hosted link.</div><a class="pb" href="#" onclick="checkout('basic');return false">Buy Now →</a></div>
+            <div class="pc feat"><div class="pl">Conversion Page</div><div class="pr">€999</div><div class="pd">Custom palette + typo. 3 variants. Sound design. Product integration.</div><a class="pb" href="#" onclick="checkout('pro');return false">Buy Now →</a></div>
+            <div class="pc"><div class="pl">Full Campaign</div><div class="pr">€3.000+</div><div class="pd">Multi-scene. Custom shaders. Video exports. Brand kit. Priority support.</div><a class="pb" href="mailto:hi@aesthetic.studio">Contact →</a></div>
   </div>
   <div style="font-size:8px;color:rgba(255,255,255,0.06);letter-spacing:.1em">Secure payment via Stripe • 14-day delivery • Unlimited revisions</div>
 </section>
@@ -151,6 +151,47 @@ footer{padding:20px 60px;display:flex;justify-content:space-between;font-size:8p
 
 <script>
 gsap.registerPlugin(ScrollTrigger);
+
+// === STRIPE CHECKOUT ===
+const API_BASE = 'https://hypnotic-core-api.vercel.app';
+
+async function checkout(tier) {
+  try {
+    const btn = event?.target || document.querySelector(`[onclick*="${tier}"]`);
+    if (btn) { btn.textContent = '⏳ Redirecting...'; btn.style.opacity = '0.5'; }
+
+    // Try Vercel API first, fallback to local backend
+    const url = API_BASE.startsWith('https://') 
+      ? `${API_BASE}/api/create-checkout-session`
+      : `http://localhost:3001/api/create-checkout-session`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, metadata: { source: 'hypnotic-core' } }),
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      // Open in same tab (redirect) or new tab for mock URLs
+      if (data.mock) {
+        window.open(data.url, '_blank');
+        if (btn) btn.textContent = 'Buy Now →';
+        if (btn) btn.style.opacity = '1';
+      } else {
+        window.location.href = data.url;
+      }
+    } else {
+      throw new Error(data.error || 'Failed to create checkout session');
+    }
+  } catch (err) {
+    console.error('Checkout error:', err);
+    const btn = document.querySelector(`[onclick*="${tier}"]`);
+    if (btn) { btn.textContent = 'Buy Now →'; btn.style.opacity = '1'; }
+    alert('Something went wrong. Please try again or email us at hi@aesthetic.studio');
+  }
+}
 
 // === VIDEO BACKGROUNDS ===
 const VIDEOS={

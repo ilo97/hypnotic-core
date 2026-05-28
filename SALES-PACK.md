@@ -50,18 +50,73 @@ Want to try?
 
 ---
 
-## 💳 STRIPE KURULUMU (5 DAKİKA)
+## 💳 STRIPE KURULUMU – API Tabanlı (5 DAKİKA)
 
-Henüz Stripe hesabın yoksa:
+✅ Artık API tabanlı Stripe Checkout çalışıyor — manuel link oluşturmaya gerek yok!
+
+### Seçenek A: Canlı Stripe (Önerilen)
 
 1. **Git:** https://dashboard.stripe.com/register
 2. E-posta + şifre ile kaydol (5 dk)
-3. **"Create payment link"** tıkla
-4. 3 tane link oluştur:
-   - Basic: €299 (tek ödeme)
-   - Pro: €999
-   - Elite: €3.000
-5. Linkleri bana ver, sitedeki "Buy Now" butonlarına ekleyeyim
+3. **Dashboard → API Keys**'den `sk_test_...` veya `sk_live_...` anahtarını kopyala
+4. `.env.example`'ı `.env`'ye kopyala, anahtarı yapıştır:
+
+   ```bash
+   cd backend
+   cp .env.example .env
+   # STRIPE_SECRET_KEY=sk_test_... yaz
+   npm start
+   ```
+
+5. **Stripe Webhook** kurulumu (opsiyonel ama önerilir):
+   - Dashboard → Webhooks → Add endpoint
+   - URL: `https://hypnotic-core-api.vercel.app/api/webhook`
+   - Events: `checkout.session.completed`
+   
+### Seçenek B: Mock Mod (Hemen başla)
+
+API anahtarı olmadan da çalışır. Mock mod otomatik devreye girer:
+
+```
+"Buy Now" butonları → mock ödeme sayfasına yönlendirir
+```
+
+Gerçek ödeme almaya başlayınca Stripe anahtarını `.env`'ye eklemen yeterli.
+
+## 🚀 VERCEL DEPLOY (Tek Komut)
+
+```bash
+npm i -g vercel
+vercel link
+vercel env add STRIPE_SECRET_KEY
+vercel deploy --prod
+```
+
+Sonra frontend'deki `API_BASE` değişkenini Vercel URL'ine güncelle.
+
+## 📊 SİPARİŞ TAKİBİ
+
+Ödemeler alındıktan sonra siparişleri görüntüle:
+
+```bash
+curl https://hypnotic-core-api.vercel.app/api/orders
+```
+
+Veya local:
+
+```bash
+curl http://localhost:3001/api/orders
+```
+
+Her sipariş: ID, müşteri e-posta, tier, tutar, tarih içerir.
+
+## 🔄 CI/CD PIPELINE
+
+Her `git push main`'de otomatik:
+
+1. ✅ Kod kalite kontrolü
+2. ✅ Vercel'e deploy
+3. ✅ GitHub Pages'e deploy
 
 ---
 
@@ -69,7 +124,8 @@ Henüz Stripe hesabın yoksa:
 
 1. Bu sayfayı Instagram'da paylaş (video)
 2. DM'den 3 kişiye yaz
-3. Bana müşteriyi getir → 24 saatte 3D sayfayı yapayım
-4. Sen parayı al 💰
+3. Müşteri ödeme yapar → Sipariş otomatik oluşur
+4. 24 saatte 3D sayfayı yap
+5. Sen parayı al 💰
 
 **Hazır mısın?** DM'lere başlayalım mı? 💪

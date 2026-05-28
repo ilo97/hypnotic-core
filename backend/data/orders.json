@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "ORD-1779965559529-RVR303",
+    "stripeSessionId": "cs_test_mock123",
+    "stripePaymentIntentId": "pi_mock123",
+    "customerEmail": "client@example.com",
+    "customerName": "Test Client",
+    "tier": "basic",
+    "amountTotal": 29900,
+    "currency": "eur",
+    "status": "paid",
+    "createdAt": "2026-05-28T10:52:39.529Z",
+    "updatedAt": "2026-05-28T10:52:39.529Z",
+    "metadata": {
+      "tier": "basic"
+    }
+  }
+]

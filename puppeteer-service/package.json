@@ -1,0 +1,13 @@
+{
+  "name": "hypnotic-core-puppeteer",
+  "version": "1.0.0",
+  "description": "Puppeteer export service for video/screenshot rendering",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "puppeteer": "^23.0.0"
+  }
+}
