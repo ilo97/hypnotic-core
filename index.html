@@ -42,6 +42,20 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-even
 .hero .sub{font-size:clamp(14px,1.5vw,18px);font-weight:200;color:rgba(255,255,255,0.3);max-width:520px;margin-bottom:50px;opacity:0;transform:translateY(20px)}
 .hero .cta{display:inline-block;padding:16px 48px;border:1px solid #00ffcc;color:#00ffcc;font-size:10px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .5s cubic-bezier(.19,1,.22,1);text-decoration:none;opacity:0}
 .hero .cta:hover{background:#00ffcc;color:#030303}
+
+/* Upload Zone */
+.upload-zone{width:100%;max-width:400px;margin:0 auto 30px;opacity:0;transform:translateY(10px)}
+.upload-inner{border:1px dashed rgba(255,255,255,0.08);padding:20px;text-align:center;cursor:pointer;transition:all .4s;background:rgba(255,255,255,0.01)}
+.upload-inner:hover{border-color:rgba(0,255,204,0.3);background:rgba(0,255,204,0.02)}
+.upload-icon{font-size:24px;color:rgba(255,255,255,0.15);display:block;margin-bottom:6px}
+.upload-text{font-size:11px;color:rgba(255,255,255,0.25);display:block;letter-spacing:.1em}
+.upload-hint{font-size:8px;color:rgba(255,255,255,0.08);display:block;margin-top:4px}
+.upload-preview{position:relative;border:1px solid rgba(0,255,204,0.2);padding:10px;background:rgba(0,255,204,0.02);display:flex;align-items:center;gap:15px}
+.upload-preview img{width:60px;height:60px;object-fit:cover;border-radius:2px}
+.upload-info{flex:1;font-size:10px;color:rgba(255,255,255,0.3);line-height:1.5}
+.upload-info strong{color:#00ffcc}
+.upload-remove{position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,0.1);background:#030303;color:rgba(255,255,255,0.3);cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center}
+
 .scroll-hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,0.1);opacity:0}
 .scroll-line{width:1px;height:30px;background:linear-gradient(to bottom,#00ffcc,transparent);margin:8px auto 0;animation:br 2.5s infinite}
 @keyframes br{0%{opacity:.2;transform:scaleY(.3);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.2;transform:scaleY(.3);transform-origin:bottom}}
@@ -97,6 +111,19 @@ footer{padding:20px 60px;display:flex;justify-content:space-between;font-size:8p
   <div class="badge" id="badge">✦ Scroll Experience Engine</div>
   <h1 id="h1">This is not a website.<br>It's a <em>conversion machine.</em></h1>
   <div class="sub" id="sub">Scroll-triggered 3D experiences that make people stop,<br>feel, and buy. No templates. No boring pages.</div>
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept="image/*" hidden>
+    <div class="upload-inner" id="uploadInner">
+      <span class="upload-icon">+</span>
+      <span class="upload-text">Upload reference image</span>
+      <span class="upload-hint">AI extracts colors & mood</span>
+    </div>
+    <div class="upload-preview" id="uploadPreview" style="display:none">
+      <img id="previewImg" alt="">
+      <div class="upload-info" id="uploadInfo"></div>
+      <button class="upload-remove" id="uploadRemove">✕</button>
+    </div>
+  </div>
   <a class="cta" id="ctaBtn" href="#showcase">See the Work →</a>
   <div class="scroll-hint" id="sHint"><span>Scroll to break reality</span><div class="scroll-line"></div></div>
 </section>
@@ -149,6 +176,7 @@ footer{padding:20px 60px;display:flex;justify-content:space-between;font-size:8p
   </div>
 </div>
 
+<script src="vision-analyzer.js"></script>
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
