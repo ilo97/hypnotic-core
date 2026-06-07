@@ -3,290 +3,225 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aesthetic Studio – Hypnotic Fantasy Realms</title>
-<meta name="description" content="Hypnotische 3D Werbeerlebnisse. Eintauchen in fantastische Welten. AI-generiert, scroll-getriggert, grenzenlos.">
+<title>Aesthetic Studio – Ilayda Dede</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/motion@11.11.17/dist/motion.js"></script>
-<!-- C-S-P headers via meta -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.github.com; img-src 'self' data: blob:; media-src 'self';">
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0512;color:#f0e6ff;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:crosshair}
-
-/* === Fantasy Layers === */
-#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-#fgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
-.fairy-mist{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 20% 50%, rgba(200,150,255,0.04), transparent 50%),radial-gradient(ellipse at 80% 30%, rgba(255,200,255,0.03), transparent 40%),radial-gradient(ellipse at 50% 80%, rgba(150,200,255,0.02), transparent 50%)}
-.sparkle-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:3;pointer-events:none;background-image:radial-gradient(1px 1px at 10% 20%, rgba(255,215,255,0.3), transparent),radial-gradient(1px 1px at 30% 60%, rgba(200,180,255,0.2), transparent),radial-gradient(1.5px 1.5px at 50% 10%, rgba(255,200,255,0.25), transparent),radial-gradient(1px 1px at 70% 40%, rgba(180,200,255,0.2), transparent),radial-gradient(1.5px 1.5px at 90% 70%, rgba(255,220,255,0.3), transparent);background-size:200px 200px;background-repeat:no-repeat}
-
-.content{position:relative;z-index:4}
-
-/* === NAV === */
-nav{position:fixed;top:0;left:0;width:100%;z-index:100;padding:20px 60px;display:flex;justify-content:space-between;align-items:center}
-nav .brand{font-size:10px;letter-spacing:.6em;text-transform:uppercase;color:rgba(255,215,255,0.3);font-weight:300}
-nav .brand em{color:#d4a0ff;font-style:normal;text-shadow:0 0 20px rgba(212,160,255,0.3)}
-nav .nav-links{display:flex;gap:30px}
-nav .nav-links a{font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,215,255,0.2);text-decoration:none;transition:all .4s}
-nav .nav-links a:hover{color:#d4a0ff;text-shadow:0 0 15px rgba(212,160,255,0.3)}
-
-/* === HERO === */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:80px 60px;text-align:center}
-.hero .badge{font-size:7px;letter-spacing:.5em;text-transform:uppercase;color:rgba(212,160,255,0.25);margin-bottom:20px;border:1px solid rgba(212,160,255,0.06);padding:8px 24px;backdrop-filter:blur(10px);background:rgba(212,160,255,0.02);opacity:0}
-.hero h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(42px,8vw,96px);font-weight:400;line-height:1;margin-bottom:8px;opacity:0;background:linear-gradient(180deg,#f0e6ff 0%,rgba(212,160,255,0.4) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero h1 em{font-style:italic;background:linear-gradient(135deg,#d4a0ff,#ffd0ff,#c0a0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero .sub{font-size:clamp(12px,1.2vw,15px);font-weight:200;color:rgba(240,230,255,0.15);max-width:460px;margin-bottom:35px;opacity:0;letter-spacing:.08em;line-height:1.8}
-
-/* Fantasy Prompt */
-.magic-box{width:100%;max-width:680px;background:rgba(20,10,30,0.5);backdrop-filter:blur(30px);border:1px solid rgba(212,160,255,0.05);padding:22px;margin-bottom:25px;opacity:0;position:relative;transition:border-color .5s,box-shadow .5s}
-.magic-box:focus-within{border-color:rgba(212,160,255,0.15);box-shadow:0 0 40px rgba(212,160,255,0.03)}
-.magic-box textarea{width:100%;background:transparent;border:none;outline:none;color:#f0e6ff;font-family:'Inter',sans-serif;font-size:16px;font-weight:200;resize:none;min-height:55px;line-height:1.6}
-.magic-box textarea::placeholder{color:rgba(240,230,255,0.05)}
-.magic-row{display:flex;gap:12px;align-items:center;margin-top:10px}
-.magic-btn{padding:10px 18px;border:1px dashed rgba(212,160,255,0.1);color:rgba(212,160,255,0.25);font-size:8px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .4s;background:transparent;font-family:'Inter',sans-serif;backdrop-filter:blur(5px)}
-.magic-btn:hover{border-color:rgba(212,160,255,0.2);color:rgba(212,160,255,0.5)}
-.gen-btn{flex:1;padding:12px 28px;border:1px solid #d4a0ff;color:#d4a0ff;font-size:9px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .5s;font-family:'Inter',sans-serif;position:relative;overflow:hidden}
-.gen-btn:hover{background:rgba(212,160,255,0.08);box-shadow:0 0 30px rgba(212,160,255,0.05)}
-.preview-box{display:none;align-items:center;gap:12px;margin-top:10px;padding:10px;border:1px solid rgba(212,160,255,0.08);background:rgba(212,160,255,0.02)}
-.preview-box img{width:45px;height:45px;object-fit:cover;border-radius:50%;border:1px solid rgba(212,160,255,0.15);box-shadow:0 0 15px rgba(212,160,255,0.05)}
-.preview-box .info{flex:1;font-size:9px;color:rgba(240,230,255,0.25);line-height:1.6}
-.preview-box .info strong{color:#d4a0ff}
-.preview-box .rm{color:rgba(212,160,255,0.2);cursor:pointer;font-size:13px}
-
-.scroll-hint{position:absolute;bottom:25px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:rgba(212,160,255,0.1);opacity:0}
-.magic-line{width:1px;height:35px;background:linear-gradient(to bottom,#d4a0ff,transparent);margin:6px auto 0;animation:fairyPulse 3.5s infinite}
-@keyframes fairyPulse{0%{opacity:.1;transform:scaleY(.2);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.1;transform:scaleY(.2);transform-origin:bottom}}
-
-/* Services */
-.services{padding:100px 60px;max-width:1200px;margin:0 auto}
-.services h2{font-family:'Playfair Display',serif;font-size:clamp(26px,3vw,40px);font-weight:400;text-align:center;margin-bottom:8px;opacity:0;color:#f0e6ff}
-.services .s-sub{font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(212,160,255,0.2);text-align:center;margin-bottom:50px;opacity:0}
-.s-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(212,160,255,0.02)}
-.s-item{padding:45px 30px;background:rgba(20,10,30,0.3);border:1px solid rgba(212,160,255,0.02);transition:all .6s;opacity:0;transform:translateY(15px)}
-.s-item:hover{border-color:rgba(212,160,255,0.06);background:rgba(212,160,255,0.01);box-shadow:0 0 30px rgba(212,160,255,0.02)}
-.s-item .icon{font-size:22px;margin-bottom:12px;color:#d4a0ff;opacity:.4}
-.s-item h3{font-size:12px;font-weight:400;letter-spacing:.15em;margin-bottom:6px;color:#f0e6ff}
-.s-item p{font-size:9px;color:rgba(240,230,255,0.15);line-height:1.7}
-
-/* AI Stats */
-.ai-showcase{padding:80px 60px;text-align:center}
-.ai-showcase h2{font-family:'Playfair Display',serif;font-size:clamp(22px,2.5vw,34px);font-weight:400;margin-bottom:35px;opacity:0}
-.ai-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:850px;margin:0 auto}
-.ai-card{background:rgba(20,10,30,0.2);border:1px solid rgba(212,160,255,0.03);padding:25px 15px;opacity:0;transform:translateY(10px)}
-.ai-card .num{font-family:'Playfair Display',serif;font-size:26px;color:#d4a0ff;margin-bottom:4px;text-shadow:0 0 20px rgba(212,160,255,0.2)}
-.ai-card .lbl{font-size:7px;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,230,255,0.15)}
-.ai-card .desc{font-size:7px;color:rgba(240,230,255,0.08);margin-top:4px}
-
-/* Pricing */
-.pricing{padding:80px 60px;max-width:950px;margin:0 auto;text-align:center}
-.pricing h2{font-family:'Playfair Display',serif;font-size:clamp(22px,2.5vw,34px);margin-bottom:35px;opacity:0}
-.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.p-card{background:rgba(20,10,30,0.2);border:1px solid rgba(212,160,255,0.03);padding:30px 20px;transition:all .5s;opacity:0;transform:translateY(12px)}
-.p-card:hover{border-color:rgba(212,160,255,0.08)}
-.p-card.feat{border-color:rgba(212,160,255,0.08);background:rgba(212,160,255,0.02)}
-.p-card .pl{font-size:7px;letter-spacing:.35em;text-transform:uppercase;color:rgba(212,160,255,0.2);margin-bottom:6px}
-.p-card .pr{font-family:'Playfair Display',serif;font-size:36px;color:#f0e6ff}
-.p-card .pr small{font-size:11px;font-family:'Inter';color:rgba(240,230,255,0.1)}
-.p-card .pd{font-size:8px;color:rgba(240,230,255,0.12);margin:12px 0 20px;line-height:1.7}
-.p-card .pb{display:inline-block;padding:10px 24px;border:1px solid #d4a0ff;color:#d4a0ff;font-size:7px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .4s;text-decoration:none;font-family:'Inter',sans-serif}
-.p-card .pb:hover{background:rgba(212,160,255,0.08);box-shadow:0 0 25px rgba(212,160,255,0.04)}
-
-/* Chat */
-.chat-btn{position:fixed;bottom:25px;right:25px;z-index:200;width:42px;height:42px;border-radius:50%;border:1px solid rgba(212,160,255,0.1);background:rgba(10,5,18,0.85);backdrop-filter:blur(15px);color:#d4a0ff;font-size:15px;cursor:pointer;transition:all .4s;display:flex;align-items:center;justify-content:center}
-.chat-btn:hover{background:rgba(212,160,255,0.1);box-shadow:0 0 25px rgba(212,160,255,0.05)}
-.chat-box{position:fixed;bottom:75px;right:25px;z-index:199;width:280px;max-height:350px;background:rgba(8,4,15,0.96);backdrop-filter:blur(20px);border:1px solid rgba(212,160,255,0.04);display:none;flex-direction:column}
-.chat-box.open{display:flex}
-.chat-hdr{padding:10px 12px;border-bottom:1px solid rgba(212,160,255,0.03);font-size:7px;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,160,255,0.2);display:flex;justify-content:space-between}
-.chat-hdr span{cursor:pointer;color:rgba(240,230,255,0.08)}
-.chat-msgs{padding:10px;overflow-y:auto;flex:1;max-height:240px;display:flex;flex-direction:column;gap:5px;font-size:10px;font-weight:200}
-.chat-msgs .m{max-width:90%;padding:7px 10px;line-height:1.5;border-radius:2px}
-.chat-msgs .bot{background:rgba(212,160,255,0.03);border:1px solid rgba(212,160,255,0.04);align-self:flex-start;color:rgba(240,230,255,0.4)}
-.chat-msgs .usr{background:rgba(255,255,255,0.02);border:1px solid rgba(212,160,255,0.05);align-self:flex-end;color:#f0e6ff}
-.chat-inp{display:flex;border-top:1px solid rgba(212,160,255,0.03)}
-.chat-inp input{flex:1;background:transparent;border:none;outline:none;color:#f0e6ff;font-family:'Inter',sans-serif;font-size:10px;font-weight:200;padding:8px 10px}
-.chat-inp button{background:transparent;border:none;color:#d4a0ff;padding:8px 12px;cursor:pointer;font-size:7px;letter-spacing:.1em;text-transform:uppercase;font-family:'Inter',sans-serif}
-
-footer{padding:15px 60px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.03);border-top:1px solid rgba(212,160,255,0.01);position:relative;z-index:4}
-
-@media(max-width:768px){
-  .s-grid,.p-grid{grid-template-columns:1fr}
-  .ai-grid{grid-template-columns:repeat(2,1fr)}
-  .hero h1{font-size:clamp(28px,8vw,42px)}
-  .services,.pricing{padding:50px 25px}
-  nav{padding:15px 25px}
-  nav .nav-links{display:none}
-}
+body{background:#050510;color:#f0e6ff;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:crosshair}
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+.overlay{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px;text-align:center;pointer-events:none}
+.overlay>*{pointer-events:auto}
+.badge{font-size:8px;letter-spacing:.5em;text-transform:uppercase;color:rgba(212,175,55,0.2);margin-bottom:15px;opacity:0}
+h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(36px,6vw,72px);font-weight:400;background:linear-gradient(180deg,#f0e6ff 0%,rgba(212,175,55,0.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;opacity:0;transform:translateY(30px)}
+h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#ffcc00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:clamp(13px,1.5vw,18px);font-weight:200;color:rgba(240,230,255,0.15);margin-bottom:30px;opacity:0;transform:translateY(15px);letter-spacing:.05em}
+.cta{padding:14px 40px;border:1px solid #d4af37;color:#d4af37;font-size:9px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .5s;text-decoration:none;opacity:0;font-family:'Inter',sans-serif}
+.cta:hover{background:#d4af37;color:#050510}
+.scroll-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:rgba(212,175,55,0.1);opacity:0}
+.gld-line{width:1px;height:30px;background:linear-gradient(to bottom,#d4af37,transparent);margin:6px auto 0;animation:br 3s infinite}
+@keyframes br{0%{opacity:.2;transform:scaleY(.3);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.2;transform:scaleY(.3);transform-origin:bottom}}
+footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.03);border-top:1px solid rgba(212,175,55,0.01);position:relative;z-index:1}
+@media(max-width:768px){h1{font-size:clamp(24px,8vw,36px)}.overlay{padding:30px}}
 </style>
 </head>
 <body>
-
-<canvas id="bgCanvas"></canvas>
-<canvas id="fgCanvas"></canvas>
-<div class="fairy-mist"></div>
-<div class="sparkle-overlay"></div>
-
-<nav>
-  <div class="brand">✦ Aesthetic <em>Studio</em></div>
-  <div class="nav-links"><a href="#">Realms</a><a href="#">Magic</a><a href="#">Portals</a><a href="#">Contact</a></div>
-</nav>
-
-<div class="content">
-<section class="hero">
-  <div class="badge" id="badge">✦ Hypnotic Fantasy Engine</div>
-  <h1 id="h1">Betreten Sie <em>andere Welten</em></h1>
-  <div class="sub" id="sub">Scroll-getriggerte 3D Träume. <br>Jede Marke wird zur Legende.</div>
-  <div class="magic-box" id="magicBox">
-    <textarea id="promptInput" placeholder="Describe your fantasy... 'A golden elixir floating through a nebula of fairy lights...'"></textarea>
-    <div class="magic-row">
-      <button class="magic-btn" id="uploadBtn">✦ Bild</button>
-      <input type="file" id="fileInput" accept="image/*" hidden>
-      <button class="gen-btn" id="genBtn">✦ Erschaffen →</button>
-    </div>
-    <div class="preview-box" id="previewBox">
-      <img id="previewImg" alt="">
-      <div class="info" id="uploadInfo">Lade...</div>
-      <span class="rm" id="uploadRemove">✕</span>
-    </div>
-  </div>
-  <div class="scroll-hint" id="sHint"><span>Scroll</span><div class="magic-line"></div></div>
-</section>
-
-<section class="services" id="services">
-  <h2 id="sTitle">Magische Dimensionen</h2>
-  <div class="s-sub" id="sSub">Each realm is a hypnotic journey</div>
-  <div class="s-grid">
-    <div class="s-item"><div class="icon">🧚</div><h3>Fairy Realms</h3><p>Schwebende Lichter, irisierende Partikel, sanfte Träume. Für zarte Marken.</p></div>
-    <div class="s-item"><div class="icon">🐉</div><h3>Mythic Lands</h3><p>Epische Welten, goldene Drachen, uralte Magie. Für kraftvolle Marken.</p></div>
-    <div class="s-item"><div class="icon">🌌</div><h3>Cosmic Dreams</h3><p>Nebelgalaxien, Sternenstaub, unendliche Tiefe. Für visionäre Marken.</p></div>
-    <div class="s-item"><div class="icon">💎</div><h3>Crystal Caves</h3><p>Leuchtende Kristalle, Lichtbrechungen, prismatische Farben. Für luxuriöse Marken.</p></div>
-    <div class="s-item"><div class="icon">🌿</div><h3>Enchanted Forest</h3><p>Glühende Pflanzen, sanfte Winde, uralte Bäume. Für organische Marken.</p></div>
-    <div class="s-item"><div class="icon">🎭</div><h3>Dream Theatre</h3><p>Multidimensionale Bühnen, hypnotische Choreografien. Für Performances.</p></div>
-  </div>
-</section>
-
-<section class="ai-showcase">
-  <h2 id="aiTitle">AI Fantasy Engine</h2>
-  <div class="ai-grid">
-    <div class="ai-card"><div class="num">✦</div><div class="lbl">Realms</div><div class="desc">12 magische Welten</div></div>
-    <div class="ai-card"><div class="num">∞</div><div class="lbl">Träume</div><div class="desc">Grenzenlose Kreation</div></div>
-    <div class="ai-card"><div class="num">🎵</div><div class="lbl">Hypno Sound</div><div class="desc">Theta/Alpha Wellen</div></div>
-    <div class="ai-card"><div class="num">🌙</div><div class="lbl">Trance</div><div class="desc">Scroll-Hypnose</div></div>
-  </div>
-</section>
-
-<section class="pricing" id="pricing">
-  <h2 id="pTitle">Portal Öffnungen</h2>
-  <div class="p-grid">
-    <div class="p-card"><div class="pl">Dream Portal</div><div class="pr">€299</div><div class="pd">1 Traumwelt. 24h. Live Link.</div><a class="pb" href="#">Öffnen →</a></div>
-    <div class="p-card feat"><div class="pl">Fantasy Realm</div><div class="pr">€999</div><div class="pd">Custom Realm. Sound. 3 Varianten.</div><a class="pb" href="#">Öffnen →</a></div>
-    <div class="p-card"><div class="pl">Legendary Saga</div><div class="pr">€3.000+</div><div class="pd">Multidimensionale Kampagne.</div><a class="pb" href="#">Öffnen →</a></div>
-  </div>
-</section>
-
-<footer><span>© 2026 Aesthetic Studio — Fantasy Division</span><span>✦ Hypnotic 3D · AI · ∞</span></footer>
+<canvas id="c"></canvas>
+<div class="overlay">
+  <div class="badge" id="badge">✦ Ilayda Dede ✦</div>
+  <h1 id="h1">Ready to work with<br><em>Ilayda Dede?</em></h1>
+  <div class="sub" id="sub">Welcome to the cosmic creative universe.<br>Scroll to explore endless possibilities.</div>
+  <a class="cta" id="ctaBtn" href="mailto:hi@aesthetic.studio">✦ Let's Begin</a>
+  <div class="scroll-hint" id="sHint"><span>Scroll</span><div class="gld-line"></div></div>
 </div>
-
-<button class="chat-btn" id="chatBtn">🧚</button>
-<div class="chat-box" id="chatBox">
-  <div class="chat-hdr"><span>✦ Fairy Oracle</span><span id="chatClose">✕</span></div>
-  <div class="chat-msgs" id="chatMsgs"><div class="m bot">Willkommen, Träumer. Ich bin Ihre Feen-Orakel. Fragen Sie mich zu den Reichen, Preisen oder der Magie.</div></div>
-  <div class="chat-inp"><input id="chatInput" placeholder="Frage..."><button id="chatSend">→</button></div>
-</div>
+<footer><span>© 2026 Aesthetic Studio</span><span>✦ Ilayda Dede ✦</span></footer>
 
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
-// === MOTION ONE (Framer Motion standalone) ===
-const {animate: mAni, scroll: mScroll, inView: mView} = window.Motion || {};
+const c=document.getElementById('c'),r=new THREE.WebGLRenderer({canvas:c,antialias:true,alpha:true});
+r.setSize(window.innerWidth,window.innerHeight);r.setPixelRatio(Math.min(window.devicePixelRatio,2));
+const S=new THREE.Scene(),M=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,1000);
+M.position.z=40;
 
-// === COSMIC BACKGROUND ===
-const bC=document.getElementById('bgCanvas'),bR=new THREE.WebGLRenderer({canvas:bC,antialias:true,alpha:true});
-bR.setSize(window.innerWidth,window.innerHeight);bR.setPixelRatio(Math.min(window.devicePixelRatio,2));
-const bS=new THREE.Scene(),bM=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,1000);
-bM.position.z=35;
-const STAR_C=4000,sG=new THREE.BufferGeometry(),sP=new Float32Array(STAR_C*3);
-for(let i=0;i<STAR_C*3;i+=3){const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=20+Math.random()*40;sP[i]=r*Math.sin(p)*Math.cos(t);sP[i+1]=r*Math.sin(p)*Math.sin(t);sP[i+2]=r*Math.cos(p);}
+// ===== STARS =====
+const sC=6000,sG=new THREE.BufferGeometry(),sP=new Float32Array(sC*3),sS=new Float32Array(sC);
+for(let i=0;i<sC*3;i+=3){const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=20+Math.random()*60;sP[i]=r*Math.sin(p)*Math.cos(t);sP[i+1]=r*Math.sin(p)*Math.sin(t);sP[i+2]=r*Math.cos(p);sS[i/3]=0.05+Math.random()*0.3;}
 sG.setAttribute('position',new THREE.BufferAttribute(sP,3));
-const sM=new THREE.PointsMaterial({size:0.06,color:0xd4a0ff,transparent:true,opacity:0.6,blending:THREE.AdditiveBlending});
-const sF=new THREE.Points(sG,sM);bS.add(sF);
-// Fairy dust
-const fC=2500,fG=new THREE.BufferGeometry(),fP=new Float32Array(fC*3),fS=new Float32Array(fC);
-for(let i=0;i<fC*3;i+=3){const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=5+Math.random()*25;fP[i]=r*Math.sin(p)*Math.cos(t);fP[i+1]=r*Math.sin(p)*Math.sin(t);fP[i+2]=r*Math.cos(p);fS[i/3]=0.1+Math.random()*0.3;}
-fG.setAttribute('position',new THREE.BufferAttribute(fP,3));
-const fM=new THREE.PointsMaterial({size:0.12,color:0xffd0ff,transparent:true,opacity:0.15,blending:THREE.AdditiveBlending});
-const fF=new THREE.Points(fG,fM);bS.add(fF);
+const sM=new THREE.PointsMaterial({size:0.08,color:0xf0e6ff,transparent:true,opacity:0.6,blending:THREE.AdditiveBlending});
+const stars=new THREE.Points(sG,sM);S.add(stars);
 
-// === FG PARTICLE SPHERE ===
-const fCv=document.getElementById('fgCanvas'),fR=new THREE.WebGLRenderer({canvas:fCv,antialias:true,alpha:true});
-fR.setSize(window.innerWidth,window.innerHeight);fR.setPixelRatio(Math.min(window.devicePixelRatio,2));fR.setClearColor(0x000000,0);
-const fS2=new THREE.Scene(),fM2=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,100);
-fM2.position.z=5;
-const CNT=30000,G=new THREE.BufferGeometry(),P=new Float32Array(CNT*3),O=new Float32Array(CNT*3),T2=new Float32Array(CNT*3);
-for(let i=0;i<CNT*3;i+=3){const u=Math.random(),v=Math.random(),theta=u*2*Math.PI,phi=Math.acos(2*v-1),rad=1.5+Math.random()*0.5;const x=rad*Math.sin(phi)*Math.cos(theta),y=rad*Math.sin(phi)*Math.sin(theta),z=rad*Math.cos(phi);O[i]=x;O[i+1]=y;O[i+2]=z;T2[i]=(Math.random()-0.5)*18;T2[i+1]=(Math.random()-0.5)*18;T2[i+2]=(Math.random()-0.5)*18;P[i]=T2[i];P[i+1]=T2[i+1];P[i+2]=T2[i+2];}
-G.setAttribute('position',new THREE.BufferAttribute(P,3));
-const MAT=new THREE.PointsMaterial({size:0.012,color:0xd4a0ff,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending});
-const PT=new THREE.Points(G,MAT);fS2.add(PT);
-const IN={p:0};gsap.to(IN,{p:1,duration:3,ease:'power3.inOut',delay:0.5});
-const SP={p:0};gsap.to(SP,{p:1,ease:'none',scrollTrigger:{trigger:'body',start:'top top',end:'bottom bottom',scrub:1.5}});
+// ===== SHOOTING STARS =====
+const shC=20,shG=new THREE.BufferGeometry(),shP=new Float32Array(shC*3),shV=[];
+for(let i=0;i<shC;i++){shP[i*3]=(Math.random()-0.5)*80;shP[i*3+1]=(Math.random()-0.5)*80;shP[i*3+2]=(Math.random()-0.5)*80-10;shV.push({x:(Math.random()-0.5)*0.5,y:(Math.random()-0.5)*0.5,z:Math.random()*0.3+0.1});}
+shG.setAttribute('position',new THREE.BufferAttribute(shP,3));
+const shM=new THREE.PointsMaterial({size:0.15,color:0xffd700,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending});
+const shooters=new THREE.Points(shG,shM);S.add(shooters);
 
-// === GSAP + MOTION ONE COMBO ===
+// ===== ROCKETS =====
+function makeRocket(x,y,z){
+  const g=new THREE.Group();
+  // Body
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.6,8),new THREE.MeshBasicMaterial({color:0xd4af37}));
+  body.rotation.x=Math.PI/2;g.add(body);
+  // Nose
+  const nose=new THREE.Mesh(new THREE.ConeGeometry(0.15,0.2,8),new THREE.MeshBasicMaterial({color:0xff6b9d}));
+  nose.position.x=0.35;nose.rotation.z=-Math.PI/2;g.add(nose);
+  // Fins
+  for(let i=0;i<3;i++){const f=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.08,0.15,4),new THREE.MeshBasicMaterial({color:0xffd700}));f.rotation.x=Math.PI/2;f.position.set(-0.25,0.08*Math.sin(i*2.1),0.08*Math.cos(i*2.1));g.add(f);}
+  g.position.set(x,y,z);return g;
+}
+const rockets=[];
+for(let i=0;i<8;i++){
+  const r=makeRocket((Math.random()-0.5)*50,(Math.random()-0.5)*40,(Math.random()-0.5)*30-5);
+  rockets.push({obj:r,spd:0.02+Math.random()*0.04,rot:Math.random()*0.02});S.add(r);
+}
+
+// ===== CHASING PIXELS =====
+const pC=500,pG=new THREE.BufferGeometry(),pPos=new Float32Array(pC*3),pVel=[],pCol=[];
+for(let i=0;i<pC;i++){
+  pPos[i*3]=(Math.random()-0.5)*40;pPos[i*3+1]=(Math.random()-0.5)*40;pPos[i*3+2]=(Math.random()-0.5)*20;
+  pVel.push({x:(Math.random()-0.5)*0.1,y:(Math.random()-0.5)*0.1});
+  pCol.push(new THREE.Color().setHSL(Math.random(),0.8,0.6));
+}
+pG.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+const pMat=new THREE.PointsMaterial({size:0.12,vertexColors:true,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending});
+const pixels=new THREE.Points(pG,pMat);S.add(pixels);
+
+// ===== FLOATING DRINKS (pixel art) =====
+const dC=30,dG=new THREE.BufferGeometry(),dPos=new Float32Array(dC*3),dCol=new Float32Array(dC*3),dS=new Float32Array(dC);
+for(let i=0;i<dC;i++){
+  dPos[i*3]=(Math.random()-0.5)*40;dPos[i*3+1]=(Math.random()-0.5)*30;dPos[i*3+2]=(Math.random()-0.5)*20-5;
+  const c=new THREE.Color().setHSL(0.05+Math.random()*0.1,0.8,0.5+Math.random()*0.3);
+  dCol[i*3]=c.r;dCol[i*3+1]=c.g;dCol[i*3+2]=c.b;dS[i]=0.2+Math.random()*0.3;
+}
+dG.setAttribute('position',new THREE.BufferAttribute(dPos,3));
+dG.setAttribute('color',new THREE.BufferAttribute(dCol,3));
+dG.setAttribute('size',new THREE.BufferAttribute(dS,1));
+const dMat=new THREE.PointsMaterial({size:0.2,vertexColors:true,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending});
+const drinks=new THREE.Points(dG,dMat);S.add(drinks);
+
+// ===== FASHION/ANIMAL PIXELS =====
+const aC=200,aG=new THREE.BufferGeometry(),aPos=new Float32Array(aC*3),aCol=new Float32Array(aC*3);
+for(let i=0;i<aC;i++){
+  aPos[i*3]=(Math.random()-0.5)*35;aPos[i*3+1]=(Math.random()-0.5)*35;aPos[i*3+2]=(Math.random()-0.5)*15;
+  const c=new THREE.Color().setHSL(0.6+Math.random()*0.2,0.7,0.5+Math.random()*0.3);
+  aCol[i*3]=c.r;aCol[i*3+1]=c.g;aCol[i*3+2]=c.b;
+}
+aG.setAttribute('position',new THREE.BufferAttribute(aPos,3));
+aG.setAttribute('color',new THREE.BufferAttribute(aCol,3));
+const aMat=new THREE.PointsMaterial({size:0.15,vertexColors:true,transparent:true,opacity:0.6,blending:THREE.AdditiveBlending});
+const animals=new THREE.Points(aG,aMat);S.add(animals);
+
+// ===== PIXEL DRINKS FLOWERS =====
+const fC=400,fG=new THREE.BufferGeometry(),fPos=new Float32Array(fC*3);
+for(let i=0;i<fC*3;i+=3){const r=5+Math.random()*15,a=Math.random()*Math.PI*2;fPos[i]=Math.cos(a)*r;fPos[i+1]=Math.sin(a)*r*0.6;fPos[i+2]=(Math.random()-0.5)*10;}
+fG.setAttribute('position',new THREE.BufferAttribute(fPos,3));
+const fMat=new THREE.PointsMaterial({size:0.08,color:0xffd700,transparent:true,opacity:0.3,blending:THREE.AdditiveBlending});
+const flowers=new THREE.Points(fG,fMat);S.add(flowers);
+
+// ===== NEBULA =====
+const nC=3000,nG=new THREE.BufferGeometry(),nP=new Float32Array(nC*3),nCol=new Float32Array(nC*3);
+for(let i=0;i<nC;i++){
+  const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=10+Math.random()*25;
+  nP[i*3]=r*Math.sin(p)*Math.cos(t);nP[i*3+1]=r*Math.sin(p)*Math.sin(t);nP[i*3+2]=r*Math.cos(p)-5;
+  const c=new THREE.Color().setHSL(0.75+Math.random()*0.15,0.6,0.1+Math.random()*0.15);
+  nCol[i*3]=c.r;nCol[i*3+1]=c.g;nCol[i*3+2]=c.b;
+}
+nG.setAttribute('position',new THREE.BufferAttribute(nP,3));nG.setAttribute('color',new THREE.BufferAttribute(nCol,3));
+const nMat=new THREE.PointsMaterial({size:0.2,vertexColors:true,transparent:true,opacity:0.12,blending:THREE.AdditiveBlending});
+const nebula=new THREE.Points(nG,nMat);S.add(nebula);
+
+// ===== GSAP =====
 gsap.to('#badge',{opacity:1,duration:1.2,delay:0.3});
 gsap.to('#h1',{opacity:1,y:0,duration:1.8,ease:'power4.out',delay:0.6});
 gsap.to('#sub',{opacity:1,y:0,duration:1.5,ease:'power3.out',delay:1.0});
-gsap.to('#magicBox',{opacity:1,y:0,duration:1.5,ease:'power3.out',delay:1.4});
+gsap.to('#ctaBtn',{opacity:1,duration:1.2,delay:1.4});
 gsap.to('#sHint',{opacity:1,duration:1.5,delay:2.0});
 
-// Motion One scroll animations
-if(mAni){
-  mAni('.s-item',{opacity:1,y:0},{duration:0.8,easing:'ease-out'});
-  mAni('.p-card',{opacity:1,y:0},{duration:0.8,easing:'ease-out'});
-  mAni('.ai-card',{opacity:1,y:0},{duration:0.6,easing:'ease-out'});
+const SP={p:0};
+gsap.to(SP,{p:1,ease:'none',scrollTrigger:{trigger:'body',start:'top top',end:'bottom bottom',scrub:1.5}});
+
+// ===== MOUSE =====
+const MX={x:0,y:0};
+gsap.quickTo(MX,'x',{duration:0.6,ease:'power3.out'});
+gsap.quickTo(MX,'y',{duration:0.6,ease:'power3.out'});
+window.addEventListener('mousemove',e=>{MX.x=(e.clientX/w.innerWidth)*2-1;MX.y=-(e.clientY/w.innerHeight)*2+1;});
+
+let CLK=new THREE.Clock();
+function tick(){
+  const t=CLK.getElapsedTime();
+  
+  // Space rotation
+  stars.rotation.y=t*0.005;stars.rotation.x=t*0.002;
+  nebula.rotation.y=t*0.003;flowers.rotation.y=t*0.008;flowers.rotation.x=t*0.005;
+  
+  // Rockets
+  rockets.forEach((r,i)=>{
+    r.obj.position.x+=Math.sin(t*r.spd*2+i)*0.03;
+    r.obj.position.y+=Math.cos(t*r.spd*1.5+i)*0.03;
+    r.obj.position.z+=Math.sin(t*r.spd+i)*0.02;
+    r.obj.rotation.y+=r.rot;
+    r.obj.rotation.x+=Math.sin(t*0.5+i)*0.01;
+  });
+  
+  // Shooting stars
+  const sh=shG.attributes.position.array;
+  for(let i=0;i<shC;i++){
+    sh[i*3]+=shV[i].x;sh[i*3+1]+=shV[i].y;sh[i*3+2]+=shV[i].z;
+    if(sh[i*3]>40||sh[i*3]<-40||sh[i*3+1]>40||sh[i*3+1]<-40){sh[i*3]=(Math.random()-0.5)*80;sh[i*3+1]=(Math.random()-0.5)*80;sh[i*3+2]=(Math.random()-0.5)*80-10;}
+  }
+  shG.attributes.position.needsUpdate=true;
+  
+  // Chasing pixels
+  const pp=pG.attributes.position.array;
+  for(let i=0;i<pC;i++){
+    const target=i>0?i-1:(pC-1);
+    pp[i*3]+=(pp[target*3]-pp[i*3])*0.003+pVel[i].x;
+    pp[i*3+1]+=(pp[target*3+1]-pp[i*3+1])*0.003+pVel[i].y;
+    pp[i*3+2]+=Math.sin(t*0.3+i)*0.01;
+    if(Math.abs(pp[i*3])>20){pVel[i].x*=-1;}
+    if(Math.abs(pp[i*3+1])>20){pVel[i].y*=-1;}
+  }
+  pG.attributes.position.needsUpdate=true;
+  
+  // Floating drinks
+  const dp=dG.attributes.position.array;
+  for(let i=0;i<dC;i++){
+    dp[i*3]+=Math.sin(t*0.5+i)*0.008;
+    dp[i*3+1]+=Math.cos(t*0.7+i*1.3)*0.008;
+    dp[i*3+2]+=Math.sin(t*0.3+i*0.7)*0.005;
+  }
+  dG.attributes.position.needsUpdate=true;
+  
+  // Animals
+  const ap=aG.attributes.position.array;
+  for(let i=0;i<aC;i++){
+    ap[i*3]+=Math.sin(t*0.2+i*2)*0.01;
+    ap[i*3+1]+=Math.cos(t*0.3+i*1.5)*0.01;
+    ap[i*3+2]+=Math.sin(t*0.1+i)*0.008;
+  }
+  aG.attributes.position.needsUpdate=true;
+  
+  // Sp = scroll progress
+  const sp=SP.p;
+  M.position.z=THREE.MathUtils.lerp(40,28,sp);
+  M.position.x=MX.x*2;
+  M.position.y=MX.y*2;
+  
+  r.render(S,M);requestAnimationFrame(tick);
 }
-
-gsap.utils.toArray('.s-item').forEach((el,i)=>{gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%',end:'top 60%',scrub:1}})});
-gsap.utils.toArray('.p-card').forEach((el,i)=>{gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%',end:'top 60%',scrub:1}})});
-gsap.utils.toArray('.ai-card').forEach((el,i)=>{gsap.to(el,{opacity:1,y:0,duration:0.8,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%',end:'top 60%',scrub:1}})});
-gsap.to('#sTitle',{opacity:1,y:0,duration:1.2,ease:'power3.out',scrollTrigger:{trigger:'#sTitle',start:'top 85%',end:'top 60%',scrub:1}});
-gsap.to('#sSub',{opacity:1,y:0,duration:1,scrollTrigger:{trigger:'#sSub',start:'top 85%',end:'top 60%',scrub:1}});
-gsap.to('#aiTitle',{opacity:1,y:0,duration:1.2,scrollTrigger:{trigger:'#aiTitle',start:'top 85%',end:'top 60%',scrub:1}});
-gsap.to('#pTitle',{opacity:1,y:0,duration:1.2,scrollTrigger:{trigger:'#pTitle',start:'top 85%',end:'top 60%',scrub:1}});
-
-// === MOUSE ===
-const MX={x:0,y:0},SX=gsap.quickTo(MX,'x',{duration:0.6,ease:'power3.out'}),SY=gsap.quickTo(MX,'y',{duration:0.6,ease:'power3.out'});
-window.addEventListener('mousemove',e=>{SX((e.clientX/w.innerWidth)*2-1);SY(-(e.clientY/w.innerHeight)*2+1)});
-
-// === IMAGE UPLOAD ===
-window.analyzeImage=async function(file){
-  return new Promise(r=>{const rd=new FileReader();rd.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=100;c.height=100;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,100,100);const d=ctx.getImageData(0,0,100,100).data,cm={};for(let i=0;i<d.length;i+=16){const r=Math.round(d[i]/32)*32,g=Math.round(d[i+1]/32)*32,b=Math.round(d[i+2]/32)*32;k=r+','+g+','+b;cm[k]=(cm[k]||0)+1}const sorted=Object.entries(cm).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k])=>{const[r,g,b]=k.split(',').map(Number);return{hex:'#'+[r,g,b].map(c=>c.toString(16).padStart(2,'0')).join('')}});const bright=sorted.reduce((s,c)=>s+(parseInt(c.hex.slice(1,3),16)+parseInt(c.hex.slice(3,5),16)+parseInt(c.hex.slice(5,7),16))/3,0)/sorted.length;r({colors:sorted.map(c=>c.hex),mood:bright>150?'bright':bright>80?'balanced':'dark',primary:sorted[0]?.hex||'#d4a0ff',secondary:sorted[1]?.hex||'#f0e6ff'})};img.src=e.target.result};rd.readAsDataURL(file)})};
-document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('fileInput').click());
-document.getElementById('fileInput').addEventListener('change',async(e)=>{const f=e.target.files[0];if(!f)return;const p=document.getElementById('previewBox'),i=document.getElementById('previewImg'),u=document.getElementById('uploadInfo');p.style.display='flex';i.src=URL.createObjectURL(f);u.innerHTML='🔮 Analyzing...';const a=await window.analyzeImage(f);u.innerHTML='<strong>'+a.primary+'</strong> · '+a.mood;MAT.color.setStyle(a.primary)});
-document.getElementById('uploadRemove').addEventListener('click',()=>{document.getElementById('previewBox').style.display='none';document.getElementById('fileInput').value=''});
-
-// === STYLE DETECT ===
-const STYLES={fairy:{p:'#d4a0ff',s:'#ffd0ff',n:30000},mythic:{p:'#d4af37',s:'#8800ff',n:35000},cosmic:{p:'#8800ff',s:'#d4a0ff',n:45000},crystal:{p:'#00d9ff',s:'#d4a0ff',n:25000},forest:{p:'#00ff88',s:'#44aa00',n:22000},dark:{p:'#1a007a',s:'#d4a0ff',n:30000}};
-function detect(p){const l=p.toLowerCase();if(l.includes('fairy')||l.includes('light')||l.includes('dream'))return STYLES.fairy;if(l.includes('myth')||l.includes('dragon')||l.includes('epic')||l.includes('gold'))return STYLES.mythic;if(l.includes('cosmic')||l.includes('space')||l.includes('nebula')||l.includes('galaxy'))return STYLES.cosmic;if(l.includes('crystal')||l.includes('prism')||l.includes('diamond'))return STYLES.crystal;if(l.includes('forest')||l.includes('nature')||l.includes('enchanted'))return STYLES.forest;return STYLES.fairy;}
-
-document.getElementById('genBtn').addEventListener('click',()=>{const p=document.getElementById('promptInput').value.trim();if(!p)return;const s=detect(p);MAT.color.setStyle(s.p);gsap.to('#magicBox',{borderColor:'rgba(212,160,255,0.2)',duration:0.3});document.getElementById('genBtn').textContent='✦ Dreaming...';setTimeout(()=>{document.getElementById('genBtn').textContent='✦ Erschaffen →';window.open('prototype-3d.html?style='+encodeURIComponent(p),'_blank')},1500)});
-document.getElementById('promptInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('genBtn').click()}});
-
-// === 3D TICK ===
-let MS=0,LMX=0,LMY=0,CLK=new THREE.Clock();
-function tick(){const t=CLK.getElapsedTime();sF.rotation.y=t*0.006;fF.rotation.y=t*0.004;fF.rotation.x=t*0.002;const ddx=MX.x-LMX,ddy=MX.y-LMY;MS+=(Math.sqrt(ddx*ddx+ddy*ddy)-MS)*0.06;LMX=MX.x;LMY=MX.y;const sp=SP.p;PT.rotation.y=t*0.04+sp*1.5;PT.rotation.x=t*0.015+sp*0.4;const pa=G.attributes.position;for(let i=0;i<CNT;i++){const i3=i*3;const cx=T2[i3]+(O[i3]-T2[i3])*IN.p,cy=T2[i3+1]+(O[i3+1]-T2[i3+1])*IN.p,cz=T2[i3+2]+(O[i3+2]-T2[i3+2])*IN.p;const w=Math.sin(O[i3]*2.5+t*0.9)*0.18*Math.cos(O[i3+1]*2.5+t*0.7)*IN.p;pa.array[i3]=cx+O[i3]*w+MX.x*0.2*IN.p;pa.array[i3+1]=cy+O[i3+1]*w+MX.y*0.2*IN.p;pa.array[i3+2]=cz+O[i3+2]*w}pa.needsUpdate=true;const cX=THREE.MathUtils.lerp(0,1.2,sp)+MX.x*0.25,cY=THREE.MathUtils.lerp(0,0.9,sp)+MX.y*0.25,cZ=THREE.MathUtils.lerp(5,3,sp);fM2.position.x+=(cX-fM2.position.x)*0.04;fM2.position.y+=(cY-fM2.position.y)*0.04;fM2.position.z+=(cZ-fM2.position.z)*0.04;fM2.lookAt(fS2.position);bR.render(bS,bM);fR.render(fS2,fM2);requestAnimationFrame(tick)}
 tick();
-window.addEventListener('resize',()=>{fM2.aspect=window.innerWidth/window.innerHeight;fM2.updateProjectionMatrix();fR.setSize(window.innerWidth,window.innerHeight);bM.aspect=window.innerWidth/window.innerHeight;bM.updateProjectionMatrix();bR.setSize(window.innerWidth,window.innerHeight);bR.setPixelRatio(Math.min(window.devicePixelRatio,2));fR.setPixelRatio(Math.min(window.devicePixelRatio,2));ScrollTrigger.refresh()});
 
-// === CHATBOT SANITIZED ===
-const ca={pricing:'Unsere Portale: Dream €299, Fantasy €999, Saga €3.000+',how:'Sie träumen → wir erschaffen → Sie erhalten eine lebendige 3D Welt.',ai:'Unsere AI Fantasy Engine analysiert Stil, Farben und Stimmung.',hello:'Willkommen, Träumer. Ihre Reise beginnt hier.'};
-const chatBtn=document.getElementById('chatBtn'),chatBox=document.getElementById('chatBox'),chatMsgs=document.getElementById('chatMsgs'),chatInput=document.getElementById('chatInput'),chatSend=document.getElementById('chatSend'),chatClose=document.getElementById('chatClose');
-chatBtn.addEventListener('click',()=>chatBox.classList.toggle('open'));
-chatClose.addEventListener('click',()=>chatBox.classList.remove('open'));
-chatSend.addEventListener('click',()=>{const t=chatInput.value.trim();if(!t)return;const s=t.replace(/</g,'&lt;').replace(/>/g,'&gt;');chatMsgs.innerHTML+='<div class="m usr">'+s+'</div>';chatInput.value='';const l=t.toLowerCase(),ans=Object.entries(ca).find(([k])=>l.includes(k));setTimeout(()=>{chatMsgs.innerHTML+='<div class="m bot">'+(ans?ans[1]:'Die Feen flüstern... Fragen Sie zu Preisen oder Magie.')+'</div>';chatMsgs.scrollTop=chatMsgs.scrollHeight},500);chatMsgs.scrollTop=chatMsgs.scrollHeight});
-chatInput.addEventListener('keydown',e=>{if(e.key==='Enter')chatSend.click()});
+window.addEventListener('resize',()=>{
+  M.aspect=window.innerWidth/window.innerHeight;M.updateProjectionMatrix();
+  r.setSize(window.innerWidth,window.innerHeight);r.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  ScrollTrigger.refresh();
+});
 </script>
 </body>
 </html>
