@@ -26,16 +26,16 @@ body{background:#050510;color:#f0e6ff;font-family:'Inter',sans-serif;overflow-x:
 canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
 .overlay{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px;text-align:center;pointer-events:none}
 .overlay>*{pointer-events:auto}
-.badge{font-size:8px;letter-spacing:.5em;text-transform:uppercase;color:rgba(212,175,55,0.2);margin-bottom:15px;opacity:0}
-h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(36px,6vw,72px);font-weight:400;background:linear-gradient(180deg,#f0e6ff 0%,rgba(212,175,55,0.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;opacity:0;transform:translateY(30px)}
-h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#ffcc00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.badge{font-size:8px;letter-spacing:.5em;text-transform:uppercase;color:rgba(184,169,255,0.2);margin-bottom:15px;opacity:0}
+h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(36px,6vw,72px);font-weight:400;background:linear-gradient(180deg,#f0e6ff 0%,rgba(184,169,255,0.3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;opacity:0;transform:translateY(30px)}
+h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .sub{font-size:clamp(13px,1.5vw,18px);font-weight:200;color:rgba(240,230,255,0.15);margin-bottom:30px;opacity:0;transform:translateY(15px);letter-spacing:.05em}
-.cta{padding:14px 40px;border:1px solid #d4af37;color:#d4af37;font-size:9px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .5s;text-decoration:none;opacity:0;font-family:'Inter',sans-serif}
-.cta:hover{background:#d4af37;color:#050510}
-.scroll-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:rgba(212,175,55,0.1);opacity:0}
-.gld-line{width:1px;height:30px;background:linear-gradient(to bottom,#d4af37,transparent);margin:6px auto 0;animation:br 3s infinite}
+.cta{padding:14px 40px;border:1px solid #b8a9ff;color:#b8a9ff;font-size:9px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .5s;text-decoration:none;opacity:0;font-family:'Inter',sans-serif}
+.cta:hover{background:#b8a9ff;color:#050510}
+.scroll-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:rgba(184,169,255,0.1);opacity:0}
+.gld-line{width:1px;height:30px;background:linear-gradient(to bottom,#b8a9ff,transparent);margin:6px auto 0;animation:br 3s infinite}
 @keyframes br{0%{opacity:.2;transform:scaleY(.3);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.2;transform:scaleY(.3);transform-origin:bottom}}
-footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.03);border-top:1px solid rgba(212,175,55,0.01);position:relative;z-index:1}
+footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.03);border-top:1px solid rgba(184,169,255,0.01);position:relative;z-index:1}
 @media(max-width:768px){h1{font-size:clamp(24px,8vw,36px)}.overlay{padding:30px}}
 </style>
 </head>
@@ -44,12 +44,12 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
 <div class="overlay">
   <div class="badge" id="badge">✦ Aesthetic Studio ✦</div>
   <h1 id="h1">Ready to build<br><em>something unforgettable?</em></h1>
-  <div class="sub" id="sub">Welcome to the cosmic creative universe.<br>Scroll to explore endless possibilities.</div>
+  <div class="sub" id="sub">One prompt. One scroll-triggered 3D ad your audience won't scroll past.</div>
   <a class="cta" id="ctaBtn" href="mailto:hi@aesthetic.studio">✦ Let's Begin</a>
   <a class="cta" id="ctaBtn2" href="platform-index.html" style="margin-top:10px;opacity:0">✦ Explore the Platform</a>
   <div class="scroll-hint" id="sHint"><span>Scroll</span><div class="gld-line"></div></div>
 </div>
-<footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(212,175,55,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Aesthetic Studio ✦</span></footer>
+<footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(184,169,255,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Aesthetic Studio ✦</span></footer>
 
 <script>
 gsap.registerPlugin(ScrollTrigger);
@@ -84,20 +84,20 @@ const stars=new THREE.Points(sG,sM);S.add(stars);
 const shC=Math.floor(20*PERF)||8,shG=new THREE.BufferGeometry(),shP=new Float32Array(shC*3),shV=[];
 for(let i=0;i<shC;i++){shP[i*3]=(Math.random()-0.5)*80;shP[i*3+1]=(Math.random()-0.5)*80;shP[i*3+2]=(Math.random()-0.5)*80-10;shV.push({x:(Math.random()-0.5)*0.5,y:(Math.random()-0.5)*0.5,z:Math.random()*0.3+0.1});}
 shG.setAttribute('position',new THREE.BufferAttribute(shP,3));
-const shM=new THREE.PointsMaterial({size:0.15,map:DOT,color:0xffd700,transparent:true,opacity:0.8,depthWrite:false,blending:THREE.AdditiveBlending});
+const shM=new THREE.PointsMaterial({size:0.15,map:DOT,color:0xb8a9ff,transparent:true,opacity:0.8,depthWrite:false,blending:THREE.AdditiveBlending});
 const shooters=new THREE.Points(shG,shM);S.add(shooters);
 
 // ===== ROCKETS =====
 function makeRocket(x,y,z){
   const g=new THREE.Group();
   // Body
-  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.6,8),new THREE.MeshBasicMaterial({color:0xd4af37}));
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.6,8),new THREE.MeshBasicMaterial({color:0xb8a9ff}));
   body.rotation.x=Math.PI/2;g.add(body);
   // Nose
   const nose=new THREE.Mesh(new THREE.ConeGeometry(0.15,0.2,8),new THREE.MeshBasicMaterial({color:0xff6b9d}));
   nose.position.x=0.35;nose.rotation.z=-Math.PI/2;g.add(nose);
   // Fins
-  for(let i=0;i<3;i++){const f=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.08,0.15,4),new THREE.MeshBasicMaterial({color:0xffd700}));f.rotation.x=Math.PI/2;f.position.set(-0.25,0.08*Math.sin(i*2.1),0.08*Math.cos(i*2.1));g.add(f);}
+  for(let i=0;i<3;i++){const f=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.08,0.15,4),new THREE.MeshBasicMaterial({color:0xb8a9ff}));f.rotation.x=Math.PI/2;f.position.set(-0.25,0.08*Math.sin(i*2.1),0.08*Math.cos(i*2.1));g.add(f);}
   g.position.set(x,y,z);return g;
 }
 const rockets=[];
@@ -146,7 +146,7 @@ const animals=new THREE.Points(aG,aMat);S.add(animals);
 const fC=Math.floor(400*PERF),fG=new THREE.BufferGeometry(),fPos=new Float32Array(fC*3);
 for(let i=0;i<fC*3;i+=3){const r=5+Math.random()*15,a=Math.random()*Math.PI*2;fPos[i]=Math.cos(a)*r;fPos[i+1]=Math.sin(a)*r*0.6;fPos[i+2]=(Math.random()-0.5)*10;}
 fG.setAttribute('position',new THREE.BufferAttribute(fPos,3));
-const fMat=new THREE.PointsMaterial({size:0.08,map:DOT,color:0xffd700,transparent:true,opacity:0.3,depthWrite:false,blending:THREE.AdditiveBlending});
+const fMat=new THREE.PointsMaterial({size:0.08,map:DOT,color:0xb8a9ff,transparent:true,opacity:0.3,depthWrite:false,blending:THREE.AdditiveBlending});
 const flowers=new THREE.Points(fG,fMat);S.add(flowers);
 
 // ===== NEBULA =====
