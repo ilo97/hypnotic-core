@@ -60,18 +60,31 @@ const S=new THREE.Scene(),M=new THREE.PerspectiveCamera(60,window.innerWidth/win
 M.position.z=40;
 const PERF=window.innerWidth<480?0.7:1;
 
+// Soft round sprite texture — WebGL points are square by default, this makes them round
+function makeDotTexture(){
+  const cv=document.createElement('canvas');cv.width=64;cv.height=64;
+  const ctx=cv.getContext('2d');
+  const g=ctx.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,255,255,1)');
+  g.addColorStop(0.4,'rgba(255,255,255,0.6)');
+  g.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,64,64);
+  return new THREE.CanvasTexture(cv);
+}
+const DOT=makeDotTexture();
+
 // ===== STARS =====
 const sC=Math.floor(6000*PERF),sG=new THREE.BufferGeometry(),sP=new Float32Array(sC*3),sS=new Float32Array(sC);
 for(let i=0;i<sC*3;i+=3){const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=20+Math.random()*60;sP[i]=r*Math.sin(p)*Math.cos(t);sP[i+1]=r*Math.sin(p)*Math.sin(t);sP[i+2]=r*Math.cos(p);sS[i/3]=0.05+Math.random()*0.3;}
 sG.setAttribute('position',new THREE.BufferAttribute(sP,3));
-const sM=new THREE.PointsMaterial({size:0.08,color:0xf0e6ff,transparent:true,opacity:0.6,blending:THREE.AdditiveBlending});
+const sM=new THREE.PointsMaterial({size:0.08,map:DOT,color:0xf0e6ff,transparent:true,opacity:0.6,depthWrite:false,blending:THREE.AdditiveBlending});
 const stars=new THREE.Points(sG,sM);S.add(stars);
 
 // ===== SHOOTING STARS =====
 const shC=Math.floor(20*PERF)||8,shG=new THREE.BufferGeometry(),shP=new Float32Array(shC*3),shV=[];
 for(let i=0;i<shC;i++){shP[i*3]=(Math.random()-0.5)*80;shP[i*3+1]=(Math.random()-0.5)*80;shP[i*3+2]=(Math.random()-0.5)*80-10;shV.push({x:(Math.random()-0.5)*0.5,y:(Math.random()-0.5)*0.5,z:Math.random()*0.3+0.1});}
 shG.setAttribute('position',new THREE.BufferAttribute(shP,3));
-const shM=new THREE.PointsMaterial({size:0.15,color:0xffd700,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending});
+const shM=new THREE.PointsMaterial({size:0.15,map:DOT,color:0xffd700,transparent:true,opacity:0.8,depthWrite:false,blending:THREE.AdditiveBlending});
 const shooters=new THREE.Points(shG,shM);S.add(shooters);
 
 // ===== ROCKETS =====
@@ -101,7 +114,7 @@ for(let i=0;i<pC;i++){
   pCol.push(new THREE.Color().setHSL(Math.random(),0.8,0.6));
 }
 pG.setAttribute('position',new THREE.BufferAttribute(pPos,3));
-const pMat=new THREE.PointsMaterial({size:0.12,vertexColors:true,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending});
+const pMat=new THREE.PointsMaterial({size:0.12,map:DOT,vertexColors:true,transparent:true,opacity:0.7,depthWrite:false,blending:THREE.AdditiveBlending});
 const pixels=new THREE.Points(pG,pMat);S.add(pixels);
 
 // ===== FLOATING DRINKS (pixel art) =====
@@ -114,7 +127,7 @@ for(let i=0;i<dC;i++){
 dG.setAttribute('position',new THREE.BufferAttribute(dPos,3));
 dG.setAttribute('color',new THREE.BufferAttribute(dCol,3));
 dG.setAttribute('size',new THREE.BufferAttribute(dS,1));
-const dMat=new THREE.PointsMaterial({size:0.2,vertexColors:true,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending});
+const dMat=new THREE.PointsMaterial({size:0.2,map:DOT,vertexColors:true,transparent:true,opacity:0.5,depthWrite:false,blending:THREE.AdditiveBlending});
 const drinks=new THREE.Points(dG,dMat);S.add(drinks);
 
 // ===== FASHION/ANIMAL PIXELS =====
@@ -126,14 +139,14 @@ for(let i=0;i<aC;i++){
 }
 aG.setAttribute('position',new THREE.BufferAttribute(aPos,3));
 aG.setAttribute('color',new THREE.BufferAttribute(aCol,3));
-const aMat=new THREE.PointsMaterial({size:0.15,vertexColors:true,transparent:true,opacity:0.6,blending:THREE.AdditiveBlending});
+const aMat=new THREE.PointsMaterial({size:0.15,map:DOT,vertexColors:true,transparent:true,opacity:0.6,depthWrite:false,blending:THREE.AdditiveBlending});
 const animals=new THREE.Points(aG,aMat);S.add(animals);
 
 // ===== PIXEL DRINKS FLOWERS =====
 const fC=Math.floor(400*PERF),fG=new THREE.BufferGeometry(),fPos=new Float32Array(fC*3);
 for(let i=0;i<fC*3;i+=3){const r=5+Math.random()*15,a=Math.random()*Math.PI*2;fPos[i]=Math.cos(a)*r;fPos[i+1]=Math.sin(a)*r*0.6;fPos[i+2]=(Math.random()-0.5)*10;}
 fG.setAttribute('position',new THREE.BufferAttribute(fPos,3));
-const fMat=new THREE.PointsMaterial({size:0.08,color:0xffd700,transparent:true,opacity:0.3,blending:THREE.AdditiveBlending});
+const fMat=new THREE.PointsMaterial({size:0.08,map:DOT,color:0xffd700,transparent:true,opacity:0.3,depthWrite:false,blending:THREE.AdditiveBlending});
 const flowers=new THREE.Points(fG,fMat);S.add(flowers);
 
 // ===== NEBULA =====
@@ -145,7 +158,7 @@ for(let i=0;i<nC;i++){
   nCol[i*3]=c.r;nCol[i*3+1]=c.g;nCol[i*3+2]=c.b;
 }
 nG.setAttribute('position',new THREE.BufferAttribute(nP,3));nG.setAttribute('color',new THREE.BufferAttribute(nCol,3));
-const nMat=new THREE.PointsMaterial({size:0.2,vertexColors:true,transparent:true,opacity:0.12,blending:THREE.AdditiveBlending});
+const nMat=new THREE.PointsMaterial({size:0.2,map:DOT,vertexColors:true,transparent:true,opacity:0.12,depthWrite:false,blending:THREE.AdditiveBlending});
 const nebula=new THREE.Points(nG,nMat);S.add(nebula);
 
 // ===== GSAP =====
