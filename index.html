@@ -111,22 +111,71 @@ S.add(new THREE.AmbientLight(0x404060,0.7));
 const sunLight=new THREE.PointLight(0xfff2e0,2.2,300);
 sunLight.position.set(0,0,60);S.add(sunLight);
 
+// Procedural planet surface texture — continents/craters/bands + fine grain,
+// so planets read as real textured worlds instead of flat computer-3D balls.
+function makePlanetTexture(hexColor,{bands=false,spots=10}={}){
+  const w=512,h=256,cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  const ctx=cv.getContext('2d');
+  const base=new THREE.Color(hexColor);
+  ctx.fillStyle=`rgb(${base.r*255|0},${base.g*255|0},${base.b*255|0})`;
+  ctx.fillRect(0,0,w,h);
+
+  if(bands){
+    const bandCount=8+Math.floor(Math.random()*6);
+    for(let i=0;i<bandCount;i++){
+      const y=(i/bandCount)*h,bh=h/bandCount*(0.7+Math.random()*0.6);
+      const c=base.clone().offsetHSL(0,0,(Math.random()-0.5)*0.28);
+      ctx.fillStyle=`rgba(${c.r*255|0},${c.g*255|0},${c.b*255|0},${0.5+Math.random()*0.4})`;
+      ctx.fillRect(0,y,w,bh);
+    }
+  }
+
+  for(let i=0;i<spots*7;i++){
+    const x=Math.random()*w,y=Math.random()*h,rad=4+Math.random()*(bands?60:32);
+    const c=base.clone().offsetHSL((Math.random()-0.5)*0.03,0,(Math.random()-0.5)*0.32);
+    const grad=ctx.createRadialGradient(x,y,0,x,y,rad);
+    grad.addColorStop(0,`rgba(${c.r*255|0},${c.g*255|0},${c.b*255|0},0.55)`);
+    grad.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=grad;ctx.beginPath();ctx.arc(x,y,rad,0,Math.PI*2);ctx.fill();
+  }
+
+  const img=ctx.getImageData(0,0,w,h);
+  for(let i=0;i<img.data.length;i+=4){
+    const n=(Math.random()-0.5)*16;
+    img.data[i]=Math.min(255,Math.max(0,img.data[i]+n));
+    img.data[i+1]=Math.min(255,Math.max(0,img.data[i+1]+n));
+    img.data[i+2]=Math.min(255,Math.max(0,img.data[i+2]+n));
+  }
+  ctx.putImageData(img,0,0);
+
+  const tex=new THREE.CanvasTexture(cv);
+  tex.wrapS=THREE.RepeatWrapping;tex.wrapT=THREE.ClampToEdgeWrapping;
+  return tex;
+}
+
 // ===== PLANETS — all visible together, stationary, spinning in place =====
 const PLANETS=[
-  {name:'Terra Rosa',  color:0xd8623a, size:3.2, x:-11, y:4,  z:-25, ring:false},
-  {name:'Cobalt',      color:0x3a6fd8, size:2.4, x:10,  y:-5, z:-20, ring:false},
-  {name:'Amberion',    color:0xb8823a, size:4.2, x:5,   y:6,  z:-42, ring:true},
-  {name:'Emerald Veil',color:0x2fae7a, size:2.6, x:-7,  y:-7, z:-35, ring:false},
-  {name:'Nebulon',     color:0x8a5ad8, size:3.4, x:12,  y:5,  z:-48, ring:false},
-  {name:'Frost',       color:0x9fd8e8, size:2,   x:-13, y:-3, z:-30, ring:false},
+  {name:'Terra Rosa',  color:0xd8623a, size:3.2, x:-11, y:4,  z:-25, ring:false, bands:false, atmo:0xffb08a},
+  {name:'Cobalt',      color:0x3a6fd8, size:2.4, x:10,  y:-5, z:-20, ring:false, bands:false, atmo:0x9fc4ff},
+  {name:'Amberion',    color:0xb8823a, size:4.2, x:5,   y:6,  z:-42, ring:true,  bands:true,  atmo:null},
+  {name:'Emerald Veil',color:0x2fae7a, size:2.6, x:-7,  y:-7, z:-35, ring:false, bands:false, atmo:0x8affc0},
+  {name:'Nebulon',     color:0x8a5ad8, size:3.4, x:12,  y:5,  z:-48, ring:false, bands:true,  atmo:null},
+  {name:'Frost',       color:0x9fd8e8, size:2,   x:-13, y:-3, z:-30, ring:false, bands:false, atmo:0xd0f0ff},
 ];
 const planetMeshes=PLANETS.map(p=>{
   const g=new THREE.Group();
   const sphere=new THREE.Mesh(
-    new THREE.SphereGeometry(p.size,48,48),
-    new THREE.MeshStandardMaterial({color:p.color,roughness:0.7,metalness:0.15})
+    new THREE.SphereGeometry(p.size,64,64),
+    new THREE.MeshStandardMaterial({map:makePlanetTexture(p.color,{bands:p.bands,spots:p.bands?6:12}),roughness:0.85,metalness:0.05})
   );
   g.add(sphere);
+  if(p.atmo){
+    const atmo=new THREE.Mesh(
+      new THREE.SphereGeometry(p.size*1.1,32,32),
+      new THREE.MeshBasicMaterial({color:p.atmo,transparent:true,opacity:0.18,side:THREE.BackSide,blending:THREE.AdditiveBlending})
+    );
+    g.add(atmo);
+  }
   if(p.ring){
     const ring=new THREE.Mesh(
       new THREE.RingGeometry(p.size*1.4,p.size*2.1,64),
@@ -135,6 +184,7 @@ const planetMeshes=PLANETS.map(p=>{
     ring.rotation.x=Math.PI/2.3;g.add(ring);
   }
   g.position.set(p.x,p.y,p.z);
+  g.rotation.z=(Math.random()-0.5)*0.5;
   S.add(g);
   return {obj:g,spin:0.15+Math.random()*0.25};
 });
