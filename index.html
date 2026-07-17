@@ -266,7 +266,7 @@ const PLANETS=[
     tex:()=>makeRockyTexture(21,[70,32,20],[180,88,48],[235,165,115])},
   {name:'Cobalt',      size:5,   ring:false, atmo:0x9fc4ff, orbitR:30, speed:0.06,  phase:1.2, yAmp:4,
     tex:()=>makeOceanTexture(7,[6,20,55],[50,150,175],[95,115,60],[165,145,100])},
-  {name:'Amberion',    size:9,   ring:true,  atmo:null,     orbitR:40, speed:0.045, phase:2.5, yAmp:3,
+  {name:'Amberion',    size:9,   ring:true,  atmo:null,     orbitR:40, speed:0.045, phase:2.5, yAmp:3, realPhoto:true,
     tex:()=>makeGasGiantTexture(3,[190,140,70])},
   {name:'Emerald Veil',size:5.5, ring:false, atmo:0x8affc0, orbitR:50, speed:0.038, phase:3.7, yAmp:4.5,
     tex:()=>makeOceanTexture(64,[5,35,40],[40,150,140],[60,120,60],[150,175,110])},
@@ -302,18 +302,21 @@ function buildPlanet(p){
   return g;
 }
 
-const planetMeshes=PLANETS.map(p=>({obj:buildPlanet(p),spin:0.1+Math.random()*0.15,orbitR:p.orbitR,speed:p.speed,phase:p.phase,yAmp:p.yAmp}));
+const planetMeshes=PLANETS.map(p=>{
+  if(p.realPhoto)return {obj:null,spin:0,orbitR:p.orbitR,speed:p.speed,phase:p.phase,yAmp:p.yAmp,pending:true};
+  return {obj:buildPlanet(p),spin:0.1+Math.random()*0.15,orbitR:p.orbitR,speed:p.speed,phase:p.phase,yAmp:p.yAmp};
+});
 const heroObj=buildPlanet(HERO_PLANET);heroObj.visible=false; // kept as instant fallback while photo loads
 const heroPlanet={obj:heroObj,spin:0.08};
 
-// ===== REAL PHOTO HERO PLANET — actual uploaded photograph, not procedural =====
-// Loaded as a soft-edged camera-facing sprite so it always reads correctly
+// ===== REAL PHOTO SPRITES — actual uploaded photographs, not procedural =====
+// Loaded as soft-edged camera-facing sprites so they always read correctly
 // (a photo doesn't wrap onto a sphere like a UV-mapped texture would).
-const realSpriteMat=new THREE.SpriteMaterial({map:null,transparent:true,depthWrite:false,opacity:0});
-const realHero=new THREE.Sprite(realSpriteMat);
-realHero.scale.set(34,14.3,1);
-S.add(realHero);
-(function loadRealPhotoSprite(url,onReady){
+function loadRealPhotoSprite(url,widthUnits,heightUnits,onReady,onError){
+  const mat=new THREE.SpriteMaterial({map:null,transparent:true,depthWrite:false,opacity:0});
+  const sprite=new THREE.Sprite(mat);
+  sprite.scale.set(widthUnits,heightUnits,1);
+  S.add(sprite);
   const img=new Image();
   img.onload=function(){
     const cv=document.createElement('canvas');cv.width=img.width;cv.height=img.height;
@@ -324,14 +327,27 @@ S.add(realHero);
     ctx.fillStyle=g;ctx.fillRect(0,0,cv.width,cv.height);
     ctx.globalCompositeOperation='source-over';
     const tex=new THREE.CanvasTexture(cv);tex.encoding=THREE.sRGBEncoding;
-    onReady(tex);
+    mat.map=tex;mat.needsUpdate=true;
+    gsap.to(mat,{opacity:1,duration:1.2});
+    if(onReady)onReady(sprite);
   };
-  img.onerror=function(){ heroObj.visible=true; }; // fallback to procedural if the photo fails to load
+  img.onerror=function(){ if(onError)onError(); };
   img.src=url;
-})('assets/earth-real.jpg',function(tex){
-  realSpriteMat.map=tex;realSpriteMat.needsUpdate=true;
-  gsap.to(realSpriteMat,{opacity:1,duration:1.2});
+  return sprite;
+}
+
+const realHero=loadRealPhotoSprite('assets/earth-real.jpg',34,14.3,null,function(){heroObj.visible=true;});
+
+// Amberion becomes the real photographed gas giant (with its own moons already in-shot)
+const amberionIndex=PLANETS.findIndex(p=>p.name==='Amberion');
+loadRealPhotoSprite('assets/gasgiant-real.jpg',24,10.2,function(sprite){
+  planetMeshes[amberionIndex].obj=sprite;
+  planetMeshes[amberionIndex].pending=false;
 });
+
+// Distant real spiral galaxy — huge, far in the background, barely drifting
+const galaxySprite=loadRealPhotoSprite('assets/galaxy-real.jpg',150,117,null,null);
+galaxySprite.position.set(-60,40,-260);
 
 // ===== VISIBLE ORBIT PATHS — thin rings tracing each planet's path =====
 function makeOrbitLine(orbitR,zScale){
@@ -400,6 +416,7 @@ function tick(){
   
   // Planets — continuous orbital motion around a shared center, plus self-spin
   planetMeshes.forEach(p=>{
+    if(!p.obj)return; // real-photo sprite still loading
     const angle=t*p.speed+p.phase;
     p.obj.position.x=ORBIT_CENTER.x+Math.cos(angle)*p.orbitR;
     p.obj.position.z=ORBIT_CENTER.z+Math.sin(angle)*p.orbitR*0.6;
@@ -412,6 +429,7 @@ function tick(){
   heroPlanet.obj.position.z=-10+7*Math.sin(t*0.03);
   heroPlanet.obj.rotation.y=t*heroPlanet.spin;
   realHero.position.copy(heroPlanet.obj.position);
+  galaxySprite.material.rotation=t*0.008;
   moon.position.x=heroPlanet.obj.position.x+Math.cos(t*0.3)*15;
   moon.position.y=heroPlanet.obj.position.y+3+Math.sin(t*0.3)*4;
   moon.position.z=heroPlanet.obj.position.z+Math.sin(t*0.3)*15;
