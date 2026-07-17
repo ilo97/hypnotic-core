@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aesthetic Studio – Ilayda Dede</title>
-<meta name="description" content="Aesthetic Studio by Ilayda Dede – scroll-triggered 3D web experiences that turn visitors into buyers. Prompt-to-3D landing pages, hypnotic motion, sound design.">
-<meta property="og:title" content="Aesthetic Studio – Ilayda Dede">
+<title>Aesthetic Studio</title>
+<meta name="description" content="Aesthetic Studio – scroll-triggered 3D web experiences that turn visitors into buyers. Prompt-to-3D landing pages, hypnotic motion, sound design.">
+<meta property="og:title" content="Aesthetic Studio">
 <meta property="og:description" content="Scroll-triggered 3D web experiences that turn visitors into buyers.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ilo97.github.io/hypnotic-core/">
 <meta property="og:image" content="https://ilo97.github.io/hypnotic-core/assets/example1.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Aesthetic Studio – Ilayda Dede">
+<meta name="twitter:title" content="Aesthetic Studio">
 <meta name="twitter:description" content="Scroll-triggered 3D web experiences that turn visitors into buyers.">
 <meta name="twitter:image" content="https://ilo97.github.io/hypnotic-core/assets/example1.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,14 +42,14 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
 <body>
 <canvas id="c"></canvas>
 <div class="overlay">
-  <div class="badge" id="badge">✦ Ilayda Dede ✦</div>
-  <h1 id="h1">Ready to work with<br><em>Ilayda Dede?</em></h1>
+  <div class="badge" id="badge">✦ Aesthetic Studio ✦</div>
+  <h1 id="h1">Ready to build<br><em>something unforgettable?</em></h1>
   <div class="sub" id="sub">Welcome to the cosmic creative universe.<br>Scroll to explore endless possibilities.</div>
   <a class="cta" id="ctaBtn" href="mailto:hi@aesthetic.studio">✦ Let's Begin</a>
   <a class="cta" id="ctaBtn2" href="platform-index.html" style="margin-top:10px;opacity:0">✦ Explore the Platform</a>
   <div class="scroll-hint" id="sHint"><span>Scroll</span><div class="gld-line"></div></div>
 </div>
-<footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(212,175,55,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Ilayda Dede ✦</span></footer>
+<footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(212,175,55,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Aesthetic Studio ✦</span></footer>
 
 <script>
 gsap.registerPlugin(ScrollTrigger);
@@ -58,7 +58,7 @@ const c=document.getElementById('c'),r=new THREE.WebGLRenderer({canvas:c,antiali
 r.setSize(window.innerWidth,window.innerHeight);r.setPixelRatio(Math.min(window.devicePixelRatio,2));
 const S=new THREE.Scene(),M=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,1000);
 M.position.z=40;
-const PERF=window.innerWidth<768?0.35:1;
+const PERF=window.innerWidth<480?0.7:1;
 
 // ===== STARS =====
 const sC=Math.floor(6000*PERF),sG=new THREE.BufferGeometry(),sP=new Float32Array(sC*3),sS=new Float32Array(sC);
