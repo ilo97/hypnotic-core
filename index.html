@@ -56,6 +56,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const c=document.getElementById('c'),r=new THREE.WebGLRenderer({canvas:c,antialias:true,alpha:true});
 r.setSize(window.innerWidth,window.innerHeight);r.setPixelRatio(Math.min(window.devicePixelRatio,2));
+r.outputEncoding=THREE.sRGBEncoding;r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.15;
 const S=new THREE.Scene(),M=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,1000);
 M.position.z=40;
 const PERF=window.innerWidth<480?0.7:1;
@@ -107,9 +108,11 @@ for(let i=0;i<8;i++){
 }
 
 // ===== LIGHTING (needed for shaded planet spheres) =====
-S.add(new THREE.AmbientLight(0x404060,0.7));
-const sunLight=new THREE.PointLight(0xfff2e0,2.2,300);
-sunLight.position.set(0,0,60);S.add(sunLight);
+S.add(new THREE.AmbientLight(0x2a2a40,0.35));
+const sunLight=new THREE.PointLight(0xfff2e0,3.2,400,1.6);
+sunLight.position.set(30,15,90);S.add(sunLight);
+const rimLight=new THREE.DirectionalLight(0x7d9fff,0.5);
+rimLight.position.set(-50,20,-60);S.add(rimLight);
 
 // Procedural planet surface texture — continents/craters/bands + fine grain,
 // so planets read as real textured worlds instead of flat computer-3D balls.
@@ -148,9 +151,23 @@ function makePlanetTexture(hexColor,{bands=false,spots=10}={}){
   }
   ctx.putImageData(img,0,0);
 
+  // Bump map — grayscale relief derived from the same surface detail, so
+  // craters/continents/bands actually catch light instead of looking flat-painted
+  const bumpCv=document.createElement('canvas');bumpCv.width=w;bumpCv.height=h;
+  const bctx=bumpCv.getContext('2d');
+  const bImg=bctx.createImageData(w,h);
+  for(let i=0;i<img.data.length;i+=4){
+    const lum=img.data[i]*0.299+img.data[i+1]*0.587+img.data[i+2]*0.114;
+    bImg.data[i]=bImg.data[i+1]=bImg.data[i+2]=lum;bImg.data[i+3]=255;
+  }
+  bctx.putImageData(bImg,0,0);
+
   const tex=new THREE.CanvasTexture(cv);
   tex.wrapS=THREE.RepeatWrapping;tex.wrapT=THREE.ClampToEdgeWrapping;
-  return tex;
+  tex.encoding=THREE.sRGBEncoding;
+  const bumpTex=new THREE.CanvasTexture(bumpCv);
+  bumpTex.wrapS=THREE.RepeatWrapping;bumpTex.wrapT=THREE.ClampToEdgeWrapping;
+  return {map:tex,bump:bumpTex};
 }
 
 // ===== PLANETS — huge, constantly orbiting; one looms close to camera =====
@@ -167,9 +184,10 @@ const HERO_PLANET={name:'Nebulon', color:0x8a5ad8, size:11, ring:false, bands:tr
 
 function buildPlanet(p){
   const g=new THREE.Group();
+  const tex=makePlanetTexture(p.color,{bands:p.bands,spots:p.bands?6:12});
   const sphere=new THREE.Mesh(
     new THREE.SphereGeometry(p.size,64,64),
-    new THREE.MeshStandardMaterial({map:makePlanetTexture(p.color,{bands:p.bands,spots:p.bands?6:12}),roughness:0.85,metalness:0.05})
+    new THREE.MeshStandardMaterial({map:tex.map,bumpMap:tex.bump,bumpScale:p.size*0.06,roughness:0.9,metalness:0.04})
   );
   g.add(sphere);
   if(p.atmo){
