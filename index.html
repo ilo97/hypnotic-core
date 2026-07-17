@@ -136,84 +136,153 @@ sunLight.position.set(30,15,90);S.add(sunLight);
 const rimLight=new THREE.DirectionalLight(0x7d9fff,0.5);
 rimLight.position.set(-50,20,-60);S.add(rimLight);
 
-// Procedural planet surface texture — continents/craters/bands + fine grain,
-// so planets read as real textured worlds instead of flat computer-3D balls.
-function makePlanetTexture(hexColor,{bands=false,spots=10}={}){
-  const w=512,h=256,cv=document.createElement('canvas');cv.width=w;cv.height=h;
-  const ctx=cv.getContext('2d');
-  const base=new THREE.Color(hexColor);
-  ctx.fillStyle=`rgb(${base.r*255|0},${base.g*255|0},${base.b*255|0})`;
-  ctx.fillRect(0,0,w,h);
-
-  if(bands){
-    const bandCount=8+Math.floor(Math.random()*6);
-    for(let i=0;i<bandCount;i++){
-      const y=(i/bandCount)*h,bh=h/bandCount*(0.7+Math.random()*0.6);
-      const c=base.clone().offsetHSL(0,0,(Math.random()-0.5)*0.28);
-      ctx.fillStyle=`rgba(${c.r*255|0},${c.g*255|0},${c.b*255|0},${0.5+Math.random()*0.4})`;
-      ctx.fillRect(0,y,w,bh);
-    }
+// ===== REALISTIC PROCEDURAL PLANET TEXTURES =====
+// Fractal (fBm) value noise — the same technique behind real terrain/cloud
+// generators — replaces the old scattered-blob look with continuous,
+// organic coastlines, cloud swirls, and crater fields.
+function makeNoise2D(seed){
+  function hash(x,y){
+    let n=x*374761393+y*668265263+seed*2246822519;
+    n=(n^(n>>>13))>>>0;n=Math.imul(n,1274126177)>>>0;n=(n^(n>>>16))>>>0;
+    return n/4294967295;
   }
+  function smooth(t){return t*t*(3-2*t);}
+  return function(x,y){
+    const x0=Math.floor(x),y0=Math.floor(y),x1=x0+1,y1=y0+1;
+    const sx=smooth(x-x0),sy=smooth(y-y0);
+    const n00=hash(x0,y0),n10=hash(x1,y0),n01=hash(x0,y1),n11=hash(x1,y1);
+    const ix0=n00+(n10-n00)*sx,ix1=n01+(n11-n01)*sx;
+    return ix0+(ix1-ix0)*sy;
+  };
+}
+function fbm(noise,x,y,octaves,lacunarity,gain){
+  let sum=0,amp=0.5,freq=1,norm=0;
+  for(let i=0;i<octaves;i++){sum+=noise(x*freq,y*freq)*amp;norm+=amp;freq*=lacunarity;amp*=gain;}
+  return sum/norm;
+}
+function smoothstep(e0,e1,x){const t=Math.min(1,Math.max(0,(x-e0)/(e1-e0)));return t*t*(3-2*t);}
+function lerpC(c1,c2,t){return [c1[0]+(c2[0]-c1[0])*t,c1[1]+(c2[1]-c1[1])*t,c1[2]+(c2[2]-c1[2])*t];}
 
-  for(let i=0;i<spots*7;i++){
-    const x=Math.random()*w,y=Math.random()*h,rad=4+Math.random()*(bands?60:26);
-    const c=base.clone().offsetHSL((Math.random()-0.5)*0.03,0,(Math.random()-0.5)*0.32);
-    ctx.save();
-    ctx.translate(x,y);
-    if(!bands){ctx.rotate(Math.random()*Math.PI);ctx.scale(1.8+Math.random()*1.4,0.5+Math.random()*0.5);}
-    const grad=ctx.createRadialGradient(0,0,0,0,0,rad);
-    grad.addColorStop(0,`rgba(${c.r*255|0},${c.g*255|0},${c.b*255|0},0.6)`);
-    grad.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=grad;ctx.beginPath();ctx.arc(0,0,rad,0,Math.PI*2);ctx.fill();
-    ctx.restore();
-  }
-
+function finishTexture(cv,ctx,w,h){
   const img=ctx.getImageData(0,0,w,h);
-  for(let i=0;i<img.data.length;i+=4){
-    const n=(Math.random()-0.5)*16;
-    img.data[i]=Math.min(255,Math.max(0,img.data[i]+n));
-    img.data[i+1]=Math.min(255,Math.max(0,img.data[i+1]+n));
-    img.data[i+2]=Math.min(255,Math.max(0,img.data[i+2]+n));
-  }
-  ctx.putImageData(img,0,0);
-
-  // Bump map — grayscale relief derived from the same surface detail, so
-  // craters/continents/bands actually catch light instead of looking flat-painted
   const bumpCv=document.createElement('canvas');bumpCv.width=w;bumpCv.height=h;
-  const bctx=bumpCv.getContext('2d');
-  const bImg=bctx.createImageData(w,h);
+  const bctx=bumpCv.getContext('2d');const bImg=bctx.createImageData(w,h);
   for(let i=0;i<img.data.length;i+=4){
     const lum=img.data[i]*0.299+img.data[i+1]*0.587+img.data[i+2]*0.114;
     bImg.data[i]=bImg.data[i+1]=bImg.data[i+2]=lum;bImg.data[i+3]=255;
   }
   bctx.putImageData(bImg,0,0);
-
   const tex=new THREE.CanvasTexture(cv);
-  tex.wrapS=THREE.RepeatWrapping;tex.wrapT=THREE.ClampToEdgeWrapping;
-  tex.encoding=THREE.sRGBEncoding;
+  tex.wrapS=THREE.RepeatWrapping;tex.wrapT=THREE.ClampToEdgeWrapping;tex.encoding=THREE.sRGBEncoding;
   const bumpTex=new THREE.CanvasTexture(bumpCv);
   bumpTex.wrapS=THREE.RepeatWrapping;bumpTex.wrapT=THREE.ClampToEdgeWrapping;
   return {map:tex,bump:bumpTex};
 }
 
+// Ocean + continents + clouds, like Terra/Cobalt/Emerald Veil
+function makeOceanTexture(seed,oceanDeep,oceanShallow,landLow,landHigh){
+  const w=PERF<1?384:768,h=w/2,cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  const ctx=cv.getContext('2d'),img=ctx.createImageData(w,h);
+  const landNoise=makeNoise2D(seed),cloudNoise=makeNoise2D(seed+999),detailNoise=makeNoise2D(seed+55);
+  for(let py=0;py<h;py++){
+    const v=py/h;
+    for(let px=0;px<w;px++){
+      const u=px/w;
+      let land=fbm(landNoise,u*5,v*5,6,2.1,0.55);
+      land=Math.pow(Math.max(0,land),1.6);
+      const detail=fbm(detailNoise,u*20,v*20,3,2,0.5);
+      const landMix=smoothstep(0.47,0.56,land);
+      const oceanShade=1-Math.min(1,land/0.47);
+      const landShade=Math.min(1,Math.max(0,(land-0.5)/0.4));
+      let color=lerpC(oceanDeep,oceanShallow,oceanShade*0.7+detail*0.3);
+      color=lerpC(color,lerpC(landLow,landHigh,landShade*0.6+detail*0.4),landMix);
+      const coastal=Math.max(0,1-Math.abs(landMix-0.18)/0.16);
+      color=lerpC(color,[90,200,200],coastal*0.35);
+      let cloud=fbm(cloudNoise,u*7,v*7,5,2.2,0.5);
+      cloud=Math.min(1,Math.pow(Math.max(0,cloud-0.44),1.5)*2.4);
+      color=lerpC(color,[255,255,255],cloud*0.8);
+      const idx=(py*w+px)*4;
+      img.data[idx]=color[0];img.data[idx+1]=color[1];img.data[idx+2]=color[2];img.data[idx+3]=255;
+    }
+  }
+  ctx.putImageData(img,0,0);
+  return finishTexture(cv,ctx,w,h);
+}
+
+// Continuous mottled rock/ice surface, like Terra Rosa (Mars-like) or Frost
+function makeRockyTexture(seed,colorLow,colorMid,colorHigh){
+  const w=PERF<1?384:768,h=w/2,cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  const ctx=cv.getContext('2d'),img=ctx.createImageData(w,h);
+  const baseNoise=makeNoise2D(seed),detailNoise=makeNoise2D(seed+77),craterNoise=makeNoise2D(seed+133);
+  for(let py=0;py<h;py++){
+    const v=py/h;
+    for(let px=0;px<w;px++){
+      const u=px/w;
+      let base=fbm(baseNoise,u*4,v*4,5,2.1,0.55);
+      const detail=fbm(detailNoise,u*16,v*16,4,2,0.5);
+      base=base*0.7+detail*0.3;
+      let color=base<0.42?lerpC(colorLow,colorMid,base/0.42):lerpC(colorMid,colorHigh,(base-0.42)/0.58);
+      const crater=fbm(craterNoise,u*30,v*30,2,2,0.5);
+      if(crater>0.62)color=lerpC(color,colorLow,(crater-0.62)*1.4);
+      const idx=(py*w+px)*4;
+      img.data[idx]=color[0];img.data[idx+1]=color[1];img.data[idx+2]=color[2];img.data[idx+3]=255;
+    }
+  }
+  ctx.putImageData(img,0,0);
+  return finishTexture(cv,ctx,w,h);
+}
+
+// Turbulent horizontal bands, like Amberion/Nebulon gas giants
+function makeGasGiantTexture(seed,base){
+  const w=PERF<1?384:768,h=w/2,cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  const ctx=cv.getContext('2d'),img=ctx.createImageData(w,h);
+  const bandNoise=makeNoise2D(seed),turbNoise=makeNoise2D(seed+42);
+  for(let py=0;py<h;py++){
+    const v=py/h;
+    for(let px=0;px<w;px++){
+      const u=px/w;
+      const turb=fbm(turbNoise,u*6,v*1.2,4,2,0.5)*0.06;
+      const bandY=v*14+turb*4;
+      const bandShade=fbm(bandNoise,bandY*0.6,0.5,3,2,0.5)-0.5;
+      const swirl=fbm(turbNoise,u*10+v*3,v*10,4,2.3,0.5)-0.5;
+      const shade=bandShade*0.5+swirl*0.25;
+      const color=[
+        Math.min(255,Math.max(0,base[0]*(1+shade))),
+        Math.min(255,Math.max(0,base[1]*(1+shade))),
+        Math.min(255,Math.max(0,base[2]*(1+shade)))
+      ];
+      const idx=(py*w+px)*4;
+      img.data[idx]=color[0];img.data[idx+1]=color[1];img.data[idx+2]=color[2];img.data[idx+3]=255;
+    }
+  }
+  ctx.putImageData(img,0,0);
+  return finishTexture(cv,ctx,w,h);
+}
+
 // ===== PLANETS — huge, constantly orbiting; one looms close to camera =====
 const ORBIT_CENTER={x:0,y:0,z:-58};
 const PLANETS=[
-  {name:'Terra Rosa',  color:0xd8623a, size:6,   ring:false, bands:false, atmo:0xffb08a, orbitR:20, speed:0.075, phase:0.0, yAmp:3},
-  {name:'Cobalt',      color:0x3a6fd8, size:5,   ring:false, bands:false, atmo:0x9fc4ff, orbitR:30, speed:0.06,  phase:1.2, yAmp:4},
-  {name:'Amberion',    color:0xb8823a, size:9,   ring:true,  bands:true,  atmo:null,     orbitR:40, speed:0.045, phase:2.5, yAmp:3},
-  {name:'Emerald Veil',color:0x2fae7a, size:5.5, ring:false, bands:false, atmo:0x8affc0, orbitR:50, speed:0.038, phase:3.7, yAmp:4.5},
-  {name:'Frost',       color:0x9fd8e8, size:4.5, ring:false, bands:false, atmo:0xd0f0ff, orbitR:60, speed:0.03,  phase:5.0, yAmp:4},
+  {name:'Terra Rosa',  size:6,   ring:false, atmo:0xffb08a, orbitR:20, speed:0.075, phase:0.0, yAmp:3,
+    tex:()=>makeRockyTexture(21,[70,32,20],[180,88,48],[235,165,115])},
+  {name:'Cobalt',      size:5,   ring:false, atmo:0x9fc4ff, orbitR:30, speed:0.06,  phase:1.2, yAmp:4,
+    tex:()=>makeOceanTexture(7,[6,20,55],[50,150,175],[95,115,60],[165,145,100])},
+  {name:'Amberion',    size:9,   ring:true,  atmo:null,     orbitR:40, speed:0.045, phase:2.5, yAmp:3,
+    tex:()=>makeGasGiantTexture(3,[190,140,70])},
+  {name:'Emerald Veil',size:5.5, ring:false, atmo:0x8affc0, orbitR:50, speed:0.038, phase:3.7, yAmp:4.5,
+    tex:()=>makeOceanTexture(64,[5,35,40],[40,150,140],[60,120,60],[150,175,110])},
+  {name:'Frost',       size:4.5, ring:false, atmo:0xd0f0ff, orbitR:60, speed:0.03,  phase:5.0, yAmp:4,
+    tex:()=>makeRockyTexture(88,[70,110,130],[170,210,225],[245,250,255])},
 ];
 // Hero planet — huge, drifts close in the foreground so it always feels near
-const HERO_PLANET={name:'Nebulon', color:0x8a5ad8, size:11, ring:false, bands:true, atmo:0xc9a8ff};
+const HERO_PLANET={name:'Nebulon', size:11, ring:false, atmo:0xc9a8ff,
+  tex:()=>makeGasGiantTexture(3,[140,100,190])};
 
 function buildPlanet(p){
   const g=new THREE.Group();
-  const tex=makePlanetTexture(p.color,{bands:p.bands,spots:p.bands?6:12});
+  const tex=p.tex();
   const sphere=new THREE.Mesh(
     new THREE.SphereGeometry(p.size,64,64),
-    new THREE.MeshStandardMaterial({map:tex.map,bumpMap:tex.bump,bumpScale:p.size*0.06,roughness:0.9,metalness:0.04})
+    new THREE.MeshStandardMaterial({map:tex.map,bumpMap:tex.bump,bumpScale:p.size*0.05,roughness:0.9,metalness:0.04})
   );
   g.add(sphere);
   const glowColor=p.atmo||0xaab4ff;
@@ -251,7 +320,7 @@ function makeOrbitLine(orbitR,zScale){
 PLANETS.forEach(p=>S.add(makeOrbitLine(p.orbitR,0.6)));
 
 // ===== MOON — small companion orbiting close to the hero planet =====
-const moonTex=makePlanetTexture(0x9a9a9a,{bands:false,spots:14});
+const moonTex=makeRockyTexture(555,[70,70,72],[140,140,145],[195,195,200]);
 const moon=new THREE.Mesh(
   new THREE.SphereGeometry(1.6,32,32),
   new THREE.MeshStandardMaterial({map:moonTex.map,bumpMap:moonTex.bump,bumpScale:0.15,roughness:0.95,metalness:0.02})
