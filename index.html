@@ -153,16 +153,19 @@ function makePlanetTexture(hexColor,{bands=false,spots=10}={}){
   return tex;
 }
 
-// ===== PLANETS — all visible together, stationary, spinning in place =====
+// ===== PLANETS — huge, constantly orbiting; one looms close to camera =====
+const ORBIT_CENTER={x:0,y:0,z:-58};
 const PLANETS=[
-  {name:'Terra Rosa',  color:0xd8623a, size:3.2, x:-11, y:4,  z:-25, ring:false, bands:false, atmo:0xffb08a},
-  {name:'Cobalt',      color:0x3a6fd8, size:2.4, x:10,  y:-5, z:-20, ring:false, bands:false, atmo:0x9fc4ff},
-  {name:'Amberion',    color:0xb8823a, size:4.2, x:5,   y:6,  z:-42, ring:true,  bands:true,  atmo:null},
-  {name:'Emerald Veil',color:0x2fae7a, size:2.6, x:-7,  y:-7, z:-35, ring:false, bands:false, atmo:0x8affc0},
-  {name:'Nebulon',     color:0x8a5ad8, size:3.4, x:12,  y:5,  z:-48, ring:false, bands:true,  atmo:null},
-  {name:'Frost',       color:0x9fd8e8, size:2,   x:-13, y:-3, z:-30, ring:false, bands:false, atmo:0xd0f0ff},
+  {name:'Terra Rosa',  color:0xd8623a, size:6,   ring:false, bands:false, atmo:0xffb08a, orbitR:20, speed:0.075, phase:0.0, yAmp:3},
+  {name:'Cobalt',      color:0x3a6fd8, size:5,   ring:false, bands:false, atmo:0x9fc4ff, orbitR:30, speed:0.06,  phase:1.2, yAmp:4},
+  {name:'Amberion',    color:0xb8823a, size:9,   ring:true,  bands:true,  atmo:null,     orbitR:40, speed:0.045, phase:2.5, yAmp:3},
+  {name:'Emerald Veil',color:0x2fae7a, size:5.5, ring:false, bands:false, atmo:0x8affc0, orbitR:50, speed:0.038, phase:3.7, yAmp:4.5},
+  {name:'Frost',       color:0x9fd8e8, size:4.5, ring:false, bands:false, atmo:0xd0f0ff, orbitR:60, speed:0.03,  phase:5.0, yAmp:4},
 ];
-const planetMeshes=PLANETS.map(p=>{
+// Hero planet — huge, drifts close in the foreground so it always feels near
+const HERO_PLANET={name:'Nebulon', color:0x8a5ad8, size:11, ring:false, bands:true, atmo:0xc9a8ff};
+
+function buildPlanet(p){
   const g=new THREE.Group();
   const sphere=new THREE.Mesh(
     new THREE.SphereGeometry(p.size,64,64),
@@ -183,11 +186,14 @@ const planetMeshes=PLANETS.map(p=>{
     );
     ring.rotation.x=Math.PI/2.3;g.add(ring);
   }
-  g.position.set(p.x,p.y,p.z);
   g.rotation.z=(Math.random()-0.5)*0.5;
   S.add(g);
-  return {obj:g,spin:0.15+Math.random()*0.25};
-});
+  return g;
+}
+
+const planetMeshes=PLANETS.map(p=>({obj:buildPlanet(p),spin:0.1+Math.random()*0.15,orbitR:p.orbitR,speed:p.speed,phase:p.phase,yAmp:p.yAmp}));
+const heroObj=buildPlanet(HERO_PLANET);
+const heroPlanet={obj:heroObj,spin:0.08};
 
 // ===== ASTEROID BELT (rocky dust ring, replaces old golden "flowers" ring) =====
 const fC=Math.floor(400*PERF),fG=new THREE.BufferGeometry(),fPos=new Float32Array(fC*3);
@@ -233,8 +239,19 @@ function tick(){
   stars.rotation.y=t*0.005;stars.rotation.x=t*0.002;
   nebula.rotation.y=t*0.003;asteroids.rotation.y=t*0.02;
   
-  // Planets — slow individual spin
-  planetMeshes.forEach(p=>{p.obj.rotation.y=t*p.spin;});
+  // Planets — continuous orbital motion around a shared center, plus self-spin
+  planetMeshes.forEach(p=>{
+    const angle=t*p.speed+p.phase;
+    p.obj.position.x=ORBIT_CENTER.x+Math.cos(angle)*p.orbitR;
+    p.obj.position.z=ORBIT_CENTER.z+Math.sin(angle)*p.orbitR*0.6;
+    p.obj.position.y=ORBIT_CENTER.y+Math.sin(angle*0.6)*p.yAmp;
+    p.obj.rotation.y=t*p.spin;
+  });
+  // Hero planet — huge, drifts slowly close to the camera, always in motion
+  heroPlanet.obj.position.x=10*Math.sin(t*0.045);
+  heroPlanet.obj.position.y=-4+3.5*Math.sin(t*0.035+1.4);
+  heroPlanet.obj.position.z=-10+7*Math.sin(t*0.03);
+  heroPlanet.obj.rotation.y=t*heroPlanet.spin;
   
   // Rockets
   rockets.forEach((r,i)=>{
