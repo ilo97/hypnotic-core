@@ -326,6 +326,7 @@
     <div class="hero">
         <header>
             <a class="logo" href="index.html" style="color:inherit;text-decoration:none">Aesthetic.Studio</a>
+            <div id="trial-badge" style="font-size:10px;letter-spacing:.1em;color:var(--dim-text);cursor:pointer" title="Admin login" onclick="window.GeneratorBridge && window.GeneratorBridge.tryAdminUnlock()"></div>
             <div class="status">Neural Link: Active</div>
         </header>
 
@@ -632,6 +633,13 @@
             if (result.success) {
                 // Bridge updates the status/UI internally if successful
                 console.log('[Platform] Generation successful:', result);
+            } else if (result.limitReached) {
+                setStatus(`Status: ${result.error}`);
+                const pricingSection = document.getElementById('pricing');
+                if (pricingSection) {
+                    pricingSection.scrollIntoView({ behavior: 'smooth' });
+                    gsap.fromTo(pricingSection, { backgroundColor: 'rgba(0,255,204,0.08)' }, { backgroundColor: 'transparent', duration: 1.5 });
+                }
             } else {
                 setStatus(`Error: ${result.error}`);
             }

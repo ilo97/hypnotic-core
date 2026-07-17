@@ -6,9 +6,60 @@
  * to a visual config (colors, particle behaviour, headline/subtitle), and
  * live-applies that config to the page so the visitor sees an immediate
  * result — instead of the button doing nothing.
+ *
+ * Also gates usage: admin (Ilayda) gets unlimited free generations via a
+ * password unlock; everyone else gets a limited number of free tries before
+ * being pointed to the pricing section.
+ *
+ * NOTE: this is a client-side soft gate (localStorage), not real security.
+ * Anyone who reads the page source can find ADMIN_PASSWORD or clear
+ * localStorage to reset their trial count. A hard gate would require a
+ * backend session check tied to a verified Stripe payment.
  */
 (function initGeneratorBridge(global) {
   const root = document.documentElement;
+
+  // ─── Change this to your own secret before sharing the site widely ───
+  const ADMIN_PASSWORD = 'ilayda-aesthetic-2026';
+  const FREE_TRIAL_LIMIT = 3;
+  const LS_ADMIN_KEY = 'hypnotic_admin_unlocked';
+  const LS_TRIAL_KEY = 'hypnotic_trial_count';
+
+  function isAdmin() {
+    return global.localStorage.getItem(LS_ADMIN_KEY) === 'true';
+  }
+
+  function getTrialCount() {
+    return parseInt(global.localStorage.getItem(LS_TRIAL_KEY) || '0', 10);
+  }
+
+  function incrementTrialCount() {
+    global.localStorage.setItem(LS_TRIAL_KEY, String(getTrialCount() + 1));
+  }
+
+  function tryAdminUnlock() {
+    const input = global.prompt('Admin password:');
+    if (input === null) return false;
+    if (input === ADMIN_PASSWORD) {
+      global.localStorage.setItem(LS_ADMIN_KEY, 'true');
+      global.alert('Admin unlocked. Unlimited generations enabled on this browser.');
+      updateTrialBadge();
+      return true;
+    }
+    global.alert('Wrong password.');
+    return false;
+  }
+
+  function updateTrialBadge() {
+    const badge = document.getElementById('trial-badge');
+    if (!badge) return;
+    if (isAdmin()) {
+      badge.textContent = 'Admin • unlimited';
+    } else {
+      const remaining = Math.max(0, FREE_TRIAL_LIMIT - getTrialCount());
+      badge.textContent = `${remaining} free ${remaining === 1 ? 'try' : 'tries'} left`;
+    }
+  }
 
   function applyConfigToPage(config) {
     if (!config) return;
@@ -40,6 +91,14 @@
       return { success: false, error: 'Prompt is empty.' };
     }
 
+    if (!isAdmin() && getTrialCount() >= FREE_TRIAL_LIMIT) {
+      return {
+        success: false,
+        limitReached: true,
+        error: 'Free trial limit reached. Upgrade below to keep generating.'
+      };
+    }
+
     if (!global.PromptMapping || typeof global.PromptMapping.buildConfigFromPrompt !== 'function') {
       return { success: false, error: 'PromptMapping module not loaded.' };
     }
@@ -50,6 +109,11 @@
     try {
       const { config, appliedRules } = global.PromptMapping.buildConfigFromPrompt(cleaned);
       applyConfigToPage(config);
+
+      if (!isAdmin()) {
+        incrementTrialCount();
+        updateTrialBadge();
+      }
 
       const statusEl = document.getElementById('stack-status');
       if (statusEl) {
@@ -64,5 +128,7 @@
     }
   }
 
-  global.GeneratorBridge = { generate, applyConfigToPage };
+  global.GeneratorBridge = { generate, applyConfigToPage, isAdmin, tryAdminUnlock, updateTrialBadge, FREE_TRIAL_LIMIT };
+
+  document.addEventListener('DOMContentLoaded', updateTrialBadge);
 })(window);
