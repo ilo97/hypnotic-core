@@ -49,7 +49,6 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
   <a class="cta" id="ctaBtn2" href="platform-index.html" style="margin-top:10px;opacity:0">✦ Explore the Platform</a>
   <div class="scroll-hint" id="sHint"><span>Scroll</span><div class="gld-line"></div></div>
 </div>
-<div style="height:600vh"></div>
 <footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(184,169,255,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Aesthetic Studio ✦</span></footer>
 
 <script>
@@ -76,14 +75,14 @@ const DOT=makeDotTexture();
 
 // ===== STARS =====
 const sC=Math.floor(6000*PERF),sG=new THREE.BufferGeometry(),sP=new Float32Array(sC*3),sS=new Float32Array(sC);
-for(let i=0;i<sC*3;i+=3){const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=20+Math.random()*220;sP[i]=r*Math.sin(p)*Math.cos(t);sP[i+1]=r*Math.sin(p)*Math.sin(t);sP[i+2]=r*Math.cos(p)-170;sS[i/3]=0.05+Math.random()*0.3;}
+for(let i=0;i<sC*3;i+=3){const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=20+Math.random()*60;sP[i]=r*Math.sin(p)*Math.cos(t);sP[i+1]=r*Math.sin(p)*Math.sin(t);sP[i+2]=r*Math.cos(p);sS[i/3]=0.05+Math.random()*0.3;}
 sG.setAttribute('position',new THREE.BufferAttribute(sP,3));
 const sM=new THREE.PointsMaterial({size:0.08,map:DOT,color:0xf0e6ff,transparent:true,opacity:0.6,depthWrite:false,blending:THREE.AdditiveBlending});
 const stars=new THREE.Points(sG,sM);S.add(stars);
 
 // ===== SHOOTING STARS =====
 const shC=Math.floor(20*PERF)||8,shG=new THREE.BufferGeometry(),shP=new Float32Array(shC*3),shV=[];
-for(let i=0;i<shC;i++){shP[i*3]=(Math.random()-0.5)*80;shP[i*3+1]=(Math.random()-0.5)*80;shP[i*3+2]=Math.random()*-400+40;shV.push({x:(Math.random()-0.5)*0.5,y:(Math.random()-0.5)*0.5,z:Math.random()*0.3+0.1});}
+for(let i=0;i<shC;i++){shP[i*3]=(Math.random()-0.5)*80;shP[i*3+1]=(Math.random()-0.5)*80;shP[i*3+2]=(Math.random()-0.5)*80-10;shV.push({x:(Math.random()-0.5)*0.5,y:(Math.random()-0.5)*0.5,z:Math.random()*0.3+0.1});}
 shG.setAttribute('position',new THREE.BufferAttribute(shP,3));
 const shM=new THREE.PointsMaterial({size:0.15,map:DOT,color:0xb8a9ff,transparent:true,opacity:0.8,depthWrite:false,blending:THREE.AdditiveBlending});
 const shooters=new THREE.Points(shG,shM);S.add(shooters);
@@ -103,7 +102,7 @@ function makeRocket(x,y,z){
 }
 const rockets=[];
 for(let i=0;i<8;i++){
-  const r=makeRocket((Math.random()-0.5)*50,(Math.random()-0.5)*40,Math.random()*-380+20);
+  const r=makeRocket((Math.random()-0.5)*50,(Math.random()-0.5)*40,(Math.random()-0.5)*30-5);
   rockets.push({obj:r,spd:0.02+Math.random()*0.04,rot:Math.random()*0.02});S.add(r);
 }
 
@@ -112,14 +111,14 @@ S.add(new THREE.AmbientLight(0x404060,0.7));
 const sunLight=new THREE.PointLight(0xfff2e0,2.2,300);
 sunLight.position.set(0,0,60);S.add(sunLight);
 
-// ===== PLANETS — camera flies close past each one in turn =====
+// ===== PLANETS — all visible together, stationary, spinning in place =====
 const PLANETS=[
-  {name:'Terra Rosa',  color:0xd8623a, size:5,  x:6,  y:-2, z:-40,  ring:false},
-  {name:'Cobalt',      color:0x3a6fd8, size:4,  x:-7, y:3,  z:-95,  ring:false},
-  {name:'Amberion',    color:0xb8823a, size:7,  x:5,  y:-4, z:-155, ring:true},
-  {name:'Emerald Veil',color:0x2fae7a, size:4.5,x:-6, y:2,  z:-215, ring:false},
-  {name:'Nebulon',     color:0x8a5ad8, size:5.5,x:6,  y:3,  z:-275, ring:false},
-  {name:'Frost',       color:0x9fd8e8, size:3.5,x:-5, y:-3, z:-335, ring:false},
+  {name:'Terra Rosa',  color:0xd8623a, size:3.2, x:-11, y:4,  z:-25, ring:false},
+  {name:'Cobalt',      color:0x3a6fd8, size:2.4, x:10,  y:-5, z:-20, ring:false},
+  {name:'Amberion',    color:0xb8823a, size:4.2, x:5,   y:6,  z:-42, ring:true},
+  {name:'Emerald Veil',color:0x2fae7a, size:2.6, x:-7,  y:-7, z:-35, ring:false},
+  {name:'Nebulon',     color:0x8a5ad8, size:3.4, x:12,  y:5,  z:-48, ring:false},
+  {name:'Frost',       color:0x9fd8e8, size:2,   x:-13, y:-3, z:-30, ring:false},
 ];
 const planetMeshes=PLANETS.map(p=>{
   const g=new THREE.Group();
@@ -137,12 +136,12 @@ const planetMeshes=PLANETS.map(p=>{
   }
   g.position.set(p.x,p.y,p.z);
   S.add(g);
-  return {obj:g,spin:0.05+Math.random()*0.1};
+  return {obj:g,spin:0.15+Math.random()*0.25};
 });
 
 // ===== ASTEROID BELT (rocky dust ring, replaces old golden "flowers" ring) =====
 const fC=Math.floor(400*PERF),fG=new THREE.BufferGeometry(),fPos=new Float32Array(fC*3);
-for(let i=0;i<fC*3;i+=3){const r=5+Math.random()*15,a=Math.random()*Math.PI*2;fPos[i]=Math.cos(a)*r;fPos[i+1]=Math.sin(a)*r*0.6;fPos[i+2]=(Math.random()-0.5)*10-150;}
+for(let i=0;i<fC*3;i+=3){const r=5+Math.random()*15,a=Math.random()*Math.PI*2;fPos[i]=Math.cos(a)*r;fPos[i+1]=Math.sin(a)*r*0.6;fPos[i+2]=(Math.random()-0.5)*10-40;}
 fG.setAttribute('position',new THREE.BufferAttribute(fPos,3));
 const fMat=new THREE.PointsMaterial({size:0.1,map:DOT,color:0x9a8f8a,transparent:true,opacity:0.5,depthWrite:false});
 const asteroids=new THREE.Points(fG,fMat);S.add(asteroids);
@@ -150,8 +149,8 @@ const asteroids=new THREE.Points(fG,fMat);S.add(asteroids);
 // ===== NEBULA =====
 const nC=Math.floor(3000*PERF),nG=new THREE.BufferGeometry(),nP=new Float32Array(nC*3),nCol=new Float32Array(nC*3);
 for(let i=0;i<nC;i++){
-  const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=10+Math.random()*180;
-  nP[i*3]=r*Math.sin(p)*Math.cos(t);nP[i*3+1]=r*Math.sin(p)*Math.sin(t);nP[i*3+2]=r*Math.cos(p)-170;
+  const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=10+Math.random()*25;
+  nP[i*3]=r*Math.sin(p)*Math.cos(t);nP[i*3+1]=r*Math.sin(p)*Math.sin(t);nP[i*3+2]=r*Math.cos(p)-5;
   const c=new THREE.Color().setHSL(0.75+Math.random()*0.15,0.6,0.1+Math.random()*0.15);
   nCol[i*3]=c.r;nCol[i*3+1]=c.g;nCol[i*3+2]=c.b;
 }
@@ -200,14 +199,13 @@ function tick(){
   const sh=shG.attributes.position.array;
   for(let i=0;i<shC;i++){
     sh[i*3]+=shV[i].x;sh[i*3+1]+=shV[i].y;sh[i*3+2]+=shV[i].z;
-    if(sh[i*3]>40||sh[i*3]<-40||sh[i*3+1]>40||sh[i*3+1]<-40||sh[i*3+2]<-400||sh[i*3+2]>60){sh[i*3]=(Math.random()-0.5)*80;sh[i*3+1]=(Math.random()-0.5)*80;sh[i*3+2]=Math.random()*-400+40;}
+    if(sh[i*3]>40||sh[i*3]<-40||sh[i*3+1]>40||sh[i*3+1]<-40){sh[i*3]=(Math.random()-0.5)*80;sh[i*3+1]=(Math.random()-0.5)*80;sh[i*3+2]=(Math.random()-0.5)*80-10;}
   }
   shG.attributes.position.needsUpdate=true;
   
-  // Sp = scroll progress — camera flies deep through space, passing close by each planet in turn
+  // Sp = scroll progress — subtle drift only, camera stays put among the planets
   const sp=SP.p;
-  M.position.z=THREE.MathUtils.lerp(40,-360,sp);
-  sunLight.position.z=M.position.z+60;
+  M.position.z=THREE.MathUtils.lerp(40,32,sp);
   M.position.x=MX.x*2;
   M.position.y=MX.y*2;
   
