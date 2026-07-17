@@ -270,11 +270,12 @@ function tick(){
   }
   shG.attributes.position.needsUpdate=true;
   
-  // Sp = scroll progress — subtle drift only, camera stays put among the planets
+  // Sp = scroll progress + slow autonomous drift — camera gently cruises through space on its own, on top of scroll and mouse parallax
   const sp=SP.p;
-  M.position.z=THREE.MathUtils.lerp(40,32,sp);
-  M.position.x=MX.x*2;
-  M.position.y=MX.y*2;
+  M.position.z=THREE.MathUtils.lerp(40,32,sp)+Math.sin(t*0.015)*9;
+  M.position.x=MX.x*2+Math.sin(t*0.011)*4;
+  M.position.y=MX.y*2+Math.cos(t*0.009)*2.5;
+  M.lookAt(0,0,ORBIT_CENTER.z);
   
   r.render(S,M);requestAnimationFrame(tick);
 }
