@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aesthetic.Studio | Prompt-to-3D</title>
+    <meta name="description" content="Turn a prompt into a scroll-triggered 3D web experience. Aesthetic.Studio builds hypnotic, sound-reactive landing pages for premium brands — from €299.">
+    <meta property="og:title" content="Aesthetic.Studio | Prompt-to-3D">
+    <meta property="og:description" content="Turn a prompt into a scroll-triggered 3D web experience for your brand — from €299.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ilo97.github.io/hypnotic-core/platform-index.html">
+    <meta property="og:image" content="https://ilo97.github.io/hypnotic-core/assets/example2.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Aesthetic.Studio | Prompt-to-3D">
+    <meta name="twitter:description" content="Turn a prompt into a scroll-triggered 3D web experience for your brand — from €299.">
+    <meta name="twitter:image" content="https://ilo97.github.io/hypnotic-core/assets/example2.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
@@ -315,7 +325,7 @@
 
     <div class="hero">
         <header>
-            <div class="logo">Aesthetic.Studio</div>
+            <a class="logo" href="index.html" style="color:inherit;text-decoration:none">Aesthetic.Studio</a>
             <div class="status">Neural Link: Active</div>
         </header>
 
@@ -464,38 +474,41 @@
         </div>
 
         <div class="grid">
-            <a href="generated/luxury-watch.html" target="_blank" class="grid-item">
+            <a href="#" data-img="assets/example1.png" class="grid-item lightbox-trigger">
                 <img src="assets/example1.png" alt="Example 1">
                 <div class="item-label">Luxury Gold (Vogue)</div>
             </a>
-            <a href="generated/cyberpunk-city.html" target="_blank" class="grid-item">
+            <a href="#" data-img="assets/example2.png" class="grid-item lightbox-trigger">
                 <img src="assets/example2.png" alt="Example 2">
                 <div class="item-label">Cyber Reality (Neon)</div>
             </a>
-            <a href="generated/racing-speed.html" target="_blank" class="grid-item">
+            <a href="#" data-img="assets/example3.png" class="grid-item lightbox-trigger">
                 <img src="assets/example3.png" alt="Example 3">
                 <div class="item-label">Raw Power (Speed)</div>
             </a>
-            <a href="generated/beauty-glow.html" target="_blank" class="grid-item">
+            <a href="#" data-img="assets/example4.png" class="grid-item lightbox-trigger">
                 <img src="assets/example4.png" alt="Example 4">
                 <div class="item-label">Soft Radiance (Beauty)</div>
             </a>
-            <a href="generated/refreshing-drink.html" target="_blank" class="grid-item">
+            <a href="#" data-img="assets/example1.png" class="grid-item lightbox-trigger">
                 <img src="assets/example1.png" alt="Example 5">
                 <div class="item-label">Liquid Frost (Beverage)</div>
             </a>
-            <a href="generated/organic-food.html" target="_blank" class="grid-item">
+            <a href="#" data-img="assets/example2.png" class="grid-item lightbox-trigger">
                 <img src="assets/example2.png" alt="Example 6">
                 <div class="item-label">Organic Bloom (Food)</div>
             </a>
-            <a href="generated/minimal-zen.html" target="_blank" class="grid-item">
+            <a href="#" data-img="assets/example3.png" class="grid-item lightbox-trigger">
                 <img src="assets/example3.png" alt="Example 7">
                 <div class="item-label">Zen Minimal (Pure)</div>
             </a>
-            <a href="generated/mystic-music.html" target="_blank" class="grid-item">
+            <a href="#" data-img="assets/example4.png" class="grid-item lightbox-trigger">
                 <img src="assets/example4.png" alt="Example 8">
                 <div class="item-label">Sonic Waves (Music)</div>
             </a>
+        </div>
+        <div id="lightbox-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:999;align-items:center;justify-content:center;cursor:zoom-out">
+            <img id="lightbox-img" src="" alt="" style="max-width:90vw;max-height:85vh;border:1px solid var(--glass-border)">
         </div>
     </section>
 
@@ -512,6 +525,21 @@
     <script src="./sound-engine.js"></script>
     <script src="./prompt-mapping.js"></script>
     <script src="./generator-bridge.js"></script>
+    <script>
+        // ─── LIGHTBOX ───────────────────────────────────────────
+        (function () {
+            const overlay = document.getElementById('lightbox-overlay');
+            const img = document.getElementById('lightbox-img');
+            document.querySelectorAll('.lightbox-trigger').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    img.src = el.dataset.img;
+                    overlay.style.display = 'flex';
+                });
+            });
+            overlay.addEventListener('click', () => { overlay.style.display = 'none'; });
+        })();
+    </script>
     <script>
         const statusEl = document.getElementById('stack-status');
         const promptInput = document.getElementById('prompt-input');

@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aesthetic Studio – Ilayda Dede</title>
+<meta name="description" content="Aesthetic Studio by Ilayda Dede – scroll-triggered 3D web experiences that turn visitors into buyers. Prompt-to-3D landing pages, hypnotic motion, sound design.">
+<meta property="og:title" content="Aesthetic Studio – Ilayda Dede">
+<meta property="og:description" content="Scroll-triggered 3D web experiences that turn visitors into buyers.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ilo97.github.io/hypnotic-core/">
+<meta property="og:image" content="https://ilo97.github.io/hypnotic-core/assets/example1.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Aesthetic Studio – Ilayda Dede">
+<meta name="twitter:description" content="Scroll-triggered 3D web experiences that turn visitors into buyers.">
+<meta name="twitter:image" content="https://ilo97.github.io/hypnotic-core/assets/example1.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -36,9 +46,10 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
   <h1 id="h1">Ready to work with<br><em>Ilayda Dede?</em></h1>
   <div class="sub" id="sub">Welcome to the cosmic creative universe.<br>Scroll to explore endless possibilities.</div>
   <a class="cta" id="ctaBtn" href="mailto:hi@aesthetic.studio">✦ Let's Begin</a>
+  <a class="cta" id="ctaBtn2" href="platform-index.html" style="margin-top:10px;opacity:0">✦ Explore the Platform</a>
   <div class="scroll-hint" id="sHint"><span>Scroll</span><div class="gld-line"></div></div>
 </div>
-<footer><span>© 2026 Aesthetic Studio</span><span>✦ Ilayda Dede ✦</span></footer>
+<footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(212,175,55,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Ilayda Dede ✦</span></footer>
 
 <script>
 gsap.registerPlugin(ScrollTrigger);
@@ -47,16 +58,17 @@ const c=document.getElementById('c'),r=new THREE.WebGLRenderer({canvas:c,antiali
 r.setSize(window.innerWidth,window.innerHeight);r.setPixelRatio(Math.min(window.devicePixelRatio,2));
 const S=new THREE.Scene(),M=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,1000);
 M.position.z=40;
+const PERF=window.innerWidth<768?0.35:1;
 
 // ===== STARS =====
-const sC=6000,sG=new THREE.BufferGeometry(),sP=new Float32Array(sC*3),sS=new Float32Array(sC);
+const sC=Math.floor(6000*PERF),sG=new THREE.BufferGeometry(),sP=new Float32Array(sC*3),sS=new Float32Array(sC);
 for(let i=0;i<sC*3;i+=3){const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=20+Math.random()*60;sP[i]=r*Math.sin(p)*Math.cos(t);sP[i+1]=r*Math.sin(p)*Math.sin(t);sP[i+2]=r*Math.cos(p);sS[i/3]=0.05+Math.random()*0.3;}
 sG.setAttribute('position',new THREE.BufferAttribute(sP,3));
 const sM=new THREE.PointsMaterial({size:0.08,color:0xf0e6ff,transparent:true,opacity:0.6,blending:THREE.AdditiveBlending});
 const stars=new THREE.Points(sG,sM);S.add(stars);
 
 // ===== SHOOTING STARS =====
-const shC=20,shG=new THREE.BufferGeometry(),shP=new Float32Array(shC*3),shV=[];
+const shC=Math.floor(20*PERF)||8,shG=new THREE.BufferGeometry(),shP=new Float32Array(shC*3),shV=[];
 for(let i=0;i<shC;i++){shP[i*3]=(Math.random()-0.5)*80;shP[i*3+1]=(Math.random()-0.5)*80;shP[i*3+2]=(Math.random()-0.5)*80-10;shV.push({x:(Math.random()-0.5)*0.5,y:(Math.random()-0.5)*0.5,z:Math.random()*0.3+0.1});}
 shG.setAttribute('position',new THREE.BufferAttribute(shP,3));
 const shM=new THREE.PointsMaterial({size:0.15,color:0xffd700,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending});
@@ -82,7 +94,7 @@ for(let i=0;i<8;i++){
 }
 
 // ===== CHASING PIXELS =====
-const pC=500,pG=new THREE.BufferGeometry(),pPos=new Float32Array(pC*3),pVel=[],pCol=[];
+const pC=Math.floor(500*PERF),pG=new THREE.BufferGeometry(),pPos=new Float32Array(pC*3),pVel=[],pCol=[];
 for(let i=0;i<pC;i++){
   pPos[i*3]=(Math.random()-0.5)*40;pPos[i*3+1]=(Math.random()-0.5)*40;pPos[i*3+2]=(Math.random()-0.5)*20;
   pVel.push({x:(Math.random()-0.5)*0.1,y:(Math.random()-0.5)*0.1});
@@ -93,7 +105,7 @@ const pMat=new THREE.PointsMaterial({size:0.12,vertexColors:true,transparent:tru
 const pixels=new THREE.Points(pG,pMat);S.add(pixels);
 
 // ===== FLOATING DRINKS (pixel art) =====
-const dC=30,dG=new THREE.BufferGeometry(),dPos=new Float32Array(dC*3),dCol=new Float32Array(dC*3),dS=new Float32Array(dC);
+const dC=Math.floor(30*PERF)||10,dG=new THREE.BufferGeometry(),dPos=new Float32Array(dC*3),dCol=new Float32Array(dC*3),dS=new Float32Array(dC);
 for(let i=0;i<dC;i++){
   dPos[i*3]=(Math.random()-0.5)*40;dPos[i*3+1]=(Math.random()-0.5)*30;dPos[i*3+2]=(Math.random()-0.5)*20-5;
   const c=new THREE.Color().setHSL(0.05+Math.random()*0.1,0.8,0.5+Math.random()*0.3);
@@ -106,7 +118,7 @@ const dMat=new THREE.PointsMaterial({size:0.2,vertexColors:true,transparent:true
 const drinks=new THREE.Points(dG,dMat);S.add(drinks);
 
 // ===== FASHION/ANIMAL PIXELS =====
-const aC=200,aG=new THREE.BufferGeometry(),aPos=new Float32Array(aC*3),aCol=new Float32Array(aC*3);
+const aC=Math.floor(200*PERF),aG=new THREE.BufferGeometry(),aPos=new Float32Array(aC*3),aCol=new Float32Array(aC*3);
 for(let i=0;i<aC;i++){
   aPos[i*3]=(Math.random()-0.5)*35;aPos[i*3+1]=(Math.random()-0.5)*35;aPos[i*3+2]=(Math.random()-0.5)*15;
   const c=new THREE.Color().setHSL(0.6+Math.random()*0.2,0.7,0.5+Math.random()*0.3);
@@ -118,14 +130,14 @@ const aMat=new THREE.PointsMaterial({size:0.15,vertexColors:true,transparent:tru
 const animals=new THREE.Points(aG,aMat);S.add(animals);
 
 // ===== PIXEL DRINKS FLOWERS =====
-const fC=400,fG=new THREE.BufferGeometry(),fPos=new Float32Array(fC*3);
+const fC=Math.floor(400*PERF),fG=new THREE.BufferGeometry(),fPos=new Float32Array(fC*3);
 for(let i=0;i<fC*3;i+=3){const r=5+Math.random()*15,a=Math.random()*Math.PI*2;fPos[i]=Math.cos(a)*r;fPos[i+1]=Math.sin(a)*r*0.6;fPos[i+2]=(Math.random()-0.5)*10;}
 fG.setAttribute('position',new THREE.BufferAttribute(fPos,3));
 const fMat=new THREE.PointsMaterial({size:0.08,color:0xffd700,transparent:true,opacity:0.3,blending:THREE.AdditiveBlending});
 const flowers=new THREE.Points(fG,fMat);S.add(flowers);
 
 // ===== NEBULA =====
-const nC=3000,nG=new THREE.BufferGeometry(),nP=new Float32Array(nC*3),nCol=new Float32Array(nC*3);
+const nC=Math.floor(3000*PERF),nG=new THREE.BufferGeometry(),nP=new Float32Array(nC*3),nCol=new Float32Array(nC*3);
 for(let i=0;i<nC;i++){
   const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=10+Math.random()*25;
   nP[i*3]=r*Math.sin(p)*Math.cos(t);nP[i*3+1]=r*Math.sin(p)*Math.sin(t);nP[i*3+2]=r*Math.cos(p)-5;
@@ -141,6 +153,7 @@ gsap.to('#badge',{opacity:1,duration:1.2,delay:0.3});
 gsap.to('#h1',{opacity:1,y:0,duration:1.8,ease:'power4.out',delay:0.6});
 gsap.to('#sub',{opacity:1,y:0,duration:1.5,ease:'power3.out',delay:1.0});
 gsap.to('#ctaBtn',{opacity:1,duration:1.2,delay:1.4});
+gsap.to('#ctaBtn2',{opacity:1,duration:1.2,delay:1.6});
 gsap.to('#sHint',{opacity:1,duration:1.5,delay:2.0});
 
 const SP={p:0};
@@ -150,7 +163,7 @@ gsap.to(SP,{p:1,ease:'none',scrollTrigger:{trigger:'body',start:'top top',end:'b
 const MX={x:0,y:0};
 gsap.quickTo(MX,'x',{duration:0.6,ease:'power3.out'});
 gsap.quickTo(MX,'y',{duration:0.6,ease:'power3.out'});
-window.addEventListener('mousemove',e=>{MX.x=(e.clientX/w.innerWidth)*2-1;MX.y=-(e.clientY/w.innerHeight)*2+1;});
+window.addEventListener('mousemove',e=>{MX.x=(e.clientX/window.innerWidth)*2-1;MX.y=-(e.clientY/window.innerHeight)*2+1;});
 
 let CLK=new THREE.Clock();
 function tick(){
