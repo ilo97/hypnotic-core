@@ -49,3 +49,4 @@ Pro Generation entstehen:
 
 - `<slug>.html` – sofort testbare Seite
 - `<slug>.json` – aufgelöste Konfiguration inkl. `metadata.appliedRules`
+
