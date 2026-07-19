@@ -20,6 +20,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="./prompt-mapping.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#050510 url('assets/space-backdrop.jpg') center center/cover no-repeat fixed;color:#f0e6ff;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:crosshair}
@@ -33,6 +34,25 @@ h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#7dd3fc);-webkit-backgro
 .cta{padding:14px 40px;border:1px solid #b8a9ff;color:#b8a9ff;font-size:9px;letter-spacing:.3em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .5s;text-decoration:none;opacity:0;font-family:'Inter',sans-serif}
 .cta:hover{background:#b8a9ff;color:#050510}
 .scroll-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:rgba(184,169,255,0.1);opacity:0}
+
+/* ===== CREATE SECTION — prompt + style options, all on one page ===== */
+.create-section{position:relative;z-index:1;padding:100px 24px 140px;max-width:1000px;margin:0 auto;text-align:center}
+.create-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(26px,4vw,42px);font-weight:400;margin-bottom:12px;color:#f0e6ff}
+.create-sub{color:rgba(240,230,255,0.5);font-size:13px;margin-bottom:36px;letter-spacing:.02em}
+.create-box{display:flex;gap:10px;max-width:640px;margin:0 auto 48px;flex-wrap:wrap;justify-content:center}
+.create-input{flex:1;min-width:240px;padding:16px 20px;background:rgba(255,255,255,0.04);border:1px solid rgba(184,169,255,0.25);border-radius:6px;color:#f0e6ff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .4s,box-shadow .4s}
+.create-input:focus{border-color:#b8a9ff;box-shadow:0 0 30px rgba(184,169,255,0.15)}
+.create-btn{padding:16px 32px;background:transparent;border:1px solid #b8a9ff;color:#b8a9ff;font-size:10px;letter-spacing:.25em;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:all .4s;font-family:'Inter',sans-serif;white-space:nowrap}
+.create-btn:hover{background:#b8a9ff;color:#050510}
+.style-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
+.style-card{position:relative;border-radius:10px;padding:22px 18px;text-align:left;cursor:pointer;border:1px solid rgba(255,255,255,0.08);transition:transform .35s,border-color .35s,box-shadow .35s;overflow:hidden}
+.style-card:hover,.style-card.active{transform:translateY(-4px);border-color:rgba(255,255,255,0.35);box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+.style-card .swatch{width:100%;height:52px;border-radius:6px;margin-bottom:14px}
+.style-card .name{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;margin-bottom:6px}
+.style-card .desc{font-size:10px;color:rgba(240,230,255,0.45);line-height:1.6;letter-spacing:.02em}
+.style-card .match-tag{position:absolute;top:12px;right:12px;font-size:8px;letter-spacing:.15em;text-transform:uppercase;background:rgba(184,169,255,0.9);color:#050510;padding:3px 8px;border-radius:20px;opacity:0}
+.style-card.active .match-tag{opacity:1}
+@media (max-width:640px){.create-box{flex-direction:column}.create-btn{width:100%}}
 .gld-line{width:1px;height:30px;background:linear-gradient(to bottom,#b8a9ff,transparent);margin:6px auto 0;animation:br 3s infinite}
 @keyframes br{0%{opacity:.2;transform:scaleY(.3);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.2;transform:scaleY(.3);transform-origin:bottom}}
 footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.03);border-top:1px solid rgba(184,169,255,0.01);position:relative;z-index:1}
@@ -49,6 +69,17 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
   <a class="cta" id="ctaBtn2" href="platform-index.html" style="margin-top:10px;opacity:0">✦ Explore the Platform</a>
   <div class="scroll-hint" id="sHint"><span>Scroll</span><div class="gld-line"></div></div>
 </div>
+
+<section class="create-section" id="createSection">
+  <h2>Reklamını Şimdi Oluştur</h2>
+  <div class="create-sub">Markanı bir cümlede anlat, sana uygun animasyon tarzını anında gör.</div>
+  <div class="create-box">
+    <input class="create-input" id="createPromptInput" type="text" placeholder="örn. lüks altın parfüm lansmanı" autocomplete="off">
+    <button class="create-btn" id="createGenerateBtn">✦ Oluştur</button>
+  </div>
+  <div class="style-grid" id="styleGrid"></div>
+</section>
+
 <footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(184,169,255,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Aesthetic Studio ✦</span></footer>
 
 <script>
@@ -473,6 +504,64 @@ window.addEventListener('resize',()=>{
   r.setSize(window.innerWidth,window.innerHeight);r.setPixelRatio(Math.min(window.devicePixelRatio,2));
   ScrollTrigger.refresh();
 });
+</script>
+
+<script>
+  // ─── CREATE SECTION — style options built from the real generator rules ───
+  (function(){
+    const STYLE_LABELS={
+      'luxury':{name:'Lüks & Prestij',desc:'Yavaş, ihtişamlı giriş • 30.000 parçacık • altın-beyaz palet'},
+      'tech-cyber':{name:'Teknoloji & Neon',desc:'Hızlı tepki • 40.000 parçacık • turkuaz-mavi neon'},
+      'beverage-refreshing':{name:'İçecek & Ferahlık',desc:'Dalga hareketi • 22.000 parçacık • buz mavisi'},
+      'automotive-speed':{name:'Otomotiv & Hız',desc:'Ani, keskin giriş • 45.000 parçacık • kırmızı-siyah'},
+      'food-organic':{name:'Doğal & Organik',desc:'Yumuşak sallanma • 18.000 parçacık • yeşil-krem'},
+      'cosmetics-beauty':{name:'Kozmetik & Güzellik',desc:'Uzun, zarif giriş (4s) • pastel pembe'},
+      'music-mystic':{name:'Müzik & Mistik',desc:'Renk geçişli döngü • 35.000 parçacık • mor-turkuaz'},
+      'minimal-zen':{name:'Minimal & Zen',desc:'Sakin, yavaş kamera • 12.000 parçacık • siyah-beyaz'}
+    };
+    const grid=document.getElementById('styleGrid');
+    const input=document.getElementById('createPromptInput');
+    const btn=document.getElementById('createGenerateBtn');
+    if(!grid||!window.PromptMapping||!window.PromptMapping.RULES)return;
+
+    window.PromptMapping.RULES.forEach(rule=>{
+      const label=STYLE_LABELS[rule.id]||{name:rule.id,desc:''};
+      const base=rule.patch.colors.base,bg=rule.patch.colors.background;
+      const card=document.createElement('div');
+      card.className='style-card';
+      card.dataset.id=rule.id;
+      card.style.background=`linear-gradient(160deg, ${bg} 0%, rgba(255,255,255,0.02) 100%)`;
+      card.innerHTML=`
+        <span class="match-tag">Eşleşme</span>
+        <div class="swatch" style="background:linear-gradient(120deg, ${base}, ${rule.patch.colors.accent||'#ffffff'})"></div>
+        <div class="name" style="color:${base}">${label.name}</div>
+        <div class="desc">${label.desc}</div>`;
+      card.addEventListener('click',()=>applyStyle(rule));
+      grid.appendChild(card);
+    });
+
+    function applyStyle(rule){
+      document.querySelectorAll('.style-card').forEach(c=>c.classList.toggle('active',c.dataset.id===rule.id));
+      const base=rule.patch.colors.base;
+      document.querySelectorAll('.cta').forEach(el=>{el.style.borderColor=base;el.style.color=base;});
+      const createBtn=document.getElementById('createGenerateBtn');
+      createBtn.style.borderColor=base;createBtn.style.color=base;
+      gsap.to('#createSection h2',{color:base,duration:0.6});
+    }
+
+    btn.addEventListener('click',()=>{
+      const prompt=input.value.trim();
+      if(!prompt)return;
+      const {config,appliedRules}=window.PromptMapping.buildConfigFromPrompt(prompt);
+      const matchedId=appliedRules.length?appliedRules[appliedRules.length-1]:null;
+      const matched=window.PromptMapping.RULES.find(r=>r.id===matchedId);
+      if(matched){
+        applyStyle(matched);
+        document.querySelector(`.style-card[data-id="${matched.id}"]`).scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    });
+    input.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+  })();
 </script>
 </body>
 </html>
