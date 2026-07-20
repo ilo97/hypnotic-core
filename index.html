@@ -36,11 +36,11 @@ h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#7dd3fc);-webkit-backgro
 .scroll-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:rgba(184,169,255,0.1);opacity:0}
 
 /* ===== CREATE SECTION — prompt + style options, all on one page ===== */
-.create-section{position:relative;z-index:1;padding:100px 24px 140px;max-width:1000px;margin:0 auto;text-align:center}
+.create-section{position:relative;z-index:1;padding:100px 24px 140px;max-width:1000px;margin:0 auto;text-align:center;background:rgba(5,5,16,0.85);backdrop-filter:blur(12px)}
 .create-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(26px,4vw,42px);font-weight:400;margin-bottom:12px;color:#f0e6ff}
 .create-sub{color:rgba(240,230,255,0.5);font-size:13px;margin-bottom:36px;letter-spacing:.02em}
 .create-box{display:flex;gap:10px;max-width:640px;margin:0 auto 48px;flex-wrap:wrap;justify-content:center}
-.create-input{flex:1;min-width:240px;padding:16px 20px;background:rgba(255,255,255,0.04);border:1px solid rgba(184,169,255,0.25);border-radius:6px;color:#f0e6ff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .4s,box-shadow .4s}
+.create-input{flex:1;min-width:240px;padding:16px 20px;background:rgba(10,10,20,0.7);border:1px solid rgba(184,169,255,0.3);border-radius:6px;color:#f0e6ff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .4s,box-shadow .4s}
 .create-input:focus{border-color:#b8a9ff;box-shadow:0 0 30px rgba(184,169,255,0.15)}
 .create-btn{padding:16px 32px;background:transparent;border:1px solid #b8a9ff;color:#b8a9ff;font-size:10px;letter-spacing:.25em;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:all .4s;font-family:'Inter',sans-serif;white-space:nowrap}
 .create-btn:hover{background:#b8a9ff;color:#050510}
@@ -55,7 +55,7 @@ h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#7dd3fc);-webkit-backgro
 @media (max-width:640px){.create-box{flex-direction:column}.create-btn{width:100%}}
 
 /* ===== REAL PHOTO SHOWCASE — GL-Transition style pixel/warp morph ===== */
-.showcase-section{position:relative;z-index:1;padding:60px 0;background:rgba(5,5,16,0.5)}
+.showcase-section{position:relative;z-index:1;padding:60px 0;background:rgba(5,5,16,0.9)}
 .showcase-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(24px,3.5vw,38px);font-weight:400;text-align:center;margin-bottom:8px;color:#f0e6ff}
 .showcase-sub{text-align:center;color:rgba(240,230,255,0.45);font-size:12px;margin-bottom:28px}
 #transitionCanvas{width:100%;height:56vh;display:block;border-top:1px solid rgba(184,169,255,0.1);border-bottom:1px solid rgba(184,169,255,0.1)}
@@ -68,7 +68,7 @@ h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#7dd3fc);-webkit-backgro
 .grain-blob{position:absolute;pointer-events:none;opacity:0.5;z-index:0}
 .gld-line{width:1px;height:30px;background:linear-gradient(to bottom,#b8a9ff,transparent);margin:6px auto 0;animation:br 3s infinite}
 @keyframes br{0%{opacity:.2;transform:scaleY(.3);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.2;transform:scaleY(.3);transform-origin:bottom}}
-footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.03);border-top:1px solid rgba(184,169,255,0.01);position:relative;z-index:1}
+footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.35);border-top:1px solid rgba(184,169,255,0.15);position:relative;z-index:1;background:rgba(5,5,16,0.9)}
 @media(max-width:768px){h1{font-size:clamp(24px,8vw,36px)}.overlay{padding:30px}}
 </style>
 </head>
@@ -115,20 +115,20 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
   <div id="pricingPanel" style="display:none;margin-top:60px;padding-top:50px;border-top:1px solid rgba(184,169,255,0.12)">
     <div style="font-size:12px;letter-spacing:.1em;color:rgba(240,230,255,0.5);margin-bottom:28px">Bu stili beğendin mi? Uzun/özel versiyonlar için:</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:900px;margin:0 auto">
-      <div style="border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:26px 20px;text-align:left">
+      <div style="border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:26px 20px;text-align:left;background:rgba(15,15,22,0.7)">
         <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,230,255,0.5);margin-bottom:8px">Basic Ad Page</div>
         <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:#f0e6ff;margin-bottom:10px">€299</div>
         <div style="font-size:11px;color:rgba(240,230,255,0.4);margin-bottom:18px">Tek sahne, hazır preset, 24 saatte teslim</div>
         <a href="platform-index.html#pricing" class="create-btn" style="display:block;text-align:center">Satın Al →</a>
       </div>
-      <div style="border:1px solid #b8a9ff;border-radius:10px;padding:26px 20px;text-align:left;position:relative">
+      <div style="border:1px solid #b8a9ff;border-radius:10px;padding:26px 20px;text-align:left;position:relative;background:rgba(20,17,35,0.75)">
         <div style="position:absolute;top:-10px;right:16px;background:#b8a9ff;color:#050510;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px">Popüler</div>
         <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,230,255,0.5);margin-bottom:8px">Conversion Page</div>
         <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:#f0e6ff;margin-bottom:10px">€999</div>
         <div style="font-size:11px;color:rgba(240,230,255,0.4);margin-bottom:18px">Özel palet, 3 varyant, ürün entegrasyonu</div>
         <a href="platform-index.html#pricing" class="create-btn" style="display:block;text-align:center;background:#b8a9ff;color:#050510">Satın Al →</a>
       </div>
-      <div style="border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:26px 20px;text-align:left">
+      <div style="border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:26px 20px;text-align:left;background:rgba(15,15,22,0.7)">
         <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,230,255,0.5);margin-bottom:8px">Full Campaign</div>
         <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:#f0e6ff;margin-bottom:10px">€3.000+</div>
         <div style="font-size:11px;color:rgba(240,230,255,0.4);margin-bottom:18px">Çoklu sahne, video export, marka kiti</div>
@@ -151,7 +151,7 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
 </section>
 
 <div class="shape-divider" style="margin-top:-2px">
-  <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path fill="rgba(5,5,16,0.5)" d="M0,40 C 360,90 1080,-10 1440,40 L1440,80 L0,80 Z"/></svg>
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path fill="rgba(5,5,16,0.88)" d="M0,40 C 360,90 1080,-10 1440,40 L1440,80 L0,80 Z"/></svg>
 </div>
 
 <section class="showcase-section">
@@ -161,7 +161,7 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
 </section>
 
 <div class="shape-divider" style="margin-top:-2px;transform:scaleY(-1)">
-  <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path fill="rgba(5,5,16,0.5)" d="M0,40 C 360,90 1080,-10 1440,40 L1440,80 L0,80 Z"/></svg>
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path fill="rgba(5,5,16,0.88)" d="M0,40 C 360,90 1080,-10 1440,40 L1440,80 L0,80 Z"/></svg>
 </div>
 
 <footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(184,169,255,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Aesthetic Studio ✦</span></footer>
@@ -634,7 +634,7 @@ window.addEventListener('resize',()=>{
       const card=document.createElement('div');
       card.className='style-card';
       card.dataset.id=rule.id;
-      card.style.background=`linear-gradient(160deg, ${bg} 0%, rgba(255,255,255,0.02) 100%)`;
+      card.style.background=`linear-gradient(160deg, ${bg} 0%, #0a0a0f 100%)`;
       card.innerHTML=`
         <span class="match-tag">Eşleşme</span>
         <div class="swatch" style="background:linear-gradient(120deg, ${base}, ${rule.patch.colors.accent||'#ffffff'})"></div>
