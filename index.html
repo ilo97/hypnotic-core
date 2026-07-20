@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,18 +76,18 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
 
 <div id="authArea" style="position:fixed;top:20px;right:24px;z-index:100;display:flex;align-items:center;gap:12px">
   <span id="authGreeting" style="font-size:10px;letter-spacing:.1em;color:rgba(240,230,255,0.5);display:none"></span>
-  <button id="authOpenBtn" style="background:transparent;border:1px solid rgba(184,169,255,0.3);color:#f0e6ff;font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:8px 16px;border-radius:20px;cursor:pointer;font-family:'Inter',sans-serif">Giriş Yap</button>
-  <button id="authLogoutBtn" style="display:none;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(240,230,255,0.4);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;border-radius:20px;cursor:pointer;font-family:'Inter',sans-serif">Çıkış</button>
+  <button id="authOpenBtn" style="background:transparent;border:1px solid rgba(184,169,255,0.3);color:#f0e6ff;font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:8px 16px;border-radius:20px;cursor:pointer;font-family:'Inter',sans-serif">Log In</button>
+  <button id="authLogoutBtn" style="display:none;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(240,230,255,0.4);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;border-radius:20px;cursor:pointer;font-family:'Inter',sans-serif">Log Out</button>
 </div>
 
 <div id="authModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center">
   <div style="background:#0a0a0c;border:1px solid rgba(184,169,255,0.15);border-radius:14px;padding:36px;width:90%;max-width:360px;position:relative">
     <button id="authCloseBtn" style="position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(240,230,255,0.4);font-size:18px;cursor:pointer">×</button>
-    <div style="font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#f0e6ff;margin-bottom:20px">Giriş Yap</div>
+    <div style="font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#f0e6ff;margin-bottom:20px">Log In</div>
     <div id="authError" style="display:none;color:#ff6b6b;font-size:11px;margin-bottom:14px"></div>
-    <input id="loginEmail" type="email" placeholder="E-posta" style="width:100%;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px;box-sizing:border-box">
-    <input id="loginPassword" type="password" placeholder="Şifre" style="width:100%;padding:12px 14px;margin-bottom:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px;box-sizing:border-box">
-    <button id="loginSubmitBtn" style="width:100%;padding:12px;background:#b8a9ff;border:none;color:#050510;font-size:11px;letter-spacing:.15em;text-transform:uppercase;border-radius:6px;cursor:pointer;font-weight:600">Giriş Yap</button>
+    <input id="loginEmail" type="email" placeholder="Email" style="width:100%;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px;box-sizing:border-box">
+    <input id="loginPassword" type="password" placeholder="Password" style="width:100%;padding:12px 14px;margin-bottom:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px;box-sizing:border-box">
+    <button id="loginSubmitBtn" style="width:100%;padding:12px;background:#b8a9ff;border:none;color:#050510;font-size:11px;letter-spacing:.15em;text-transform:uppercase;border-radius:6px;cursor:pointer;font-weight:600">Log In</button>
   </div>
 </div>
 
@@ -96,43 +96,42 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
   <div class="badge" id="badge">✦ Aesthetic Studio ✦</div>
   <h1 id="h1">Ready to build<br><em>something unforgettable?</em></h1>
   <div class="sub" id="sub">One prompt. One scroll-triggered 3D ad your audience won't scroll past.</div>
-  <a class="cta" id="ctaBtn" href="#createSection">✦ Reklamını Oluştur</a>
   <div class="scroll-hint" id="sHint"><span>Scroll</span><div class="gld-line"></div></div>
 </div>
 
 <section class="create-section" id="createSection">
-  <h2>Reklamını Şimdi Oluştur</h2>
-  <div class="create-sub">Markanı bir cümlede anlat, sana uygun animasyon tarzını anında gör.</div>
+  <h2>Create Your Ad Now</h2>
+  <div class="create-sub">Describe your brand in one sentence, see your animation style instantly.</div>
   <div class="create-box">
-    <input class="create-input" id="createPromptInput" type="text" placeholder="örn. lüks altın parfüm lansmanı" autocomplete="off">
-    <button class="create-btn" id="createGenerateBtn">✦ Oluştur</button>
+    <input class="create-input" id="createPromptInput" type="text" placeholder="e.g. luxury gold perfume launch" autocomplete="off">
+    <button class="create-btn" id="createGenerateBtn">✦ Generate</button>
   </div>
   <div style="max-width:420px;margin:0 auto 24px">
-    <input class="create-input" id="styleSearchInput" type="text" placeholder="🔍 28 stil arasında ara — içecek, kıyafet, emlak, kişisel..." style="width:100%;font-size:12px;padding:10px 16px">
+    <input class="create-input" id="styleSearchInput" type="text" placeholder="🔍 Search 28 styles — drinks, clothing, real estate, personal..." style="width:100%;font-size:12px;padding:10px 16px">
   </div>
   <div class="style-grid" id="styleGrid"></div>
 
   <div id="pricingPanel" style="display:none;margin-top:60px;padding-top:50px;border-top:1px solid rgba(184,169,255,0.12)">
-    <div style="font-size:12px;letter-spacing:.1em;color:rgba(240,230,255,0.5);margin-bottom:28px">Bu stili beğendin mi? Uzun/özel versiyonlar için:</div>
+    <div style="font-size:12px;letter-spacing:.1em;color:rgba(240,230,255,0.5);margin-bottom:28px">Like this style? For longer/custom versions:</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:900px;margin:0 auto">
       <div style="border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:26px 20px;text-align:left;background:rgba(15,15,22,0.7)">
         <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,230,255,0.5);margin-bottom:8px">Basic Ad Page</div>
         <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:#f0e6ff;margin-bottom:10px">€299</div>
-        <div style="font-size:11px;color:rgba(240,230,255,0.4);margin-bottom:18px">Tek sahne, hazır preset, 24 saatte teslim</div>
-        <a href="platform-index.html#pricing" class="create-btn" style="display:block;text-align:center">Satın Al →</a>
+        <div style="font-size:11px;color:rgba(240,230,255,0.4);margin-bottom:18px">One scene, premium preset, delivered in 24h</div>
+        <a href="platform-index.html#pricing" class="create-btn" style="display:block;text-align:center">Buy Now →</a>
       </div>
       <div style="border:1px solid #b8a9ff;border-radius:10px;padding:26px 20px;text-align:left;position:relative;background:rgba(20,17,35,0.75)">
-        <div style="position:absolute;top:-10px;right:16px;background:#b8a9ff;color:#050510;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px">Popüler</div>
+        <div style="position:absolute;top:-10px;right:16px;background:#b8a9ff;color:#050510;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px">Popular</div>
         <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,230,255,0.5);margin-bottom:8px">Conversion Page</div>
         <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:#f0e6ff;margin-bottom:10px">€999</div>
-        <div style="font-size:11px;color:rgba(240,230,255,0.4);margin-bottom:18px">Özel palet, 3 varyant, ürün entegrasyonu</div>
-        <a href="platform-index.html#pricing" class="create-btn" style="display:block;text-align:center;background:#b8a9ff;color:#050510">Satın Al →</a>
+        <div style="font-size:11px;color:rgba(240,230,255,0.4);margin-bottom:18px">Custom palette, 3 variants, product integration</div>
+        <a href="platform-index.html#pricing" class="create-btn" style="display:block;text-align:center;background:#b8a9ff;color:#050510">Buy Now →</a>
       </div>
       <div style="border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:26px 20px;text-align:left;background:rgba(15,15,22,0.7)">
         <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,230,255,0.5);margin-bottom:8px">Full Campaign</div>
-        <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:#f0e6ff;margin-bottom:10px">€3.000+</div>
-        <div style="font-size:11px;color:rgba(240,230,255,0.4);margin-bottom:18px">Çoklu sahne, video export, marka kiti</div>
-        <a href="platform-index.html#pricing" class="create-btn" style="display:block;text-align:center">Satın Al →</a>
+        <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:#f0e6ff;margin-bottom:10px">€3,000+</div>
+        <div style="font-size:11px;color:rgba(240,230,255,0.4);margin-bottom:18px">Multi-scene, video export, brand kit</div>
+        <a href="platform-index.html#pricing" class="create-btn" style="display:block;text-align:center">Buy Now →</a>
       </div>
     </div>
   </div>
@@ -155,8 +154,8 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
 </div>
 
 <section class="showcase-section">
-  <h2>Gerçek Sahneler, Sinematik Geçişlerle</h2>
-  <div class="showcase-sub">GL Transition tekniği: piksel bloklarına ayrışıp dalga gibi bükülerek bir sonraki sahneye akıyor</div>
+  <h2>Real Scenes, Cinematic Transitions</h2>
+  <div class="showcase-sub">GL Transition technique: breaks into pixel blocks, warps like a wave, and flows into the next scene</div>
   <canvas id="transitionCanvas"></canvas>
 </section>
 
@@ -512,7 +511,6 @@ const nebula=new THREE.Points(nG,nMat);S.add(nebula);
 gsap.to('#badge',{opacity:1,duration:1.2,delay:0.3});
 gsap.to('#h1',{opacity:1,y:0,duration:1.8,ease:'power4.out',delay:0.6});
 gsap.to('#sub',{opacity:1,y:0,duration:1.5,ease:'power3.out',delay:1.0});
-gsap.to('#ctaBtn',{opacity:1,duration:1.2,delay:1.4});
 gsap.to('#sHint',{opacity:1,duration:1.5,delay:2.0});
 
 const SP={p:0};
@@ -593,34 +591,34 @@ window.addEventListener('resize',()=>{
   // ─── CREATE SECTION — style options built from the real generator rules ───
   (function(){
     const STYLE_LABELS={
-      'luxury':{name:'Lüks & Prestij',desc:'Yavaş, ihtişamlı giriş • 30.000 parçacık • altın-beyaz palet'},
-      'tech-cyber':{name:'Teknoloji & Neon',desc:'Hızlı tepki • 40.000 parçacık • turkuaz-mavi neon'},
-      'beverage-refreshing':{name:'İçecek & Ferahlık',desc:'Dalga hareketi • 22.000 parçacık • buz mavisi'},
-      'automotive-speed':{name:'Otomotiv & Hız',desc:'Ani, keskin giriş • 45.000 parçacık • kırmızı-siyah'},
-      'food-organic':{name:'Doğal & Organik',desc:'Yumuşak sallanma • 18.000 parçacık • yeşil-krem'},
-      'cosmetics-beauty':{name:'Kozmetik & Güzellik',desc:'Uzun, zarif giriş (4s) • pastel pembe'},
-      'music-mystic':{name:'Müzik & Mistik',desc:'Renk geçişli döngü • 35.000 parçacık • mor-turkuaz'},
-      'minimal-zen':{name:'Minimal & Zen',desc:'Sakin, yavaş kamera • 12.000 parçacık • siyah-beyaz'},
-      'fashion-clothing':{name:'Kıyafet & Moda',desc:'Keskin giriş • 26.000 parçacık • kırmızı-siyah editorial'},
-      'jewelry-watch':{name:'Takı & Saat',desc:'Zarif, yavaş giriş (3.5s) • altın-beyaz parıltı'},
-      'electronics-gadget':{name:'Elektronik & Gadget',desc:'Anlık tepki • 38.000 parçacık • buz mavisi-lacivert'},
-      'real-estate':{name:'Emlak & Gayrimenkul',desc:'Geniş, sakin kamera • 16.000 parçacık • sıcak altın'},
-      'furniture-home':{name:'Mobilya & Dekorasyon',desc:'Yumuşak giriş • 14.000 parçacık • ahşap tonları'},
-      'personal-branding':{name:'Kişisel & Portre',desc:'Zarif giriş • 20.000 parçacık • nötr-lavanta'},
-      'fitness-sports':{name:'Spor & Fitness',desc:'Patlayıcı giriş (1.2s) • 42.000 parçacık • turuncu-siyah'},
-      'baby-kids':{name:'Bebek & Çocuk',desc:'Yumuşak, uzun giriş • 15.000 parçacık • pastel pembe-turkuaz'},
-      'pet-animal':{name:'Evcil Hayvan',desc:'Sıcak, samimi hareket • 17.000 parçacık • amber-yeşil'},
-      'travel-tourism':{name:'Seyahat & Tatil',desc:'Dalga hareketi • 24.000 parçacık • gökyüzü mavisi-turuncu'},
-      'wedding-event':{name:'Düğün & Davet',desc:'Uzun, romantik giriş (3.8s) • krem-altın'},
-      'finance-crypto':{name:'Finans & Kripto',desc:'Keskin, kurumsal • 30.000 parçacık • yeşil-siyah'},
-      'education-course':{name:'Eğitim & Kurs',desc:'Dost canlısı giriş • 18.000 parçacık • mavi-sarı'},
-      'health-medical':{name:'Sağlık & Klinik',desc:'Sakin, temiz kamera • 16.000 parçacık • turkuaz-beyaz'},
-      'gaming-esports':{name:'Oyun & Esports',desc:'Anlık tepki • 45.000 parçacık • neon mor-turkuaz'},
-      'coffee-cafe':{name:'Kahve & Kafe',desc:'Sıcak, yavaş giriş • 15.000 parçacık • kahve-krem'},
-      'bakery-dessert':{name:'Pasta & Tatlı',desc:'Yumuşak giriş • 16.000 parçacık • pembe-krem'},
-      'sneakers-street':{name:'Sneaker & Sokak Modası',desc:'Patlayıcı giriş (1.3s) • 34.000 parçacık • sarı-siyah'},
-      'flowers-florist':{name:'Çiçek & Çiçekçi',desc:'Zarif, uzun giriş • 14.000 parçacık • pembe-yeşil'},
-      'photography-camera':{name:'Fotoğrafçılık',desc:'Sakin kamera • 19.000 parçacık • gri-turuncu'}
+      'luxury':{name:'Luxury & Prestige',desc:'Slow, opulent intro • 30,000 particles • gold-white palette'},
+      'tech-cyber':{name:'Tech & Neon',desc:'Fast response • 40,000 particles • cyan-blue neon'},
+      'beverage-refreshing':{name:'Drinks & Refreshment',desc:'Wave motion • 22,000 particles • ice blue'},
+      'automotive-speed':{name:'Automotive & Speed',desc:'Sharp, sudden intro • 45,000 particles • red-black'},
+      'food-organic':{name:'Natural & Organic',desc:'Gentle sway • 18,000 particles • green-cream'},
+      'cosmetics-beauty':{name:'Cosmetics & Beauty',desc:'Long, elegant intro (4s) • pastel pink'},
+      'music-mystic':{name:'Music & Mystic',desc:'Color-shifting loop • 35,000 particles • purple-cyan'},
+      'minimal-zen':{name:'Minimal & Zen',desc:'Calm, slow camera • 12,000 particles • black-white'},
+      'fashion-clothing':{name:'Fashion & Clothing',desc:'Sharp intro • 26,000 particles • red-black editorial'},
+      'jewelry-watch':{name:'Jewelry & Watches',desc:'Elegant, slow intro (3.5s) • gold-white shimmer'},
+      'electronics-gadget':{name:'Electronics & Gadgets',desc:'Instant response • 38,000 particles • ice blue-navy'},
+      'real-estate':{name:'Real Estate',desc:'Wide, calm camera • 16,000 particles • warm gold'},
+      'furniture-home':{name:'Furniture & Home Decor',desc:'Soft intro • 14,000 particles • wood tones'},
+      'personal-branding':{name:'Personal & Portrait',desc:'Elegant intro • 20,000 particles • neutral-lavender'},
+      'fitness-sports':{name:'Sports & Fitness',desc:'Explosive intro (1.2s) • 42,000 particles • orange-black'},
+      'baby-kids':{name:'Baby & Kids',desc:'Soft, long intro • 15,000 particles • pastel pink-turquoise'},
+      'pet-animal':{name:'Pets & Animals',desc:'Warm, friendly motion • 17,000 particles • amber-green'},
+      'travel-tourism':{name:'Travel & Tourism',desc:'Wave motion • 24,000 particles • sky blue-orange'},
+      'wedding-event':{name:'Weddings & Events',desc:'Long, romantic intro (3.8s) • cream-gold'},
+      'finance-crypto':{name:'Finance & Crypto',desc:'Sharp, corporate • 30,000 particles • green-black'},
+      'education-course':{name:'Education & Courses',desc:'Friendly intro • 18,000 particles • blue-yellow'},
+      'health-medical':{name:'Health & Medical',desc:'Calm, clean camera • 16,000 particles • teal-white'},
+      'gaming-esports':{name:'Gaming & Esports',desc:'Instant response • 45,000 particles • neon purple-cyan'},
+      'coffee-cafe':{name:'Coffee & Cafe',desc:'Warm, slow intro • 15,000 particles • coffee-cream'},
+      'bakery-dessert':{name:'Bakery & Desserts',desc:'Soft intro • 16,000 particles • pink-cream'},
+      'sneakers-street':{name:'Sneakers & Streetwear',desc:'Explosive intro (1.3s) • 34,000 particles • yellow-black'},
+      'flowers-florist':{name:'Flowers & Florists',desc:'Elegant, long intro • 14,000 particles • pink-green'},
+      'photography-camera':{name:'Photography',desc:'Calm camera • 19,000 particles • gray-orange'}
     };
     const searchInput=document.getElementById('styleSearchInput');
     const grid=document.getElementById('styleGrid');
@@ -636,7 +634,7 @@ window.addEventListener('resize',()=>{
       card.dataset.id=rule.id;
       card.style.background=`linear-gradient(160deg, ${bg} 0%, #0a0a0f 100%)`;
       card.innerHTML=`
-        <span class="match-tag">Eşleşme</span>
+        <span class="match-tag">Match</span>
         <div class="swatch" style="background:linear-gradient(120deg, ${base}, ${rule.patch.colors.accent||'#ffffff'})"></div>
         <div class="name" style="color:${base}">${label.name}</div>
         <div class="desc">${label.desc}</div>`;
@@ -646,11 +644,10 @@ window.addEventListener('resize',()=>{
 
     function applyStyle(rule){
       document.querySelectorAll('.style-card').forEach(c=>c.classList.toggle('active',c.dataset.id===rule.id));
-      const base=rule.patch.colors.base;
-      document.querySelectorAll('.cta').forEach(el=>{el.style.borderColor=base;el.style.color=base;});
-      const createBtn=document.getElementById('createGenerateBtn');
-      createBtn.style.borderColor=base;createBtn.style.color=base;
-      gsap.to('#createSection h2',{color:base,duration:0.6});
+      // NOTE: intentionally NOT recoloring global buttons/headings to the
+      // rule's color anymore — that was breaking the site's own violet
+      // identity every time a card was picked. The rule color now only
+      // shows inside that card's own swatch/match-tag.
       const pricingPanel=document.getElementById('pricingPanel');
       if(pricingPanel.style.display==='none'){
         pricingPanel.style.display='block';
@@ -789,7 +786,7 @@ window.addEventListener('resize',()=>{
     function refreshAuthUI() {
       const session = localStorage.getItem(LS_SESSION);
       if (session) {
-        greeting.textContent = 'Giriş yapıldı';
+        greeting.textContent = 'Logged in';
         greeting.style.display = 'inline';
         openBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
@@ -809,7 +806,7 @@ window.addEventListener('resize',()=>{
       const pass = document.getElementById('loginPassword').value;
       clearError();
       if (email !== OWNER_EMAIL.toLowerCase() || pass !== OWNER_PASSWORD) {
-        return showError('E-posta veya şifre hatalı.');
+        return showError('Incorrect email or password.');
       }
       localStorage.setItem(LS_SESSION, 'true');
       localStorage.setItem(LS_ADMIN_KEY, 'true');
