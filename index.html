@@ -53,6 +53,12 @@ h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#7dd3fc);-webkit-backgro
 .style-card .match-tag{position:absolute;top:12px;right:12px;font-size:8px;letter-spacing:.15em;text-transform:uppercase;background:rgba(184,169,255,0.9);color:#050510;padding:3px 8px;border-radius:20px;opacity:0}
 .style-card.active .match-tag{opacity:1}
 @media (max-width:640px){.create-box{flex-direction:column}.create-btn{width:100%}}
+
+/* ===== REAL PHOTO SHOWCASE — GL-Transition style pixel/warp morph ===== */
+.showcase-section{position:relative;z-index:1;padding:60px 0}
+.showcase-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(24px,3.5vw,38px);font-weight:400;text-align:center;margin-bottom:8px;color:#f0e6ff}
+.showcase-sub{text-align:center;color:rgba(240,230,255,0.45);font-size:12px;margin-bottom:28px}
+#transitionCanvas{width:100%;height:56vh;display:block;border-top:1px solid rgba(184,169,255,0.1);border-bottom:1px solid rgba(184,169,255,0.1)}
 .gld-line{width:1px;height:30px;background:linear-gradient(to bottom,#b8a9ff,transparent);margin:6px auto 0;animation:br 3s infinite}
 @keyframes br{0%{opacity:.2;transform:scaleY(.3);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.2;transform:scaleY(.3);transform-origin:bottom}}
 footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.03);border-top:1px solid rgba(184,169,255,0.01);position:relative;z-index:1}
@@ -78,6 +84,12 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
     <button class="create-btn" id="createGenerateBtn">✦ Oluştur</button>
   </div>
   <div class="style-grid" id="styleGrid"></div>
+</section>
+
+<section class="showcase-section">
+  <h2>Gerçek Sahneler, Sinematik Geçişlerle</h2>
+  <div class="showcase-sub">GL Transition tekniği: piksel bloklarına ayrışıp dalga gibi bükülerek bir sonraki sahneye akıyor</div>
+  <canvas id="transitionCanvas"></canvas>
 </section>
 
 <footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(184,169,255,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Aesthetic Studio ✦</span></footer>
@@ -561,6 +573,91 @@ window.addEventListener('resize',()=>{
       }
     });
     input.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+  })();
+</script>
+
+<script>
+  // ─── REAL PHOTO SHOWCASE — custom GLSL transition (pixelize + wave warp) ───
+  // Technique based on the open "GL Transitions" spec (gl-transitions.com):
+  // a fragment shader mixes getFromColor()/getToColor() driven by a 0→1
+  // progress value. This implementation combines a pixelize block-reveal
+  // with a sine-wave UV warp, plus a slow continuous Ken Burns zoom.
+  (function(){
+    const canvas=document.getElementById('transitionCanvas');
+    if(!canvas)return;
+    const images=['assets/space-backdrop.jpg','assets/earth-real.jpg','assets/gasgiant-real.jpg','assets/galaxy-real.jpg','assets/deepfield-real.jpg'];
+
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    const scene=new THREE.Scene();
+    const cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+
+    const vertexShader=`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.0);}`;
+    const fragmentShader=`
+      precision highp float;
+      varying vec2 vUv;
+      uniform sampler2D uFrom, uTo;
+      uniform float uProgress, uZoom, uRatio;
+      vec2 pixelize(vec2 uv, float amount){
+        if(amount<=0.001) return uv;
+        vec2 squares=mix(vec2(1.0),vec2(46.0,46.0/uRatio),amount);
+        return (floor(uv*squares)+0.5)/squares;
+      }
+      vec2 zoomUV(vec2 uv, float z){ return (uv-0.5)*(1.0-z*0.06)+0.5; }
+      void main(){
+        float d=min(uProgress,1.0-uProgress)*2.0;
+        vec2 uv1=pixelize(vUv,d);
+        vec2 wave=vec2(sin(vUv.y*9.0+uProgress*6.28318)*0.025*d, cos(vUv.x*9.0+uProgress*6.28318)*0.025*d);
+        vec4 colFrom=texture2D(uFrom, zoomUV(uv1-wave,uZoom));
+        vec4 colTo=texture2D(uTo, zoomUV(uv1+wave,0.0));
+        float m=smoothstep(0.0,1.0,uProgress);
+        gl_FragColor=mix(colFrom,colTo,m);
+      }`;
+
+    const uniforms={uFrom:{value:null},uTo:{value:null},uProgress:{value:0},uZoom:{value:0},uRatio:{value:canvas.clientWidth/canvas.clientHeight}};
+    const mat=new THREE.ShaderMaterial({uniforms,vertexShader,fragmentShader,transparent:true});
+    const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),mat);
+    scene.add(quad);
+
+    function resize(){
+      const w=canvas.clientWidth,h=canvas.clientHeight;
+      renderer.setSize(w,h,false);
+      uniforms.uRatio.value=w/h;
+    }
+    window.addEventListener('resize',resize);
+
+    const loader=new THREE.TextureLoader();
+    Promise.all(images.map(src=>new Promise(res=>loader.load(src,tex=>{tex.encoding=THREE.sRGBEncoding;res(tex);},undefined,()=>res(null)))))
+      .then(textures=>{
+        textures=textures.filter(Boolean);
+        if(textures.length<2)return;
+        resize();
+        let idx=0;
+        uniforms.uFrom.value=textures[0];
+        uniforms.uTo.value=textures[1%textures.length];
+        renderer.render(scene,cam);
+
+        function playNext(){
+          const nextIdx=(idx+1)%textures.length;
+          uniforms.uFrom.value=textures[idx];
+          uniforms.uTo.value=textures[nextIdx];
+          uniforms.uProgress.value=0;
+          gsap.to(uniforms.uProgress,{value:1,duration:2.0,ease:'power2.inOut',onComplete:()=>{
+            idx=nextIdx;
+            uniforms.uZoom.value=0;
+            setTimeout(playNext,4200);
+          }});
+        }
+
+        // Continuous render loop — drives the shader uniforms + slow Ken Burns zoom
+        function tick(){
+          uniforms.uZoom.value=Math.min(1,uniforms.uZoom.value+0.0025);
+          renderer.render(scene,cam);
+          requestAnimationFrame(tick);
+        }
+        tick();
+        setTimeout(playNext,4200);
+      });
   })();
 </script>
 </body>
