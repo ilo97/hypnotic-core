@@ -36,9 +36,9 @@ h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#7dd3fc);-webkit-backgro
 .scroll-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:.4em;text-transform:uppercase;color:rgba(184,169,255,0.1);opacity:0}
 
 /* ===== CREATE SECTION — prompt + style options, all on one page ===== */
-.create-section{position:relative;z-index:1;padding:100px 24px 140px;max-width:1000px;margin:0 auto;text-align:center;background:rgba(5,5,16,0.85);backdrop-filter:blur(12px)}
-.create-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(26px,4vw,42px);font-weight:400;margin-bottom:12px;color:#f0e6ff}
-.create-sub{color:rgba(240,230,255,0.5);font-size:13px;margin-bottom:36px;letter-spacing:.02em}
+.create-section{position:relative;z-index:1;padding:100px 24px 140px;max-width:1000px;margin:0 auto;text-align:center;background:linear-gradient(rgba(5,5,16,0.55),rgba(5,5,16,0.7));backdrop-filter:blur(3px)}
+.create-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(26px,4vw,42px);font-weight:400;margin-bottom:12px;color:#f0e6ff;text-shadow:0 2px 20px rgba(0,0,0,0.8)}
+.create-sub{color:rgba(240,230,255,0.6);font-size:13px;margin-bottom:36px;letter-spacing:.02em;text-shadow:0 2px 12px rgba(0,0,0,0.8)}
 .create-box{display:flex;gap:10px;max-width:640px;margin:0 auto 48px;flex-wrap:wrap;justify-content:center}
 .create-input{flex:1;min-width:240px;padding:16px 20px;background:rgba(10,10,20,0.7);border:1px solid rgba(184,169,255,0.3);border-radius:6px;color:#f0e6ff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .4s,box-shadow .4s}
 .create-input:focus{border-color:#b8a9ff;box-shadow:0 0 30px rgba(184,169,255,0.15)}
@@ -55,13 +55,13 @@ h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#7dd3fc);-webkit-backgro
 @media (max-width:640px){.create-box{flex-direction:column}.create-btn{width:100%}}
 
 /* ===== REAL PHOTO SHOWCASE — GL-Transition style pixel/warp morph ===== */
-.showcase-section{position:relative;z-index:1;padding:60px 0;background:rgba(5,5,16,0.9)}
-.showcase-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(24px,3.5vw,38px);font-weight:400;text-align:center;margin-bottom:8px;color:#f0e6ff}
-.showcase-sub{text-align:center;color:rgba(240,230,255,0.45);font-size:12px;margin-bottom:28px}
+.showcase-section{position:relative;z-index:1;padding:60px 0;background:rgba(5,5,16,0.45)}
+.showcase-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(24px,3.5vw,38px);font-weight:400;text-align:center;margin-bottom:8px;color:#f0e6ff;text-shadow:0 2px 20px rgba(0,0,0,0.8)}
+.showcase-sub{text-align:center;color:rgba(240,230,255,0.6);font-size:12px;margin-bottom:28px;text-shadow:0 2px 12px rgba(0,0,0,0.8)}
 #transitionCanvas{width:100%;height:56vh;display:block;border-top:1px solid rgba(184,169,255,0.1);border-bottom:1px solid rgba(184,169,255,0.1)}
 .gld-line{width:1px;height:30px;background:linear-gradient(to bottom,#b8a9ff,transparent);margin:6px auto 0;animation:br 3s infinite}
 @keyframes br{0%{opacity:.2;transform:scaleY(.3);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.2;transform:scaleY(.3);transform-origin:bottom}}
-footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.35);border-top:1px solid rgba(184,169,255,0.15);position:relative;z-index:1;background:rgba(5,5,16,0.9)}
+footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.4);border-top:1px solid rgba(184,169,255,0.15);position:relative;z-index:1;background:rgba(5,5,16,0.5);text-shadow:0 1px 8px rgba(0,0,0,0.8)}
 @media(max-width:768px){h1{font-size:clamp(24px,8vw,36px)}.overlay{padding:30px}}
 </style>
 </head>
@@ -399,10 +399,10 @@ const heroPlanet={obj:heroObj,spin:0.08};
 // ===== REAL PHOTO SPRITES — actual uploaded photographs, not procedural =====
 // Loaded as soft-edged camera-facing sprites so they always read correctly
 // (a photo doesn't wrap onto a sphere like a UV-mapped texture would).
-function loadRealPhotoSprite(url,widthUnits,heightUnits,onReady,onError,revealDelay){
-  const mat=new THREE.SpriteMaterial({map:null,transparent:true,depthWrite:false,opacity:0});
+function loadRealPhotoSprite(url,widthUnits,heightUnits,onReady,onError){
+  const mat=new THREE.SpriteMaterial({map:null,transparent:true,depthWrite:false,opacity:1});
   const sprite=new THREE.Sprite(mat);
-  sprite.scale.set(0,0,1); // scaled in during the harmonious reveal sequence
+  sprite.scale.set(widthUnits,heightUnits,1); // full size immediately — no pop-in animation
   S.add(sprite);
   const img=new Image();
   img.onload=function(){
@@ -415,8 +415,6 @@ function loadRealPhotoSprite(url,widthUnits,heightUnits,onReady,onError,revealDe
     ctx.globalCompositeOperation='source-over';
     const tex=new THREE.CanvasTexture(cv);tex.encoding=THREE.sRGBEncoding;
     mat.map=tex;mat.needsUpdate=true;
-    gsap.to(mat,{opacity:1,duration:1.4,delay:revealDelay||0,ease:'power2.out'});
-    gsap.to(sprite.scale,{x:widthUnits,y:heightUnits,duration:1.6,delay:revealDelay||0,ease:'power2.out'});
     if(onReady)onReady(sprite);
   };
   img.onerror=function(){ if(onError)onError(); };
@@ -424,21 +422,21 @@ function loadRealPhotoSprite(url,widthUnits,heightUnits,onReady,onError,revealDe
   return sprite;
 }
 
-const realHero=loadRealPhotoSprite('assets/earth-real.jpg',34,14.3,null,function(){heroObj.visible=true;},1.6);
+const realHero=loadRealPhotoSprite('assets/earth-real.jpg',34,14.3,null,function(){heroObj.visible=true;});
 
 // Amberion becomes the real photographed gas giant (with its own moons already in-shot)
 const amberionIndex=PLANETS.findIndex(p=>p.name==='Amberion');
 loadRealPhotoSprite('assets/gasgiant-real.jpg',24,10.2,function(sprite){
   planetMeshes[amberionIndex].obj=sprite;
   planetMeshes[amberionIndex].pending=false;
-},null,2.1);
+});
 
 // Distant real spiral galaxy — huge, far in the background, barely drifting
-const galaxySprite=loadRealPhotoSprite('assets/galaxy-real.jpg',150,117,null,null,0.2);
+const galaxySprite=loadRealPhotoSprite('assets/galaxy-real.jpg',150,117,null,null);
 galaxySprite.position.set(-60,40,-260);
 
 // Second deep-field layer — distant galaxy cluster, opposite side for depth
-const deepfieldSprite=loadRealPhotoSprite('assets/deepfield-real.jpg',170,113,null,null,0.5);
+const deepfieldSprite=loadRealPhotoSprite('assets/deepfield-real.jpg',170,113,null,null);
 deepfieldSprite.position.set(70,-30,-300);
 
 // ===== VISIBLE ORBIT PATHS — thin rings tracing each planet's path =====
@@ -552,28 +550,6 @@ function tick(){
   
   r.render(S,M);requestAnimationFrame(tick);
 }
-
-// ===== HARMONIOUS INTRO SEQUENCE — everything appears in order, not at once =====
-stars.material.opacity=0;nMat.opacity=0;fMat.opacity=0;shM.opacity=0;
-planetMeshes.forEach(p=>{if(p.obj)p.obj.scale.set(0,0,0);});
-moon.scale.set(0,0,0);
-rockets.forEach(r=>r.obj.scale.set(0,0,0));
-
-const introTl=gsap.timeline({delay:0.3});
-introTl
-  .to(stars.material,{opacity:0.6,duration:1.6,ease:'power1.out'},0)
-  .to(nMat,{opacity:0.12,duration:1.6,ease:'power1.out'},0.25)
-  .to(fMat,{opacity:0.5,duration:1.3,ease:'power1.out'},0.5)
-  .to(shM,{opacity:0.8,duration:1.1,ease:'power1.out'},0.7);
-
-planetMeshes.forEach((p,i)=>{
-  if(!p.obj)return; // Amberion's real photo reveals itself once loaded (see revealDelay above)
-  introTl.to(p.obj.scale,{x:1,y:1,z:1,duration:1.1,ease:'back.out(1.5)'},1.0+i*0.3);
-});
-introTl.to(moon.scale,{x:1,y:1,z:1,duration:0.9,ease:'back.out(1.6)'},2.6);
-rockets.forEach((r,i)=>{
-  introTl.to(r.obj.scale,{x:1,y:1,z:1,duration:0.8,ease:'back.out(1.4)'},2.9+i*0.12);
-});
 
 tick();
 
