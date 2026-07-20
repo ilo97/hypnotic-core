@@ -105,6 +105,7 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
 <section class="create-section" id="createSection">
   <h2>Create Your Ad Now</h2>
   <div class="create-sub">Describe your brand in one sentence, see your animation style instantly.</div>
+  <div id="previewLimitBadge" style="font-size:11px;color:rgba(184,169,255,0.6);margin-bottom:16px;letter-spacing:.05em"></div>
   <div class="create-box">
     <input class="create-input" id="createPromptInput" type="text" placeholder="e.g. luxury gold perfume launch" autocomplete="off">
     <button class="create-btn" id="createGenerateBtn">✦ Generate</button>
@@ -632,12 +633,40 @@ window.addEventListener('resize',()=>{
       grid.appendChild(card);
     });
 
+    // ─── FREE PREVIEW LIMIT — full results are gated behind payment/login ───
+    // No real video export happens in this codebase (that's manual/agency
+    // delivery per the pricing tiers) — this limit governs the live preview
+    // itself, so it can't be used unlimited times for free.
+    const FREE_PREVIEW_LIMIT=3;
+    function hasFullAccess(){
+      return !!localStorage.getItem('hypnotic_session')||localStorage.getItem('hypnotic_admin_unlocked')==='true';
+    }
+    function getPreviewCount(){ return parseInt(localStorage.getItem('hypnotic_trial_count')||'0',10); }
+    function incrementPreviewCount(){ localStorage.setItem('hypnotic_trial_count',String(getPreviewCount()+1)); }
+    function updatePreviewBadge(){
+      const el=document.getElementById('previewLimitBadge');
+      if(!el)return;
+      if(hasFullAccess()){ el.textContent='Unlimited access unlocked'; return; }
+      const remaining=Math.max(0,FREE_PREVIEW_LIMIT-getPreviewCount());
+      el.textContent=remaining>0?`${remaining} free preview${remaining===1?'':'s'} left`:'Free previews used — unlock below to continue';
+    }
+    window.updatePreviewBadge=updatePreviewBadge;
+    updatePreviewBadge();
+
     function applyStyle(rule){
+      if(!hasFullAccess()&&getPreviewCount()>=FREE_PREVIEW_LIMIT){
+        document.getElementById('pricingPanel').style.display='block';
+        document.getElementById('pricingPanel').scrollIntoView({behavior:'smooth',block:'center'});
+        updatePreviewBadge();
+        return;
+      }
       document.querySelectorAll('.style-card').forEach(c=>c.classList.toggle('active',c.dataset.id===rule.id));
       // NOTE: intentionally NOT recoloring global buttons/headings to the
       // rule's color anymore — that was breaking the site's own violet
       // identity every time a card was picked. The rule color now only
       // shows inside that card's own swatch/match-tag.
+      if(!hasFullAccess()) incrementPreviewCount();
+      updatePreviewBadge();
       const pricingPanel=document.getElementById('pricingPanel');
       if(pricingPanel.style.display==='none'){
         pricingPanel.style.display='block';
@@ -807,6 +836,7 @@ window.addEventListener('resize',()=>{
         openBtn.style.display = 'inline-block';
         logoutBtn.style.display = 'none';
       }
+      if (window.updatePreviewBadge) window.updatePreviewBadge();
     }
 
     openBtn.addEventListener('click', () => { modal.style.display = 'flex'; clearError(); });
