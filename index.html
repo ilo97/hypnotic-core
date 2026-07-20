@@ -426,10 +426,10 @@ const heroPlanet={obj:heroObj,spin:0.08};
 // ===== REAL PHOTO SPRITES — actual uploaded photographs, not procedural =====
 // Loaded as soft-edged camera-facing sprites so they always read correctly
 // (a photo doesn't wrap onto a sphere like a UV-mapped texture would).
-function loadRealPhotoSprite(url,widthUnits,heightUnits,onReady,onError){
+function loadRealPhotoSprite(url,widthUnits,heightUnits,onReady,onError,revealDelay){
   const mat=new THREE.SpriteMaterial({map:null,transparent:true,depthWrite:false,opacity:0});
   const sprite=new THREE.Sprite(mat);
-  sprite.scale.set(widthUnits,heightUnits,1);
+  sprite.scale.set(0,0,1); // scaled in during the harmonious reveal sequence
   S.add(sprite);
   const img=new Image();
   img.onload=function(){
@@ -442,7 +442,8 @@ function loadRealPhotoSprite(url,widthUnits,heightUnits,onReady,onError){
     ctx.globalCompositeOperation='source-over';
     const tex=new THREE.CanvasTexture(cv);tex.encoding=THREE.sRGBEncoding;
     mat.map=tex;mat.needsUpdate=true;
-    gsap.to(mat,{opacity:1,duration:1.2});
+    gsap.to(mat,{opacity:1,duration:1.4,delay:revealDelay||0,ease:'power2.out'});
+    gsap.to(sprite.scale,{x:widthUnits,y:heightUnits,duration:1.6,delay:revealDelay||0,ease:'power2.out'});
     if(onReady)onReady(sprite);
   };
   img.onerror=function(){ if(onError)onError(); };
@@ -450,21 +451,21 @@ function loadRealPhotoSprite(url,widthUnits,heightUnits,onReady,onError){
   return sprite;
 }
 
-const realHero=loadRealPhotoSprite('assets/earth-real.jpg',34,14.3,null,function(){heroObj.visible=true;});
+const realHero=loadRealPhotoSprite('assets/earth-real.jpg',34,14.3,null,function(){heroObj.visible=true;},1.6);
 
 // Amberion becomes the real photographed gas giant (with its own moons already in-shot)
 const amberionIndex=PLANETS.findIndex(p=>p.name==='Amberion');
 loadRealPhotoSprite('assets/gasgiant-real.jpg',24,10.2,function(sprite){
   planetMeshes[amberionIndex].obj=sprite;
   planetMeshes[amberionIndex].pending=false;
-});
+},null,2.1);
 
 // Distant real spiral galaxy — huge, far in the background, barely drifting
-const galaxySprite=loadRealPhotoSprite('assets/galaxy-real.jpg',150,117,null,null);
+const galaxySprite=loadRealPhotoSprite('assets/galaxy-real.jpg',150,117,null,null,0.2);
 galaxySprite.position.set(-60,40,-260);
 
 // Second deep-field layer — distant galaxy cluster, opposite side for depth
-const deepfieldSprite=loadRealPhotoSprite('assets/deepfield-real.jpg',170,113,null,null);
+const deepfieldSprite=loadRealPhotoSprite('assets/deepfield-real.jpg',170,113,null,null,0.5);
 deepfieldSprite.position.set(70,-30,-300);
 
 // ===== VISIBLE ORBIT PATHS — thin rings tracing each planet's path =====
@@ -578,6 +579,29 @@ function tick(){
   
   r.render(S,M);requestAnimationFrame(tick);
 }
+
+// ===== HARMONIOUS INTRO SEQUENCE — everything appears in order, not at once =====
+stars.material.opacity=0;nMat.opacity=0;fMat.opacity=0;shM.opacity=0;
+planetMeshes.forEach(p=>{if(p.obj)p.obj.scale.set(0,0,0);});
+moon.scale.set(0,0,0);
+rockets.forEach(r=>r.obj.scale.set(0,0,0));
+
+const introTl=gsap.timeline({delay:0.3});
+introTl
+  .to(stars.material,{opacity:0.6,duration:1.6,ease:'power1.out'},0)
+  .to(nMat,{opacity:0.12,duration:1.6,ease:'power1.out'},0.25)
+  .to(fMat,{opacity:0.5,duration:1.3,ease:'power1.out'},0.5)
+  .to(shM,{opacity:0.8,duration:1.1,ease:'power1.out'},0.7);
+
+planetMeshes.forEach((p,i)=>{
+  if(!p.obj)return; // Amberion's real photo reveals itself once loaded (see revealDelay above)
+  introTl.to(p.obj.scale,{x:1,y:1,z:1,duration:1.1,ease:'back.out(1.5)'},1.0+i*0.3);
+});
+introTl.to(moon.scale,{x:1,y:1,z:1,duration:0.9,ease:'back.out(1.6)'},2.6);
+rockets.forEach((r,i)=>{
+  introTl.to(r.obj.scale,{x:1,y:1,z:1,duration:0.8,ease:'back.out(1.4)'},2.9+i*0.12);
+});
+
 tick();
 
 window.addEventListener('resize',()=>{
