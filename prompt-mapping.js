@@ -120,6 +120,186 @@ const RULES = [
       particles: { count: 12000, size: 0.007, opacity: 0.5, waveAmplitude: 0.04 },
       scroll: { scrub: 2.5, cameraEnd: { x: 0.3, y: 0.3, z: 3.5 } }
     }
+  },
+  {
+    id: 'fashion-clothing',
+    keywords: ['fashion', 'clothing', 'apparel', 'kıyafet', 'moda', 'giyim', 'elbise', 'tekstil'],
+    patch: {
+      colors: { base: '#ff2d55', accent: '#111111', background: '#0a0a0a' },
+      particles: { count: 26000, size: 0.011, opacity: 0.65 },
+      intro: { duration: 2.2, ease: 'power3.out' }
+    }
+  },
+  {
+    id: 'jewelry-watch',
+    keywords: ['jewelry', 'ring', 'watch', 'takı', 'yüzük', 'küpe', 'kol saati', 'mücevher'],
+    patch: {
+      colors: { base: '#f2c14e', accent: '#ffffff', background: '#0d0a05' },
+      particles: { count: 20000, size: 0.006, opacity: 0.8, waveAmplitude: 0.03 },
+      intro: { duration: 3.5, ease: 'sine.inOut' }
+    }
+  },
+  {
+    id: 'electronics-gadget',
+    keywords: ['electronics', 'gadget', 'phone', 'headphones', 'elektronik', 'telefon', 'kulaklık'],
+    patch: {
+      colors: { base: '#4dd0ff', accent: '#1a1a2e', background: '#050510' },
+      particles: { count: 38000, size: 0.013, colorMorphStrength: 10 },
+      mouse: { quickToDuration: 0.4 }
+    }
+  },
+  {
+    id: 'real-estate',
+    keywords: ['real estate', 'property', 'villa', 'house', 'emlak', 'ev', 'daire', 'gayrimenkul'],
+    patch: {
+      colors: { base: '#c9a15a', accent: '#f5f0e6', background: '#0f0c08' },
+      particles: { count: 16000, size: 0.009, opacity: 0.55, waveAmplitude: 0.06 },
+      scroll: { scrub: 2.0 }
+    }
+  },
+  {
+    id: 'furniture-home',
+    keywords: ['furniture', 'home decor', 'mobilya', 'dekorasyon', 'mefruşat', 'ev eşyası'],
+    patch: {
+      colors: { base: '#c17f4e', accent: '#f2e6d8', background: '#12100c' },
+      particles: { count: 14000, size: 0.01, opacity: 0.5 },
+      intro: { duration: 3.0, ease: 'power2.out' }
+    }
+  },
+  {
+    id: 'personal-branding',
+    keywords: ['personal', 'portrait', 'influencer', 'cv', 'kişisel', 'portre', 'özgeçmiş', 'kendi reklamım'],
+    patch: {
+      colors: { base: '#e8e8e8', accent: '#b8a9ff', background: '#0a0a0c' },
+      particles: { count: 20000, size: 0.008, opacity: 0.6 },
+      intro: { duration: 2.8, ease: 'power2.inOut' }
+    }
+  },
+  {
+    id: 'fitness-sports',
+    keywords: ['fitness', 'gym', 'sports', 'workout', 'spor', 'antrenman', 'egzersiz'],
+    patch: {
+      colors: { base: '#ff4d00', accent: '#111111', background: '#050505' },
+      particles: { count: 42000, size: 0.018, waveAmplitude: 0.08 },
+      intro: { duration: 1.2, ease: 'expo.out' }
+    }
+  },
+  {
+    id: 'baby-kids',
+    keywords: ['baby', 'kids', 'toy', 'bebek', 'çocuk', 'oyuncak'],
+    patch: {
+      colors: { base: '#ffb3c6', accent: '#a0e7e5', background: '#100a0d' },
+      particles: { count: 15000, size: 0.009, opacity: 0.55, waveAmplitude: 0.1 },
+      intro: { duration: 3.2, ease: 'sine.inOut' }
+    }
+  },
+  {
+    id: 'pet-animal',
+    keywords: ['pet', 'dog', 'cat', 'evcil hayvan', 'kedi', 'köpek', 'pati'],
+    patch: {
+      colors: { base: '#e0a458', accent: '#6b9080', background: '#0d0c08' },
+      particles: { count: 17000, size: 0.01, opacity: 0.6 },
+      mouse: { quickToDuration: 1.0 }
+    }
+  },
+  {
+    id: 'travel-tourism',
+    keywords: ['travel', 'tourism', 'vacation', 'seyahat', 'tatil', 'tur', 'uçak bileti'],
+    patch: {
+      colors: { base: '#3ec6e0', accent: '#ffb26b', background: '#04141a' },
+      particles: { count: 24000, waveAmplitude: 0.15, waveFrequency: 2.5 },
+      scroll: { scrub: 1.3 }
+    }
+  },
+  {
+    id: 'wedding-event',
+    keywords: ['wedding', 'event', 'invitation', 'düğün', 'nişan', 'davet', 'organizasyon'],
+    patch: {
+      colors: { base: '#f5d6ba', accent: '#d4af37', background: '#120d0f' },
+      particles: { count: 20000, size: 0.007, opacity: 0.65, waveAmplitude: 0.05 },
+      intro: { duration: 3.8, ease: 'sine.inOut' }
+    }
+  },
+  {
+    id: 'finance-crypto',
+    keywords: ['finance', 'crypto', 'investment', 'finans', 'kripto', 'yatırım', 'borsa'],
+    patch: {
+      colors: { base: '#00e08a', accent: '#0a0a0a', background: '#020705' },
+      particles: { count: 30000, size: 0.01, colorMorphStrength: 6 },
+      scroll: { scrub: 1.0 }
+    }
+  },
+  {
+    id: 'education-course',
+    keywords: ['education', 'course', 'school', 'eğitim', 'kurs', 'okul', 'öğretim'],
+    patch: {
+      colors: { base: '#4a7dff', accent: '#ffd166', background: '#060810' },
+      particles: { count: 18000, size: 0.009, opacity: 0.6 },
+      intro: { duration: 2.4, ease: 'power2.out' }
+    }
+  },
+  {
+    id: 'health-medical',
+    keywords: ['health', 'medical', 'clinic', 'sağlık', 'klinik', 'doktor', 'tıbbi'],
+    patch: {
+      colors: { base: '#4fd1c5', accent: '#ffffff', background: '#040808' },
+      particles: { count: 16000, size: 0.007, opacity: 0.5 },
+      scroll: { scrub: 2.2 }
+    }
+  },
+  {
+    id: 'gaming-esports',
+    keywords: ['gaming', 'esports', 'console', 'oyun', 'konsol'],
+    patch: {
+      colors: { base: '#b026ff', accent: '#00ffcc', background: '#05000a' },
+      particles: { count: 45000, size: 0.016, colorMorphStrength: 18 },
+      mouse: { quickToDuration: 0.3 }
+    }
+  },
+  {
+    id: 'coffee-cafe',
+    keywords: ['coffee', 'cafe', 'espresso', 'kahve', 'kafe'],
+    patch: {
+      colors: { base: '#a9744f', accent: '#f2e2ce', background: '#100b08' },
+      particles: { count: 15000, size: 0.009, opacity: 0.55, waveAmplitude: 0.07 },
+      intro: { duration: 2.9, ease: 'sine.inOut' }
+    }
+  },
+  {
+    id: 'bakery-dessert',
+    keywords: ['bakery', 'dessert', 'cake', 'pasta', 'tatlı', 'fırın', 'çikolata'],
+    patch: {
+      colors: { base: '#f7a1c4', accent: '#fff1e6', background: '#120a0d' },
+      particles: { count: 16000, size: 0.009, opacity: 0.6, waveAmplitude: 0.08 },
+      intro: { duration: 3.0, ease: 'sine.inOut' }
+    }
+  },
+  {
+    id: 'sneakers-street',
+    keywords: ['sneakers', 'shoes', 'streetwear', 'ayakkabı', 'sneaker'],
+    patch: {
+      colors: { base: '#ffe600', accent: '#111111', background: '#050505' },
+      particles: { count: 34000, size: 0.017, waveAmplitude: 0.06 },
+      intro: { duration: 1.3, ease: 'expo.out' }
+    }
+  },
+  {
+    id: 'flowers-florist',
+    keywords: ['flowers', 'florist', 'bouquet', 'çiçek', 'çiçekçi', 'buket'],
+    patch: {
+      colors: { base: '#ff8fab', accent: '#a3c9a8', background: '#0d0a0c' },
+      particles: { count: 14000, size: 0.008, opacity: 0.55, waveAmplitude: 0.09 },
+      intro: { duration: 3.4, ease: 'sine.inOut' }
+    }
+  },
+  {
+    id: 'photography-camera',
+    keywords: ['photography', 'camera', 'photographer', 'fotoğraf', 'kamera', 'çekim'],
+    patch: {
+      colors: { base: '#c0c0c0', accent: '#ff6b3d', background: '#030303' },
+      particles: { count: 19000, size: 0.008, opacity: 0.55 },
+      scroll: { scrub: 1.7 }
+    }
   }
 ];
 

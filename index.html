@@ -90,6 +90,9 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
     <input class="create-input" id="createPromptInput" type="text" placeholder="örn. lüks altın parfüm lansmanı" autocomplete="off">
     <button class="create-btn" id="createGenerateBtn">✦ Oluştur</button>
   </div>
+  <div style="max-width:420px;margin:0 auto 24px">
+    <input class="create-input" id="styleSearchInput" type="text" placeholder="🔍 28 stil arasında ara — içecek, kıyafet, emlak, kişisel..." style="width:100%;font-size:12px;padding:10px 16px">
+  </div>
   <div class="style-grid" id="styleGrid"></div>
 
   <!-- coolshap.es-style grainy abstract blob (MIT-licensed technique: SVG blob + feTurbulence noise) -->
@@ -556,8 +559,29 @@ window.addEventListener('resize',()=>{
       'food-organic':{name:'Doğal & Organik',desc:'Yumuşak sallanma • 18.000 parçacık • yeşil-krem'},
       'cosmetics-beauty':{name:'Kozmetik & Güzellik',desc:'Uzun, zarif giriş (4s) • pastel pembe'},
       'music-mystic':{name:'Müzik & Mistik',desc:'Renk geçişli döngü • 35.000 parçacık • mor-turkuaz'},
-      'minimal-zen':{name:'Minimal & Zen',desc:'Sakin, yavaş kamera • 12.000 parçacık • siyah-beyaz'}
+      'minimal-zen':{name:'Minimal & Zen',desc:'Sakin, yavaş kamera • 12.000 parçacık • siyah-beyaz'},
+      'fashion-clothing':{name:'Kıyafet & Moda',desc:'Keskin giriş • 26.000 parçacık • kırmızı-siyah editorial'},
+      'jewelry-watch':{name:'Takı & Saat',desc:'Zarif, yavaş giriş (3.5s) • altın-beyaz parıltı'},
+      'electronics-gadget':{name:'Elektronik & Gadget',desc:'Anlık tepki • 38.000 parçacık • buz mavisi-lacivert'},
+      'real-estate':{name:'Emlak & Gayrimenkul',desc:'Geniş, sakin kamera • 16.000 parçacık • sıcak altın'},
+      'furniture-home':{name:'Mobilya & Dekorasyon',desc:'Yumuşak giriş • 14.000 parçacık • ahşap tonları'},
+      'personal-branding':{name:'Kişisel & Portre',desc:'Zarif giriş • 20.000 parçacık • nötr-lavanta'},
+      'fitness-sports':{name:'Spor & Fitness',desc:'Patlayıcı giriş (1.2s) • 42.000 parçacık • turuncu-siyah'},
+      'baby-kids':{name:'Bebek & Çocuk',desc:'Yumuşak, uzun giriş • 15.000 parçacık • pastel pembe-turkuaz'},
+      'pet-animal':{name:'Evcil Hayvan',desc:'Sıcak, samimi hareket • 17.000 parçacık • amber-yeşil'},
+      'travel-tourism':{name:'Seyahat & Tatil',desc:'Dalga hareketi • 24.000 parçacık • gökyüzü mavisi-turuncu'},
+      'wedding-event':{name:'Düğün & Davet',desc:'Uzun, romantik giriş (3.8s) • krem-altın'},
+      'finance-crypto':{name:'Finans & Kripto',desc:'Keskin, kurumsal • 30.000 parçacık • yeşil-siyah'},
+      'education-course':{name:'Eğitim & Kurs',desc:'Dost canlısı giriş • 18.000 parçacık • mavi-sarı'},
+      'health-medical':{name:'Sağlık & Klinik',desc:'Sakin, temiz kamera • 16.000 parçacık • turkuaz-beyaz'},
+      'gaming-esports':{name:'Oyun & Esports',desc:'Anlık tepki • 45.000 parçacık • neon mor-turkuaz'},
+      'coffee-cafe':{name:'Kahve & Kafe',desc:'Sıcak, yavaş giriş • 15.000 parçacık • kahve-krem'},
+      'bakery-dessert':{name:'Pasta & Tatlı',desc:'Yumuşak giriş • 16.000 parçacık • pembe-krem'},
+      'sneakers-street':{name:'Sneaker & Sokak Modası',desc:'Patlayıcı giriş (1.3s) • 34.000 parçacık • sarı-siyah'},
+      'flowers-florist':{name:'Çiçek & Çiçekçi',desc:'Zarif, uzun giriş • 14.000 parçacık • pembe-yeşil'},
+      'photography-camera':{name:'Fotoğrafçılık',desc:'Sakin kamera • 19.000 parçacık • gri-turuncu'}
     };
+    const searchInput=document.getElementById('styleSearchInput');
     const grid=document.getElementById('styleGrid');
     const input=document.getElementById('createPromptInput');
     const btn=document.getElementById('createGenerateBtn');
@@ -600,6 +624,16 @@ window.addEventListener('resize',()=>{
       }
     });
     input.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+
+    if(searchInput){
+      searchInput.addEventListener('input',()=>{
+        const q=searchInput.value.trim().toLowerCase();
+        document.querySelectorAll('.style-card').forEach(card=>{
+          const text=(card.querySelector('.name').textContent+' '+card.querySelector('.desc').textContent+' '+card.dataset.id).toLowerCase();
+          card.style.display=(!q||text.includes(q))?'':'none';
+        });
+      });
+    }
   })();
 </script>
 
