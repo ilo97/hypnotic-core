@@ -326,7 +326,7 @@
     <div class="hero">
         <header>
             <a class="logo" href="index.html" style="color:inherit;text-decoration:none">Aesthetic.Studio</a>
-            <div id="trial-badge" style="font-size:10px;letter-spacing:.1em;color:var(--dim-text);cursor:pointer" title="Admin login" onclick="window.GeneratorBridge && window.GeneratorBridge.tryAdminUnlock()"></div>
+            <div id="trial-badge" style="font-size:10px;letter-spacing:.1em;color:var(--dim-text)" title="Kullanım durumu"></div>
             <div id="authArea" style="display:flex;align-items:center;gap:14px">
                 <span id="authGreeting" style="font-size:11px;color:var(--dim-text);display:none"></span>
                 <button id="authOpenBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:#f0e6ff;font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:8px 16px;border-radius:20px;cursor:pointer;font-family:inherit">Giriş / Kayıt Ol</button>
@@ -335,27 +335,16 @@
             <div class="status">Neural Link: Active</div>
         </header>
 
-        <!-- ===== AUTH MODAL — client-side only (localStorage), not a real backend ===== -->
+        <!-- ===== OWNER LOGIN — single fixed credential, unlocks full unrestricted use ===== -->
         <div id="authModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center">
             <div style="background:#0a0a0c;border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:36px;width:100%;max-width:360px;position:relative">
                 <button id="authCloseBtn" style="position:absolute;top:14px;right:16px;background:none;border:none;color:var(--dim-text);font-size:18px;cursor:pointer">×</button>
-                <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.1)">
-                    <button class="authTab active" data-tab="login" style="flex:1;background:none;border:none;padding:10px;color:#f0e6ff;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid var(--cyan)">Giriş Yap</button>
-                    <button class="authTab" data-tab="register" style="flex:1;background:none;border:none;padding:10px;color:var(--dim-text);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent">Kayıt Ol</button>
-                </div>
+                <div style="font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#f0e6ff;margin-bottom:20px">Giriş Yap</div>
                 <div id="authError" style="display:none;color:#ff6b6b;font-size:11px;margin-bottom:14px"></div>
-                <div id="authFormLogin">
-                    <input id="loginEmail" type="email" placeholder="E-posta" style="width:100%;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px">
-                    <input id="loginPassword" type="password" placeholder="Şifre" style="width:100%;padding:12px 14px;margin-bottom:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px">
-                    <button id="loginSubmitBtn" style="width:100%;padding:12px;background:var(--cyan);border:none;color:#050505;font-size:11px;letter-spacing:.15em;text-transform:uppercase;border-radius:6px;cursor:pointer;font-weight:600">Giriş Yap</button>
-                </div>
-                <div id="authFormRegister" style="display:none">
-                    <input id="regName" type="text" placeholder="Ad" style="width:100%;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px">
-                    <input id="regEmail" type="email" placeholder="E-posta" style="width:100%;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px">
-                    <input id="regPassword" type="password" placeholder="Şifre (en az 6 karakter)" style="width:100%;padding:12px 14px;margin-bottom:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px">
-                    <button id="regSubmitBtn" style="width:100%;padding:12px;background:var(--cyan);border:none;color:#050505;font-size:11px;letter-spacing:.15em;text-transform:uppercase;border-radius:6px;cursor:pointer;font-weight:600">Kayıt Ol</button>
-                </div>
-                <div style="font-size:9px;color:var(--dim-text);margin-top:16px;line-height:1.5">Bu hesap bilgileri yalnızca bu tarayıcıda saklanır, bir sunucuya gönderilmez.</div>
+                <input id="loginEmail" type="email" placeholder="E-posta" style="width:100%;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px">
+                <input id="loginPassword" type="password" placeholder="Şifre" style="width:100%;padding:12px 14px;margin-bottom:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px">
+                <button id="loginSubmitBtn" style="width:100%;padding:12px;background:var(--cyan);border:none;color:#050505;font-size:11px;letter-spacing:.15em;text-transform:uppercase;border-radius:6px;cursor:pointer;font-weight:600">Giriş Yap</button>
+                <div style="font-size:9px;color:var(--dim-text);margin-top:16px;line-height:1.5">Bu, tek ve sabit bir giriş — sadece sana özel. Giriş yapınca sınırsız/ücretsiz kullanım açılır.</div>
             </div>
         </div>
 
@@ -675,12 +664,16 @@
         })();
     </script>
     <script>
-        // ─── CUSTOMER LOGIN / REGISTER (client-side only, localStorage) ───
-        // NOTE: this is NOT real server-side auth. Passwords are only
-        // lightly obfuscated (not securely hashed) and never leave this
-        // browser. For real accounts, a backend + database is needed.
+        // ─── OWNER LOGIN — single fixed credential (client-side check only) ───
+        // NOT real server-side auth: the credential lives in this file, so
+        // anyone who reads the page source could find it. On success it
+        // flips the same "admin unlocked" flag generator-bridge.js checks,
+        // so it grants the same unlimited/free access as the admin unlock.
         (function () {
-            const LS_USERS = 'hypnotic_users';
+            // ─── Change these to your own before sharing the site widely ───
+            const OWNER_EMAIL = 'ilayda@aesthetic.studio';
+            const OWNER_PASSWORD = 'ilayda-aesthetic-2026';
+            const LS_ADMIN_KEY = 'hypnotic_admin_unlocked';
             const LS_SESSION = 'hypnotic_session';
 
             const modal = document.getElementById('authModal');
@@ -689,21 +682,14 @@
             const logoutBtn = document.getElementById('authLogoutBtn');
             const greeting = document.getElementById('authGreeting');
             const errorEl = document.getElementById('authError');
-            const tabs = document.querySelectorAll('.authTab');
-            const formLogin = document.getElementById('authFormLogin');
-            const formRegister = document.getElementById('authFormRegister');
 
-            function obfuscate(str) { return btoa(unescape(encodeURIComponent(str))); }
-            function getUsers() { try { return JSON.parse(localStorage.getItem(LS_USERS) || '{}'); } catch (e) { return {}; } }
-            function saveUsers(u) { localStorage.setItem(LS_USERS, JSON.stringify(u)); }
             function showError(msg) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
             function clearError() { errorEl.style.display = 'none'; }
 
             function refreshAuthUI() {
                 const session = localStorage.getItem(LS_SESSION);
                 if (session) {
-                    const user = JSON.parse(session);
-                    greeting.textContent = `Merhaba, ${user.name}`;
+                    greeting.textContent = 'Giriş yapıldı';
                     greeting.style.display = 'inline';
                     openBtn.style.display = 'none';
                     logoutBtn.style.display = 'inline-block';
@@ -712,52 +698,29 @@
                     openBtn.style.display = 'inline-block';
                     logoutBtn.style.display = 'none';
                 }
+                if (window.GeneratorBridge && window.GeneratorBridge.updateTrialBadge) window.GeneratorBridge.updateTrialBadge();
             }
 
             openBtn.addEventListener('click', () => { modal.style.display = 'flex'; clearError(); });
             closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => { t.classList.remove('active'); t.style.color = 'var(--dim-text)'; t.style.borderBottomColor = 'transparent'; });
-                    tab.classList.add('active'); tab.style.color = '#f0e6ff'; tab.style.borderBottomColor = 'var(--cyan)';
-                    clearError();
-                    if (tab.dataset.tab === 'login') { formLogin.style.display = 'block'; formRegister.style.display = 'none'; }
-                    else { formLogin.style.display = 'none'; formRegister.style.display = 'block'; }
-                });
-            });
-
-            document.getElementById('regSubmitBtn').addEventListener('click', () => {
-                const name = document.getElementById('regName').value.trim();
-                const email = document.getElementById('regEmail').value.trim().toLowerCase();
-                const pass = document.getElementById('regPassword').value;
-                clearError();
-                if (!name || !email || !pass) return showError('Tüm alanları doldur.');
-                if (pass.length < 6) return showError('Şifre en az 6 karakter olmalı.');
-                const users = getUsers();
-                if (users[email]) return showError('Bu e-posta zaten kayıtlı, giriş yapmayı dene.');
-                users[email] = { name, email, pass: obfuscate(pass) };
-                saveUsers(users);
-                localStorage.setItem(LS_SESSION, JSON.stringify({ name, email }));
-                modal.style.display = 'none';
-                refreshAuthUI();
-            });
-
             document.getElementById('loginSubmitBtn').addEventListener('click', () => {
                 const email = document.getElementById('loginEmail').value.trim().toLowerCase();
                 const pass = document.getElementById('loginPassword').value;
                 clearError();
-                const users = getUsers();
-                const user = users[email];
-                if (!user || user.pass !== obfuscate(pass)) return showError('E-posta veya şifre hatalı.');
-                localStorage.setItem(LS_SESSION, JSON.stringify({ name: user.name, email: user.email }));
+                if (email !== OWNER_EMAIL.toLowerCase() || pass !== OWNER_PASSWORD) {
+                    return showError('E-posta veya şifre hatalı.');
+                }
+                localStorage.setItem(LS_SESSION, 'true');
+                localStorage.setItem(LS_ADMIN_KEY, 'true'); // same unlock generator-bridge.js checks
                 modal.style.display = 'none';
                 refreshAuthUI();
             });
 
             logoutBtn.addEventListener('click', () => {
                 localStorage.removeItem(LS_SESSION);
+                localStorage.removeItem(LS_ADMIN_KEY);
                 refreshAuthUI();
             });
 
