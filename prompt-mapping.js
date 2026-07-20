@@ -353,12 +353,21 @@ function buildConfigFromPrompt(prompt = '') {
   const lowerPrompt = prompt.toLowerCase();
   const applied = [];
 
+  // Smart weighted matching: score every category by how many of its
+  // keywords appear in the prompt, then apply only the single best match
+  // (instead of the old "last matched rule wins" overwrite behavior).
+  let bestRule = null;
+  let bestScore = 0;
   for (const rule of RULES) {
-    const matched = rule.keywords.some((kw) => lowerPrompt.includes(kw));
-    if (matched) {
-      deepMerge(config, rule.patch);
-      applied.push(rule.id);
+    const score = rule.keywords.reduce((acc, kw) => acc + (lowerPrompt.includes(kw) ? 1 : 0), 0);
+    if (score > bestScore) {
+      bestScore = score;
+      bestRule = rule;
     }
+  }
+  if (bestRule) {
+    deepMerge(config, bestRule.patch);
+    applied.push(bestRule.id);
   }
 
   applyPromptDirectives(config, prompt, applied);
