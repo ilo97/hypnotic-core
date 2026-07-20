@@ -82,8 +82,15 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
     <input id="loginEmail" type="email" placeholder="Email" style="width:100%;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px;box-sizing:border-box">
     <input id="loginPassword" type="password" placeholder="Password" style="width:100%;padding:12px 14px;margin-bottom:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#f0e6ff;font-family:inherit;font-size:13px;box-sizing:border-box">
     <button id="loginSubmitBtn" style="width:100%;padding:12px;background:#b8a9ff;border:none;color:#050510;font-size:11px;letter-spacing:.15em;text-transform:uppercase;border-radius:6px;cursor:pointer;font-weight:600">Log In</button>
+    <div style="display:flex;align-items:center;gap:10px;margin:18px 0;color:rgba(240,230,255,0.3);font-size:10px">
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.1)"></div>OR<div style="flex:1;height:1px;background:rgba(255,255,255,0.1)"></div>
+    </div>
+    <div id="googleSignInBtn" style="display:flex;justify-content:center"></div>
+    <div id="googleSignInPlaceholder" style="display:none;font-size:10px;color:rgba(240,230,255,0.35);text-align:center;padding:10px;border:1px dashed rgba(255,255,255,0.15);border-radius:6px">Google Sign-In needs a free Client ID from Google Cloud Console — not yet configured</div>
   </div>
 </div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <canvas id="c"></canvas>
 <div class="overlay">
@@ -101,6 +108,13 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
   <div class="create-box">
     <input class="create-input" id="createPromptInput" type="text" placeholder="e.g. luxury gold perfume launch" autocomplete="off">
     <button class="create-btn" id="createGenerateBtn">✦ Generate</button>
+  </div>
+  <div style="max-width:640px;margin:0 auto 30px">
+    <label for="photoUploadInput" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;border:1px dashed rgba(184,169,255,0.35);border-radius:8px;cursor:pointer;color:rgba(240,230,255,0.55);font-size:12px;transition:border-color .3s">
+      📷 Upload your own product photo(s) — optional
+    </label>
+    <input type="file" id="photoUploadInput" accept="image/*" multiple style="display:none">
+    <div id="photoPreviewRow" style="display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap"></div>
   </div>
   <div style="max-width:420px;margin:0 auto 24px">
     <input class="create-input" id="styleSearchInput" type="text" placeholder="🔍 Search 28 styles — drinks, clothing, real estate, personal..." style="width:100%;font-size:12px;padding:10px 16px">
@@ -644,6 +658,26 @@ window.addEventListener('resize',()=>{
     });
     input.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
 
+    // Photo upload preview — client-side only (no server to send it to yet,
+    // see below on what's needed to actually receive/store these).
+    const photoInput=document.getElementById('photoUploadInput');
+    const previewRow=document.getElementById('photoPreviewRow');
+    if(photoInput){
+      photoInput.addEventListener('change',()=>{
+        previewRow.innerHTML='';
+        Array.from(photoInput.files).slice(0,4).forEach(file=>{
+          const reader=new FileReader();
+          reader.onload=e=>{
+            const img=document.createElement('img');
+            img.src=e.target.result;
+            img.style.cssText='width:70px;height:70px;object-fit:cover;border-radius:6px;border:1px solid rgba(184,169,255,0.3)';
+            previewRow.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    }
+
     if(searchInput){
       searchInput.addEventListener('input',()=>{
         const q=searchInput.value.trim().toLowerCase();
@@ -762,7 +796,9 @@ window.addEventListener('resize',()=>{
     function refreshAuthUI() {
       const session = localStorage.getItem(LS_SESSION);
       if (session) {
-        greeting.textContent = 'Logged in';
+        let name = 'Logged in';
+        try { const parsed = JSON.parse(session); if (parsed && parsed.name) name = `Hi, ${parsed.name}`; } catch (e) {}
+        greeting.textContent = name;
         greeting.style.display = 'inline';
         openBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
@@ -795,6 +831,37 @@ window.addEventListener('resize',()=>{
       localStorage.removeItem(LS_ADMIN_KEY);
       refreshAuthUI();
     });
+
+    // ─── Google Sign-In (customer login) ───────────────────────────
+    // Client-side only — real, no fake button. Needs a free OAuth Client ID
+    // from https://console.cloud.google.com/apis/credentials (Create
+    // Credentials → OAuth Client ID → Web application → add this site's
+    // URL under "Authorized JavaScript origins"). Paste the ID below.
+    const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+    function decodeJwt(token) {
+      try { return JSON.parse(decodeURIComponent(escape(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))))); }
+      catch (e) { return null; }
+    }
+
+    function handleGoogleSignIn(response) {
+      const payload = decodeJwt(response.credential);
+      if (!payload) return;
+      localStorage.setItem(LS_SESSION, JSON.stringify({ name: payload.name, email: payload.email, provider: 'google' }));
+      modal.style.display = 'none';
+      refreshAuthUI();
+    }
+
+    function initGoogleSignIn() {
+      if (GOOGLE_CLIENT_ID.startsWith('YOUR_')) {
+        document.getElementById('googleSignInPlaceholder').style.display = 'block';
+        return;
+      }
+      if (typeof google === 'undefined' || !google.accounts) { setTimeout(initGoogleSignIn, 300); return; }
+      google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleSignIn });
+      google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: 'filled_black', size: 'large', shape: 'pill' });
+    }
+    initGoogleSignIn();
 
     refreshAuthUI();
   })();
