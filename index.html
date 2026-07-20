@@ -55,10 +55,17 @@ h1 em{background:linear-gradient(135deg,#ff6b9d,#d4a0ff,#7dd3fc);-webkit-backgro
 @media (max-width:640px){.create-box{flex-direction:column}.create-btn{width:100%}}
 
 /* ===== REAL PHOTO SHOWCASE — GL-Transition style pixel/warp morph ===== */
-.showcase-section{position:relative;z-index:1;padding:60px 0}
+.showcase-section{position:relative;z-index:1;padding:60px 0;background:rgba(5,5,16,0.5)}
 .showcase-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(24px,3.5vw,38px);font-weight:400;text-align:center;margin-bottom:8px;color:#f0e6ff}
 .showcase-sub{text-align:center;color:rgba(240,230,255,0.45);font-size:12px;margin-bottom:28px}
 #transitionCanvas{width:100%;height:56vh;display:block;border-top:1px solid rgba(184,169,255,0.1);border-bottom:1px solid rgba(184,169,255,0.1)}
+
+/* ===== SHAPE DIVIDERS — wave cuts between sections (shapedivider.app style) ===== */
+.shape-divider{position:relative;line-height:0;z-index:1}
+.shape-divider svg{width:100%;height:70px;display:block}
+
+/* ===== GRAINY BLOB ACCENT — coolshap.es style (MIT-licensed technique) ===== */
+.grain-blob{position:absolute;pointer-events:none;opacity:0.5;z-index:0}
 .gld-line{width:1px;height:30px;background:linear-gradient(to bottom,#b8a9ff,transparent);margin:6px auto 0;animation:br 3s infinite}
 @keyframes br{0%{opacity:.2;transform:scaleY(.3);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:.2;transform:scaleY(.3);transform-origin:bottom}}
 footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.25em;text-transform:uppercase;color:rgba(240,230,255,0.03);border-top:1px solid rgba(184,169,255,0.01);position:relative;z-index:1}
@@ -84,13 +91,33 @@ footer{padding:15px 40px;display:flex;justify-content:space-between;font-size:7p
     <button class="create-btn" id="createGenerateBtn">✦ Oluştur</button>
   </div>
   <div class="style-grid" id="styleGrid"></div>
+
+  <!-- coolshap.es-style grainy abstract blob (MIT-licensed technique: SVG blob + feTurbulence noise) -->
+  <svg class="grain-blob" width="260" height="260" viewBox="0 0 260 260" style="top:-40px;right:-60px" aria-hidden="true">
+    <defs>
+      <filter id="grainFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise"/><feColorMatrix in="noise" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/><feComposite operator="over" in2="SourceGraphic"/></filter>
+      <linearGradient id="blobGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#b8a9ff" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#7dd3fc" stop-opacity="0.12"/>
+      </linearGradient>
+    </defs>
+    <path fill="url(#blobGrad)" filter="url(#grainFilter)" d="M156.5,15.7C182,32,199,63,208.5,96.6C218,130,220,166,201,190.6C182,215,142,228,102.5,229.7C63,231,24,222,9,197.6C-6,173,3,133,17,98.7C31,64,50,35,79.5,18.7C109,2,148,-1,156.5,15.7Z"/>
+  </svg>
 </section>
+
+<div class="shape-divider" style="margin-top:-2px">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path fill="rgba(5,5,16,0.5)" d="M0,40 C 360,90 1080,-10 1440,40 L1440,80 L0,80 Z"/></svg>
+</div>
 
 <section class="showcase-section">
   <h2>Gerçek Sahneler, Sinematik Geçişlerle</h2>
   <div class="showcase-sub">GL Transition tekniği: piksel bloklarına ayrışıp dalga gibi bükülerek bir sonraki sahneye akıyor</div>
   <canvas id="transitionCanvas"></canvas>
 </section>
+
+<div class="shape-divider" style="margin-top:-2px;transform:scaleY(-1)">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path fill="rgba(5,5,16,0.5)" d="M0,40 C 360,90 1080,-10 1440,40 L1440,80 L0,80 Z"/></svg>
+</div>
 
 <footer><span>© 2026 Aesthetic Studio</span><a href="platform-index.html" style="color:rgba(184,169,255,0.4);text-decoration:none;letter-spacing:.25em;font-size:7px;text-transform:uppercase">Enter the Platform →</a><span>✦ Aesthetic Studio ✦</span></footer>
 
