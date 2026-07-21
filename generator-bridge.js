@@ -26,7 +26,7 @@
   const LS_TRIAL_KEY = 'hypnotic_trial_count';
 
   function isAdmin() {
-    return global.localStorage.getItem(LS_ADMIN_KEY) === 'true';
+    return global.localStorage.getItem(LS_ADMIN_KEY) === 'true' || global.localStorage.getItem('hypnotic_paid_unlock') === 'true';
   }
 
   function getTrialCount() {

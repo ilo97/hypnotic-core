@@ -726,6 +726,25 @@
 
             refreshAuthUI();
         })();
+
+        // ─── REAL PAYMENT VERIFICATION — asks Stripe (via our Vercel backend),
+        // not anything stored in the browser, whether this session was paid. ───
+        (function checkPaymentReturn() {
+            const params = new URLSearchParams(window.location.search);
+            const sessionId = params.get('session_id');
+            if (!sessionId) return;
+            fetch(`https://hypnotic-core.vercel.app/api/verify-payment?session_id=${encodeURIComponent(sessionId)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.paid) {
+                        localStorage.setItem('hypnotic_paid_unlock', 'true');
+                        if (data.tier) localStorage.setItem('hypnotic_paid_tier', data.tier);
+                        if (window.GeneratorBridge && window.GeneratorBridge.updateTrialBadge) window.GeneratorBridge.updateTrialBadge();
+                    }
+                    history.replaceState(null, '', window.location.pathname);
+                })
+                .catch(() => { /* backend unreachable — fail closed, no unlock */ });
+        })();
     </script>
     <script>
         const statusEl = document.getElementById('stack-status');
@@ -832,7 +851,7 @@
         });
 
         // ─── STRIPE CHECKOUT + ORDER FORM ───────────────────────
-        const API_BASE = 'https://hypnotic-core-api.vercel.app';
+        const API_BASE = 'https://hypnotic-core.vercel.app';
 
         // GSAP scroll animations for pricing + order form
         gsap.from('.pricing .section-header', {

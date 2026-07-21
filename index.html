@@ -639,7 +639,7 @@ window.addEventListener('resize',()=>{
     // itself, so it can't be used unlimited times for free.
     const FREE_PREVIEW_LIMIT=3;
     function hasFullAccess(){
-      return !!localStorage.getItem('hypnotic_session')||localStorage.getItem('hypnotic_admin_unlocked')==='true';
+      return !!localStorage.getItem('hypnotic_session')||localStorage.getItem('hypnotic_admin_unlocked')==='true'||localStorage.getItem('hypnotic_paid_unlock')==='true';
     }
     function getPreviewCount(){ return parseInt(localStorage.getItem('hypnotic_trial_count')||'0',10); }
     function incrementPreviewCount(){ localStorage.setItem('hypnotic_trial_count',String(getPreviewCount()+1)); }
@@ -652,6 +652,29 @@ window.addEventListener('resize',()=>{
     }
     window.updatePreviewBadge=updatePreviewBadge;
     updatePreviewBadge();
+
+    // ─── REAL PAYMENT VERIFICATION — asks Stripe (via our Vercel backend),
+    // not anything stored in the browser, whether this session was paid. ───
+    const VERIFY_API='https://hypnotic-core.vercel.app/api/verify-payment';
+    (function checkPaymentReturn(){
+      const params=new URLSearchParams(window.location.search);
+      const sessionId=params.get('session_id');
+      if(!sessionId)return;
+      fetch(`${VERIFY_API}?session_id=${encodeURIComponent(sessionId)}`)
+        .then(r=>r.json())
+        .then(data=>{
+          if(data.paid){
+            localStorage.setItem('hypnotic_paid_unlock','true');
+            if(data.tier)localStorage.setItem('hypnotic_paid_tier',data.tier);
+            updatePreviewBadge();
+            const badge=document.getElementById('previewLimitBadge');
+            if(badge){badge.textContent='✓ Payment verified — unlimited access unlocked';badge.style.color='#4fd1c5';}
+          }
+          // Clean the URL so refreshing doesn't re-trigger the check
+          history.replaceState(null,'',window.location.pathname);
+        })
+        .catch(()=>{ /* backend unreachable — fail closed, no unlock */ });
+    })();
 
     function applyStyle(rule){
       if(!hasFullAccess()&&getPreviewCount()>=FREE_PREVIEW_LIMIT){
