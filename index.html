@@ -638,7 +638,10 @@ window.addEventListener('resize',()=>{
     // delivery per the pricing tiers) — this limit governs the live preview
     // itself, so it can't be used unlimited times for free.
     const FREE_PREVIEW_LIMIT=3;
+    // ─── TESTING_MODE: set to false when ready to actually enforce limits/payment ───
+    const TESTING_MODE=true;
     function hasFullAccess(){
+      if(TESTING_MODE)return true;
       return !!localStorage.getItem('hypnotic_session')||localStorage.getItem('hypnotic_admin_unlocked')==='true'||localStorage.getItem('hypnotic_paid_unlock')==='true';
     }
     function getPreviewCount(){ return parseInt(localStorage.getItem('hypnotic_trial_count')||'0',10); }

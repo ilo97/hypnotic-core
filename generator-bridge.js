@@ -25,7 +25,10 @@
   const LS_ADMIN_KEY = 'hypnotic_admin_unlocked';
   const LS_TRIAL_KEY = 'hypnotic_trial_count';
 
+  // ─── TESTING_MODE: set to false when ready to actually enforce limits/payment ───
+  const TESTING_MODE = true;
   function isAdmin() {
+    if (TESTING_MODE) return true;
     return global.localStorage.getItem(LS_ADMIN_KEY) === 'true' || global.localStorage.getItem('hypnotic_paid_unlock') === 'true';
   }
 
